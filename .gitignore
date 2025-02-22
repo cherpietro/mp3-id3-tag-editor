@@ -1,2 +1,4 @@
 /files
-./a.out
+a.out
+*.o
+*.jpg
