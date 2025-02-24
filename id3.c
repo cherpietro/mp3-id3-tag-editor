@@ -1,8 +1,5 @@
 #include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <byteswap.h>
 #include "ID3v2.h"
 
 
@@ -11,7 +8,7 @@ int main(){
   ID3v2HeaderType id3Header;
   ID3v2DefaulFrameHeaderType id3FrameHeader;
 
-  mp3FilePointer = fopen("./files/theme.mp3","r");
+  mp3FilePointer = fopen("./files/overture.mp3","r");
   if (mp3FilePointer) {
     if(readHeader(mp3FilePointer,&id3Header)){
       printf("Version: 2.%d.%d\n",id3Header.version[0],id3Header.version[1]);
