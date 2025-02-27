@@ -22,7 +22,7 @@ typedef struct{
   char frameId[4];
   uint8_t size[4];
   uint8_t flags[2];
-} ID3v2DefaulFrameHeaderType;
+} ID3v2FrameHeaderType;
 
 typedef struct{
   uint8_t textEncoding;   
@@ -33,10 +33,18 @@ typedef struct{
   size_t imageDataSize;   
 } ID3v2APICFrame;
 
+typedef struct{
+  ID3v2FrameHeaderType header;
+  uint8_t textEncoding;
+  char *content;
+  // ID3v2FrameHeaderType header;
+}ID3v2TextFrameType;
+
 
 typedef struct{
   ID3v2HeaderType header;
-  ID3v2APICFrame APIC;
+  ID3v2APICFrame *APIC;
+  ID3v2TextFrameType *TALB;
 } ID3TagType;
 
 void freeAPICFrame(ID3v2APICFrame* );
@@ -47,8 +55,10 @@ uint32_t syncsafeToSize(uint8_t *) ;
 
 int readHeader(FILE* , ID3v2HeaderType*);
 
-int readFrameHeader(FILE*, ID3v2DefaulFrameHeaderType *);
+int readFrameHeader(FILE*, ID3v2FrameHeaderType *);
 
-int readFrame(FILE*, ID3v2DefaulFrameHeaderType*);
-  
+int readFrame(FILE*, ID3TagType*);
+
+void readTextFrame(uint8_t *, uint32_t, ID3v2TextFrameType *);
+
 #endif // ID3V2_H
