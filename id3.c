@@ -5,24 +5,25 @@
 
 int main(){
   FILE *mp3FilePointer;
-  ID3v2HeaderType id3Header;
-  ID3v2DefaulFrameHeaderType id3FrameHeader;
+  // ID3v2HeaderType id3Header;
+  // ID3v2DefaulFrameHeaderType id3FrameHeader;
+  ID3TagType ID3Tag; 
 
   mp3FilePointer = fopen("./files/overture.mp3","r");
   if (mp3FilePointer) {
-    if(readHeader(mp3FilePointer,&id3Header)){
-      printf("Version: 2.%d.%d\n",id3Header.version[0],id3Header.version[1]);
-      printf("Flag: %u\n",id3Header.flags);
-      uint32_t tagSize = syncsafeToSize(id3Header.size);
+    if(readHeader(mp3FilePointer,&ID3Tag.header)){
+      printf("Version: 2.%d.%d\n",ID3Tag.header.version[0],ID3Tag.header.version[1]);
+      printf("Flag: %u\n",ID3Tag.header.flags);
+      uint32_t tagSize = syncsafeToSize(ID3Tag.header.size);
       printf("Size: %u bytes\n",tagSize);
       
-      int readedBytes,remainingBytes;
-      remainingBytes = tagSize-10;
-      while(remainingBytes > 0){
-        readedBytes = readFrame(mp3FilePointer,&id3FrameHeader);
-        remainingBytes-=readedBytes;
-        // printf("remaining: %d\n",remainingBytes);
-      }
+      // int readedBytes,remainingBytes;
+      // remainingBytes = tagSize-10;
+      // while(remainingBytes > 0){
+      //   readedBytes = readFrame(mp3FilePointer,&ID3Tag.header);
+      //   remainingBytes-=readedBytes;
+      //   printf("remaining: %d\n",remainingBytes);
+      // }
     }
 
     fclose(mp3FilePointer);

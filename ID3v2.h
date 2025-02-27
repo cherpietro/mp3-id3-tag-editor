@@ -33,6 +33,12 @@ typedef struct{
   size_t imageDataSize;   
 } ID3v2APICFrame;
 
+
+typedef struct{
+  ID3v2HeaderType header;
+  ID3v2APICFrame APIC;
+} ID3TagType;
+
 void freeAPICFrame(ID3v2APICFrame* );
 
 ID3v2APICFrame* getAPICFrame(uint8_t *, uint32_t );
