@@ -2,12 +2,12 @@
 #include <stdint.h>
 #include "ID3v2.h"
 
+void printTextFrame(ID3v2TextFrameType);
 
 int main(){
   FILE *mp3FilePointer;
-  // ID3v2HeaderType id3Header;
-  // ID3v2DefaulFrameHeaderType id3FrameHeader;
   ID3TagType ID3Tag; 
+  initID3v2Tag(&ID3Tag);
 
   mp3FilePointer = fopen("./files/overture.mp3","r");
   if (mp3FilePointer) {
@@ -22,21 +22,27 @@ int main(){
       while(remainingBytes > 0){
         readedBytes = readFrame(mp3FilePointer,&ID3Tag);
         remainingBytes-=readedBytes;
+        printTextFrame(*ID3Tag.TALB);
         printf("remaining: %d\n",remainingBytes);
-        printf("\n----FRAME----\n");
-        printf("Frame ID: %s\n",ID3Tag.TALB->header.frameId);
-        printf("Flags: %u %u\n",ID3Tag.TALB->header.flags[0],ID3Tag.TALB->header.flags[1]);
-        printf("Size: %u bytes\n",syncsafeToSize(ID3Tag.TALB->header.size));
-        printf("TextEncoding: %d\n",ID3Tag.TALB->textEncoding);
-        printf("Content: %s\n",ID3Tag.TALB->content);
         remainingBytes = -1;
       }
     }
 
     fclose(mp3FilePointer);
+    freeID3v2Tag(&ID3Tag);
     return(0);
   }
   else printf("The file DOESN'T exist!\n");
 
   return 0;
+}
+
+
+void printTextFrame(ID3v2TextFrameType frame){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",frame.header.frameId);
+  printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
+  printf("Size: %u bytes\n",syncsafeToSize(frame.header.size));
+  printf("TextEncoding: %d\n",frame.textEncoding);
+  printf("Content: %s\n",frame.content);
 }

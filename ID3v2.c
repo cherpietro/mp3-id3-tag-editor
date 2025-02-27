@@ -1,6 +1,18 @@
 #include "ID3v2.h"
 #include <string.h>
 
+
+void initID3v2Tag(ID3TagType *tag){
+  tag->APIC = NULL;
+  tag->TALB = NULL;
+}
+
+void freeID3v2Tag(ID3TagType *tag){
+  if(tag->TALB != NULL){
+    free(tag->TALB->content);
+    free(tag->TALB);
+  }
+}
 void freeAPICFrame(ID3v2APICFrame* apicFrame){
   free(apicFrame->mimeType);
   free(apicFrame->description);
@@ -50,8 +62,9 @@ void readTextFrameContet(uint8_t *frameContent, uint32_t frameSize,ID3v2TextFram
   frame->textEncoding = frameContent[index++];
   char *contentPtr = (char *)frameContent + index;
   size_t contentLen = strlen(contentPtr);
-  if(frameSize - (contentLen +1) != 0){
-    printf("Error on size frame");
+  if(frameSize - 1 - (contentLen+1) != 0){ // we have to substract 1 byte from textEncoding and 1 from \0 byte
+    printf("Error on size frame\n");
+    printf("Frame size: %d; Content Len: %ld\n",frameSize,contentLen);
   }
   frame->content = (char *)malloc(contentLen+1);
   strcpy(frame->content,contentPtr);
@@ -69,10 +82,7 @@ int readFrame(FILE *mp3FilePointer, ID3TagType *ID3Tag){
   ID3v2FrameHeaderType header;
   fread(&header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer);
   uint32_t frameSize = syncsafeToSize(header.size);
-  // printf("\n----FRAME----\n");
-  // printf("Frame ID: %s\n",header.frameId);
-  // printf("Flags: %u %u\n",header.flags[0],header.flags[1]);
-  // printf("Size: %u bytes\n",frameSize);
+
   if(strncmp(header.frameId,"TALB",1)==0){
     ID3Tag ->TALB = (ID3v2TextFrameType *) malloc(sizeof(ID3v2TextFrameType));
     ID3Tag ->TALB->header = header;

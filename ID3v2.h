@@ -37,7 +37,6 @@ typedef struct{
   ID3v2FrameHeaderType header;
   uint8_t textEncoding;
   char *content;
-  // ID3v2FrameHeaderType header;
 }ID3v2TextFrameType;
 
 
@@ -46,6 +45,10 @@ typedef struct{
   ID3v2APICFrame *APIC;
   ID3v2TextFrameType *TALB;
 } ID3TagType;
+
+void initID3v2Tag(ID3TagType *);
+
+void freeID3v2Tag(ID3TagType *);
 
 void freeAPICFrame(ID3v2APICFrame* );
 
