@@ -57,7 +57,7 @@ int readHeader(FILE *mp3FilePointer, ID3v2HeaderType *header){
   }
   return -1;
 }
-void readTextFrameContet(uint8_t *frameContent, uint32_t frameSize,ID3v2TextFrameType *frame){
+void storeTextFrameContet(uint8_t *frameContent, uint32_t frameSize,ID3v2TextFrameType *frame){
   int index = 0;
   frame->textEncoding = frameContent[index++];
   char *contentPtr = (char *)frameContent + index;
@@ -86,17 +86,18 @@ int readFrame(FILE *mp3FilePointer, ID3TagType *ID3Tag){
   if(strncmp(header.frameId,"TALB",1)==0){
     ID3Tag ->TALB = (ID3v2TextFrameType *) malloc(sizeof(ID3v2TextFrameType));
     ID3Tag ->TALB->header = header;
-    printf("TextFrame\n");
     uint8_t *buffer = (uint8_t *)malloc(frameSize);
     fread(buffer, frameSize, 1, mp3FilePointer);
-    readTextFrameContet(buffer,frameSize,ID3Tag->TALB);
+    storeTextFrameContet(buffer,frameSize,ID3Tag->TALB);
     free(buffer);
+    printf("TextFrame\n");
   }
   else if(strncmp(header.frameId,"APIC",4)==0){
-    printf("APIC Frame\n");
+    // ID3Tag ->APIC = (ID3v2APICFrame *) malloc(sizeof(ID3v2APICFrame));
     uint8_t *buffer = (uint8_t *)malloc(frameSize);
     fread(buffer, frameSize, 1, mp3FilePointer);
     free(buffer);
+    printf("APIC Frame\n");
 
   }
   else{
@@ -122,14 +123,5 @@ int readFrame(FILE *mp3FilePointer, ID3TagType *ID3Tag){
   //   freeAPICFrame(apicFrame);
   //   free(buffer);
   // }
-  // else{
-  //   char *buffer = (char *)malloc(frameSize + 1);
-  //   fread(buffer, frameSize, 1, mp3FilePointer);
-  //   buffer[frameSize] ='\0';
-  //   printf("Content: %s\n",buffer);
-  //   free(buffer);
-
-  // }
-
   // return frameSize+10;
 }

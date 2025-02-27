@@ -62,6 +62,6 @@ int readFrameHeader(FILE*, ID3v2FrameHeaderType *);
 
 int readFrame(FILE*, ID3TagType*);
 
-void readTextFrame(uint8_t *, uint32_t, ID3v2TextFrameType *);
+void storeTextFrameContet(uint8_t *, uint32_t, ID3v2TextFrameType *);
 
 #endif // ID3V2_H
