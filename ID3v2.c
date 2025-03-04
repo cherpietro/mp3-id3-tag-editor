@@ -57,18 +57,25 @@ int readHeader(FILE *mp3FilePointer, ID3v2HeaderType *header){
   }
   return -1;
 }
-void storeTextFrameContet(uint8_t *frameContent, uint32_t frameSize,ID3v2TextFrameType *frame){
+
+void storeTextFrameContet(FILE *mp3FilePointer, ID3v2FrameHeaderType header, uint32_t frameSize,ID3v2TextFrameType **frame){
+  *frame =  (ID3v2TextFrameType *) malloc(sizeof(ID3v2TextFrameType));
+  (*frame)->header = header;
+  uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+  fread(frameContent, frameSize, 1, mp3FilePointer);
+
   int index = 0;
-  frame->textEncoding = frameContent[index++];
+  (*frame)->textEncoding = frameContent[index++];
   char *contentPtr = (char *)frameContent + index;
   size_t contentLen = strlen(contentPtr);
   if(frameSize - 1 - (contentLen+1) != 0){ // we have to substract 1 byte from textEncoding and 1 from \0 byte
     printf("Error on size frame\n");
     printf("Frame size: %d; Content Len: %ld\n",frameSize,contentLen);
   }
-  frame->content = (char *)malloc(contentLen+1);
-  strcpy(frame->content,contentPtr);
+  (*frame)->content = (char *)malloc(contentLen+1);
+  strcpy((*frame)->content,contentPtr);
   printf("Num of chars: %ld\n",strlen(contentPtr));
+  free(frameContent);
 }
 
 int readFrameHeader(FILE *mp3FilePointer, ID3v2FrameHeaderType *header){
@@ -84,31 +91,13 @@ int readFrame(FILE *mp3FilePointer, ID3TagType *ID3Tag){
   uint32_t frameSize = syncsafeToSize(header.size);
 
   if(strncmp(header.frameId,"TALB",4)==0){
-    ID3Tag ->TALB = (ID3v2TextFrameType *) malloc(sizeof(ID3v2TextFrameType));
-    ID3Tag ->TALB->header = header;
-    uint8_t *buffer = (uint8_t *)malloc(frameSize);
-    fread(buffer, frameSize, 1, mp3FilePointer);
-    storeTextFrameContet(buffer,frameSize,ID3Tag->TALB);
-    free(buffer);
-    // printf("TextFrame\n");
+    storeTextFrameContet(mp3FilePointer,header,frameSize,&ID3Tag->TALB);
   }
   else if(strncmp(header.frameId,"TPE2",4)==0){
-    ID3Tag ->TPE2 = (ID3v2TextFrameType *) malloc(sizeof(ID3v2TextFrameType));
-    ID3Tag ->TPE2->header = header;
-    uint8_t *buffer = (uint8_t *)malloc(frameSize);
-    fread(buffer, frameSize, 1, mp3FilePointer);
-    storeTextFrameContet(buffer,frameSize,ID3Tag->TPE2);
-    free(buffer);
-
+    storeTextFrameContet(mp3FilePointer,header,frameSize,&ID3Tag->TPE2);
   }
   else if(strncmp(header.frameId,"TPE1",4)==0){
-    ID3Tag ->TPE1 = (ID3v2TextFrameType *) malloc(sizeof(ID3v2TextFrameType));
-    ID3Tag ->TPE1->header = header;
-    uint8_t *buffer = (uint8_t *)malloc(frameSize);
-    fread(buffer, frameSize, 1, mp3FilePointer);
-    storeTextFrameContet(buffer,frameSize,ID3Tag->TPE1);
-    free(buffer);
-
+    storeTextFrameContet(mp3FilePointer,header,frameSize,&ID3Tag->TPE1);
   }
   else if(strncmp(header.frameId,"APIC",4)==0){
     // ID3Tag ->APIC = (ID3v2APICFrame *) malloc(sizeof(ID3v2APICFrame));
