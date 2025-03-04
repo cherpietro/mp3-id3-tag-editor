@@ -191,11 +191,12 @@ int readFrame(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     storeTextFrameContet(mp3FilePointer,header,frameSize,&ID3Tag->TSSE);
   }
   else if(strncmp(header.frameId,"APIC",4)==0){
-    // ID3Tag ->APIC = (ID3v2APICFrame *) malloc(sizeof(ID3v2APICFrame));
     uint8_t *buffer = (uint8_t *)malloc(frameSize);
     fread(buffer, frameSize, 1, mp3FilePointer);
+    ID3Tag->APIC = getAPICFrame(buffer,frameSize);
+    ID3Tag->APIC->header = header;
+    // freeAPICFrame(apicFrame);
     free(buffer);
-    // printf("APIC Frame\n");
 
   }
   else{
@@ -207,20 +208,4 @@ int readFrame(FILE *mp3FilePointer, ID3TagType *ID3Tag){
   }
   // printf("FRAMEID: %s\n", header.frameId);
   return frameSize+10;
-  // if(strncmp(id3FrameHeader->frameId,"APIC",4)==0){
-  //   uint8_t *buffer = (uint8_t *)malloc(frameSize);
-  //   fread(buffer, frameSize, 1, mp3FilePointer);
-  //   ID3v2APICFrame *apicFrame = getAPICFrame(buffer,frameSize);
-  //   // printf("apicFrame->textEncoding: %u size:%d\n",apicFrame->textEncoding,sizeof(apicFrame->textEncoding));
-  //   // printf("apicFrame->mimeType: %s size:%d\n",apicFrame->mimeType,strlen(apicFrame->mimeType));
-  //   // printf("apicFrame->pictureType: %u size:%d\n",apicFrame->pictureType,sizeof(apicFrame->pictureType));
-  //   // printf("apicFrame->description: %s size:%d\n",apicFrame->description,strlen(apicFrame->description));
-  //   FILE *imageFile = fopen("cover.jpg", "wb");
-  //   fwrite(apicFrame->imageData, 1, apicFrame->imageDataSize, imageFile);
-  //   fclose(imageFile);
-
-  //   freeAPICFrame(apicFrame);
-  //   free(buffer);
-  // }
-  // return frameSize+10;
 }

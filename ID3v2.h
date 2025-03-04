@@ -25,6 +25,7 @@ typedef struct{
 } ID3v2FrameHeaderType;
 
 typedef struct{
+  ID3v2FrameHeaderType header;
   uint8_t textEncoding;   
   char *mimeType;     //check standar max size
   uint8_t pictureType;    

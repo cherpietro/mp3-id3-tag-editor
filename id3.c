@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 #include "ID3v2.h"
 
 void printTextFrame(ID3v2TextFrameType);
+void printAPICFrame(ID3v2APICFrame frame);
 
 int main(){
   FILE *mp3FilePointer;
@@ -25,17 +27,20 @@ int main(){
         // printf("remaining: %d\n",remainingBytes);
         // remainingBytes = -1;
       }
-      printTextFrame(*ID3Tag.TALB);
-      printTextFrame(*ID3Tag.TPE1);
-      printTextFrame(*ID3Tag.TPE2);
-      printTextFrame(*ID3Tag.TCOM);
-      printTextFrame(*ID3Tag.TDRC);
-      printTextFrame(*ID3Tag.TPOS);
-      printTextFrame(*ID3Tag.TCON);
-      printTextFrame(*ID3Tag.TPE3);
-      printTextFrame(*ID3Tag.TIT2);
-      printTextFrame(*ID3Tag.TRCK);
-      printTextFrame(*ID3Tag.TSSE);
+      if(ID3Tag.TALB != NULL) printTextFrame(*ID3Tag.TALB);
+      if(ID3Tag.TPE1 != NULL) printTextFrame(*ID3Tag.TPE1);
+      if(ID3Tag.TPE2 != NULL) printTextFrame(*ID3Tag.TPE2);
+      if(ID3Tag.TCOM != NULL) printTextFrame(*ID3Tag.TCOM);
+      if(ID3Tag.TDRC != NULL) printTextFrame(*ID3Tag.TDRC);
+      if(ID3Tag.TPOS != NULL) printTextFrame(*ID3Tag.TPOS);
+      if(ID3Tag.TCON != NULL) printTextFrame(*ID3Tag.TCON);
+      if(ID3Tag.TPE3 != NULL) printTextFrame(*ID3Tag.TPE3);
+      if(ID3Tag.TIT2 != NULL) printTextFrame(*ID3Tag.TIT2);
+      if(ID3Tag.TRCK != NULL) printTextFrame(*ID3Tag.TRCK);
+      if(ID3Tag.TSSE != NULL) printTextFrame(*ID3Tag.TSSE);
+
+      if(ID3Tag.APIC != NULL) printAPICFrame(*ID3Tag.APIC);
+      
     }
 
     fclose(mp3FilePointer);
@@ -55,4 +60,19 @@ void printTextFrame(ID3v2TextFrameType frame){
   printf("Size: %u bytes\n",syncsafeToSize(frame.header.size));
   printf("TextEncoding: %d\n",frame.textEncoding);
   printf("Content: %s\n",frame.content);
+}
+void printAPICFrame(ID3v2APICFrame frame){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",frame.header.frameId);
+  printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
+  printf("Size: %u bytes\n",syncsafeToSize(frame.header.size));
+  printf("TextEncoding: %d\n",frame.textEncoding);
+  printf("apicframe.textEncoding: %u size:%ld\n",frame.textEncoding,sizeof(frame.textEncoding));
+  printf("apicframe.mimeType: %s size:%ld\n",frame.mimeType,strlen(frame.mimeType));
+  printf("apicframe.pictureType: %u size:%ld\n",frame.pictureType,sizeof(frame.pictureType));
+  printf("apicframe.description: %s size:%ld\n",frame.description,strlen(frame.description));
+  printf("apicframe.imageSize: %ld\n",frame.imageDataSize);
+  FILE *imageFile = fopen("cover.jpg", "wb");
+  fwrite(frame.imageData, 1, frame.imageDataSize, imageFile);
+  fclose(imageFile);
 }
