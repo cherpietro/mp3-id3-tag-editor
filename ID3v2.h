@@ -45,6 +45,14 @@ typedef struct{
   ID3v2TextFrameType *TALB;
   ID3v2TextFrameType *TPE1; 
   ID3v2TextFrameType *TPE2; 
+  ID3v2TextFrameType *TCOM;
+  ID3v2TextFrameType *TDRC;
+  ID3v2TextFrameType *TPOS;
+  ID3v2TextFrameType *TCON;
+  ID3v2TextFrameType *TPE3;
+  ID3v2TextFrameType *TIT2;
+  ID3v2TextFrameType *TRCK;
+  ID3v2TextFrameType *TSSE;
   ID3v2APICFrame *APIC;
 } ID3TagType;
 
