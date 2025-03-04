@@ -42,8 +42,10 @@ typedef struct{
 
 typedef struct{
   ID3v2HeaderType header;
-  ID3v2APICFrame *APIC;
   ID3v2TextFrameType *TALB;
+  ID3v2TextFrameType *TPE1; 
+  ID3v2TextFrameType *TPE2; 
+  ID3v2APICFrame *APIC;
 } ID3TagType;
 
 void initID3v2Tag(ID3TagType *);

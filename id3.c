@@ -22,10 +22,12 @@ int main(){
       while(remainingBytes > 0){
         readedBytes = readFrame(mp3FilePointer,&ID3Tag);
         remainingBytes-=readedBytes;
-        printTextFrame(*ID3Tag.TALB);
         printf("remaining: %d\n",remainingBytes);
-        remainingBytes = -1;
+        // remainingBytes = -1;
       }
+      printTextFrame(*ID3Tag.TALB);
+      printTextFrame(*ID3Tag.TPE1);
+      printTextFrame(*ID3Tag.TPE2);
     }
 
     fclose(mp3FilePointer);
