@@ -1,6 +1,85 @@
 #include "ID3v2.h"
 #include <string.h>
 
+
+void initID3v2Tag(ID3TagType *tag){
+  tag->APIC = NULL;
+  tag->TALB = NULL;
+  tag->TPE1 = NULL;
+  tag->TPE2 = NULL;
+  tag->TCOM = NULL;
+  tag->TDRC = NULL;
+  tag->TPOS = NULL;
+  tag->TCON = NULL;
+  tag->TPE3 = NULL;
+  tag->TIT2 = NULL;
+  tag->TRCK = NULL;
+  tag->TSSE = NULL;
+  
+}
+
+void freeID3v2Tag(ID3TagType *tag){
+  if(tag->TALB != NULL){
+    free(tag->TALB->content);
+    free(tag->TALB);
+    tag->TALB = NULL;
+  }
+  if(tag->TPE1 != NULL){
+    free(tag->TPE1->content);
+    free(tag->TPE1);
+    tag->TPE1 = NULL;
+  }
+  if(tag->TPE2 != NULL){
+    free(tag->TPE2->content);
+    free(tag->TPE2);
+    tag->TPE2 = NULL;
+  }
+  if(tag->TCOM != NULL){
+    free(tag->TCOM->content);
+    free(tag->TCOM);
+    tag->TCOM = NULL;
+  }
+  if(tag->TDRC != NULL){
+    free(tag->TDRC->content);
+    free(tag->TDRC);
+    tag->TDRC = NULL;
+  }
+  if(tag->TPOS != NULL){
+    free(tag->TPOS->content);
+    free(tag->TPOS);
+    tag->TPOS = NULL;
+  }
+  if(tag->TCON != NULL){
+    free(tag->TCON->content);
+    free(tag->TCON);
+    tag->TCON = NULL;
+  }
+  if(tag->TPE3 != NULL){
+    free(tag->TPE3->content);
+    free(tag->TPE3);
+    tag->TPE3 = NULL;
+  }
+  if(tag->TIT2 != NULL){
+    free(tag->TIT2->content);
+    free(tag->TIT2);
+    tag->TIT2 = NULL;
+  }
+  if(tag->TRCK != NULL){
+    free(tag->TRCK->content);
+    free(tag->TRCK);
+    tag->TRCK = NULL;
+  }
+  if(tag->TSSE != NULL){
+    free(tag->TSSE->content);
+    free(tag->TSSE);
+    tag->TSSE = NULL;
+  }
+  if(tag->APIC != NULL){
+    freeAPICFrame(tag->APIC);
+    tag->APIC = NULL;
+  }
+
+}
 void freeAPICFrame(ID3v2APICFrame* apicFrame){
   free(apicFrame->mimeType);
   free(apicFrame->description);
@@ -46,43 +125,87 @@ int readHeader(FILE *mp3FilePointer, ID3v2HeaderType *header){
   return -1;
 }
 
-int readFrameHeader(FILE *mp3FilePointer, ID3v2DefaulFrameHeaderType *header){
-  if (fread(header, sizeof(ID3v2DefaulFrameHeaderType), 1, mp3FilePointer) == 1 ) {
+void storeTextFrameContet(FILE *mp3FilePointer, ID3v2FrameHeaderType header, uint32_t frameSize,ID3v2TextFrameType **frame){
+  *frame =  (ID3v2TextFrameType *) malloc(sizeof(ID3v2TextFrameType));
+  (*frame)->header = header;
+  uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+  fread(frameContent, frameSize, 1, mp3FilePointer);
+
+  int index = 0;
+  (*frame)->textEncoding = frameContent[index++];
+  char *contentPtr = (char *)frameContent + index;
+  size_t contentLen = strlen(contentPtr);
+  if(frameSize - 1 - (contentLen+1) != 0){ // we have to substract 1 byte from textEncoding and 1 from \0 byte
+    printf("Error on size frame\n");
+    printf("Frame size: %d; Content Len: %ld\n",frameSize,contentLen);
+  }
+  (*frame)->content = (char *)malloc(contentLen+1);
+  strcpy((*frame)->content,contentPtr);
+  // printf("Num of chars: %ld\n",strlen(contentPtr));
+  free(frameContent);
+}
+
+int readFrameHeader(FILE *mp3FilePointer, ID3v2FrameHeaderType *header){
+  if (fread(header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer) == 1 ) {
     return 1;
   }
   return -1;
 }
 
-int readFrame(FILE *mp3FilePointer, ID3v2DefaulFrameHeaderType *id3FrameHeader){
-  printf("\n----FRAME----\n");
-  fread(id3FrameHeader, sizeof(ID3v2DefaulFrameHeaderType), 1, mp3FilePointer);
-  printf("Frame ID: %s\n",id3FrameHeader->frameId);
-  printf("Flags: %u %u\n",id3FrameHeader->flags[0],id3FrameHeader->flags[1]);
-  uint32_t frameSize = syncsafeToSize(id3FrameHeader->size);
-  printf("Size: %u bytes\n",frameSize);
-  if(strncmp(id3FrameHeader->frameId,"APIC",4)==0){
+int readFrame(FILE *mp3FilePointer, ID3TagType *ID3Tag){  
+  ID3v2FrameHeaderType header;
+  fread(&header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer);
+  uint32_t frameSize = syncsafeToSize(header.size);
+
+  if(strncmp(header.frameId,"TALB",4)==0){
+    storeTextFrameContet(mp3FilePointer,header,frameSize,&ID3Tag->TALB);
+  }
+  else if(strncmp(header.frameId,"TPE2",4)==0){
+    storeTextFrameContet(mp3FilePointer,header,frameSize,&ID3Tag->TPE2);
+  }
+  else if(strncmp(header.frameId,"TPE1",4)==0){
+    storeTextFrameContet(mp3FilePointer,header,frameSize,&ID3Tag->TPE1);
+  }
+  else if(strncmp(header.frameId,"TCOM",4)==0){
+    storeTextFrameContet(mp3FilePointer,header,frameSize,&ID3Tag->TCOM);
+  }
+  else if(strncmp(header.frameId,"TDRC",4)==0){
+    storeTextFrameContet(mp3FilePointer,header,frameSize,&ID3Tag->TDRC);
+  }
+  else if(strncmp(header.frameId,"TPOS",4)==0){
+    storeTextFrameContet(mp3FilePointer,header,frameSize,&ID3Tag->TPOS);
+  }
+  else if(strncmp(header.frameId,"TCON",4)==0){
+    storeTextFrameContet(mp3FilePointer,header,frameSize,&ID3Tag->TCON);
+  }
+  else if(strncmp(header.frameId,"TPE3",4)==0){
+    storeTextFrameContet(mp3FilePointer,header,frameSize,&ID3Tag->TPE3);
+  }
+  else if(strncmp(header.frameId,"TIT2",4)==0){
+    storeTextFrameContet(mp3FilePointer,header,frameSize,&ID3Tag->TIT2);
+  }
+  else if(strncmp(header.frameId,"TRCK",4)==0){
+    storeTextFrameContet(mp3FilePointer,header,frameSize,&ID3Tag->TRCK);
+  }
+  else if(strncmp(header.frameId,"TSSE",4)==0){
+    storeTextFrameContet(mp3FilePointer,header,frameSize,&ID3Tag->TSSE);
+  }
+  else if(strncmp(header.frameId,"APIC",4)==0){
     uint8_t *buffer = (uint8_t *)malloc(frameSize);
     fread(buffer, frameSize, 1, mp3FilePointer);
-    ID3v2APICFrame *apicFrame = getAPICFrame(buffer,frameSize);
-    // printf("apicFrame->textEncoding: %u size:%d\n",apicFrame->textEncoding,sizeof(apicFrame->textEncoding));
-    // printf("apicFrame->mimeType: %s size:%d\n",apicFrame->mimeType,strlen(apicFrame->mimeType));
-    // printf("apicFrame->pictureType: %u size:%d\n",apicFrame->pictureType,sizeof(apicFrame->pictureType));
-    // printf("apicFrame->description: %s size:%d\n",apicFrame->description,strlen(apicFrame->description));
-    FILE *imageFile = fopen("cover.jpg", "wb");
-    fwrite(apicFrame->imageData, 1, apicFrame->imageDataSize, imageFile);
-    fclose(imageFile);
-
-    freeAPICFrame(apicFrame);
+    ID3Tag->APIC = getAPICFrame(buffer,frameSize);
+    ID3Tag->APIC->header = header;
+    // freeAPICFrame(apicFrame);
     free(buffer);
+
   }
   else{
-    char *buffer = (char *)malloc(frameSize + 1);
+    printf("\nUnkownFrame: %s\n", header.frameId);
+    uint8_t *buffer = (uint8_t *)malloc(frameSize);
     fread(buffer, frameSize, 1, mp3FilePointer);
-    buffer[frameSize] ='\0';
-    printf("Content: %s\n",buffer);
     free(buffer);
 
   }
-
+  // printf("FRAMEID: %s\n", header.frameId);
   return frameSize+10;
 }
