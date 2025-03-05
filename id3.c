@@ -11,7 +11,7 @@ int main(){
   ID3TagType ID3Tag; 
   initID3v2Tag(&ID3Tag);
 
-  mp3FilePointer = fopen("./files/EliteFour.mp3","r");
+  mp3FilePointer = fopen("./files/jokin1.mp3","r");
   if (mp3FilePointer) {
     if(readHeader(mp3FilePointer,&ID3Tag.header)){
       if(ID3Tag.header.version[0] == 4){
@@ -19,11 +19,13 @@ int main(){
         printf("Flag: %u\n",ID3Tag.header.flags);
         uint32_t tagSize = syncsafeToSize(ID3Tag.header.size);
         printf("Size: %u bytes\n",tagSize);
-        int readedBytes,remainingBytes;
+        int readedBytes,remainingBytes,totalReaded;
+        totalReaded = 0;
         remainingBytes = tagSize-10;
         while(remainingBytes > 0){
           readedBytes = readFrame(mp3FilePointer,&ID3Tag);
           remainingBytes-=readedBytes;
+          totalReaded+=readedBytes;
           printf("remaining: %d\n",remainingBytes);
           // remainingBytes = -1;
         }
@@ -41,6 +43,22 @@ int main(){
   
         if(ID3Tag.APIC != NULL) printAPICFrame(*ID3Tag.APIC);
         printf("\nFinal remaining Bytes: %d\n",remainingBytes);
+      }
+      else if(ID3Tag.header.version[0] == 3){
+        printf("Version: 2.%d.%d\n",ID3Tag.header.version[0],ID3Tag.header.version[1]);
+        printf("Flag: %u\n",ID3Tag.header.flags);
+        uint32_t tagSize = syncsafeToSize(ID3Tag.header.size);
+        printf("Size: %u bytes\n",tagSize);
+        int remainingBytes,totalReaded;
+        totalReaded = 0;
+        remainingBytes = tagSize-10;
+        int paddingReached = 0;
+        while(ftell(mp3FilePointer) < tagSize + 10 && paddingReached != 1){
+          paddingReached = readFramev2_3(mp3FilePointer,&ID3Tag);
+        }
+        printf("\nSuposed Size: %u bytes\n",tagSize);
+        printf("\nFinal remaining Bytes: %d\n",remainingBytes);
+        printf("\nFinal readed Bytes: %d\n",totalReaded);
       }
       else{
         printf("Not yet supported tag version\n");

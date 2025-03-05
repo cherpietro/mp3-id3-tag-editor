@@ -117,6 +117,10 @@ uint32_t syncsafeToSize( uint8_t *size) {
   return (size[0] << 21) | (size[1] << 14) | (size[2] << 7) | size[3];
 }
 
+uint32_t sizeFromID3v23(uint8_t *size) {
+  return (size[0] << 24) | (size[1] << 16) | (size[2] << 8) | size[3];
+}
+
 int readHeader(FILE *mp3FilePointer, ID3v2HeaderType *header){
   fseek(mp3FilePointer,0,SEEK_SET);
   if (fread(header, sizeof(ID3v2HeaderType), 1, mp3FilePointer) == 1 && strncmp(header->tag, "ID3",3) == 0) {
@@ -208,4 +212,22 @@ int readFrame(FILE *mp3FilePointer, ID3TagType *ID3Tag){
   }
   // printf("FRAMEID: %s\n", header.frameId);
   return frameSize+10;
+}
+
+int readFramev2_3(FILE *mp3FilePointer, ID3TagType *ID3Tag){  
+  ID3v2FrameHeaderType header;
+  fread(&header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer);
+  uint32_t frameSize = sizeFromID3v23(header.size);
+
+  if (memcmp(header.frameId, "\0\0\0\0", 4) == 0) {
+    printf("PADDING REACHED\n");
+    return 1;
+  }
+  printf("%d-FRAMEID: %s\n", ID3Tag->header.version[0], header.frameId);
+  printf("%d-Size: %d\n", ID3Tag->header.version[0], frameSize);
+  uint8_t *buffer = (uint8_t *)malloc(frameSize);
+  fread(buffer, frameSize, 1, mp3FilePointer);
+  free(buffer);
+  return 0;
+
 }
