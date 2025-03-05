@@ -67,11 +67,15 @@ ID3v2APICFrame* getAPICFrame(uint8_t *, uint32_t );
 
 uint32_t syncsafeToSize(uint8_t *) ;
 
+uint32_t sizeFromID3v23(uint8_t *size);
+
 int readHeader(FILE* , ID3v2HeaderType*);
 
 int readFrameHeader(FILE*, ID3v2FrameHeaderType *);
 
 int readFrame(FILE*, ID3TagType*);
+
+int readFramev2_3(FILE *mp3FilePointer, ID3TagType *ID3Tag);
 
 void storeTextFrameContet(FILE *, ID3v2FrameHeaderType , uint32_t, ID3v2TextFrameType **);
 
