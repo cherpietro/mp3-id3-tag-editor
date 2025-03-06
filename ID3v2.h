@@ -67,12 +67,23 @@ ID3v2APICFrame* getAPICFrame(uint8_t *, uint32_t );
 
 uint32_t syncsafeToSize(uint8_t *) ;
 
+uint32_t sizeFromID3v23(uint8_t *size);
+
 int readHeader(FILE* , ID3v2HeaderType*);
 
 int readFrameHeader(FILE*, ID3v2FrameHeaderType *);
 
 int readFrame(FILE*, ID3TagType*);
 
+int readFramev2_3(FILE *, ID3TagType *);
+
 void storeTextFrameContet(FILE *, ID3v2FrameHeaderType , uint32_t, ID3v2TextFrameType **);
 
+void readV2Tag(FILE *,ID3TagType *);
+
+void printTag(ID3TagType);
+
+void printTextFrame(ID3v2TextFrameType);
+
+void printAPICFrame(ID3v2APICFrame);
 #endif // ID3V2_H
