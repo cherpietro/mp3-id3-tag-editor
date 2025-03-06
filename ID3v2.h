@@ -75,8 +75,15 @@ int readFrameHeader(FILE*, ID3v2FrameHeaderType *);
 
 int readFrame(FILE*, ID3TagType*);
 
-int readFramev2_3(FILE *mp3FilePointer, ID3TagType *ID3Tag);
+int readFramev2_3(FILE *, ID3TagType *);
 
 void storeTextFrameContet(FILE *, ID3v2FrameHeaderType , uint32_t, ID3v2TextFrameType **);
 
+void readV2Tag(FILE *,ID3TagType *);
+
+void printTag(ID3TagType);
+
+void printTextFrame(ID3v2TextFrameType);
+
+void printAPICFrame(ID3v2APICFrame);
 #endif // ID3V2_H

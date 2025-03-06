@@ -1,6 +1,74 @@
 #include "ID3v2.h"
 #include <string.h>
 
+void readV2Tag(FILE *mp3FilePointer,ID3TagType *ID3Tag){
+  initID3v2Tag(ID3Tag);
+  if(readHeader(mp3FilePointer,&ID3Tag->header)){
+    printf("Version: 2.%d.%d\n",ID3Tag->header.version[0],ID3Tag->header.version[1]);
+    printf("Flag: %u\n",ID3Tag->header.flags);
+    uint32_t tagSize = syncsafeToSize(ID3Tag->header.size);
+    printf("Size: %u bytes\n",tagSize);
+    int paddingReached = 0;
+    if(ID3Tag->header.version[0] == 4){
+      while(ftell(mp3FilePointer) < tagSize + 10 && paddingReached != 1){
+        paddingReached = readFrame(mp3FilePointer,ID3Tag);
+      }
+      printTag(*ID3Tag);
+    }
+    else if(ID3Tag->header.version[0] == 3){
+      while(ftell(mp3FilePointer) < tagSize + 10 && paddingReached != 1){
+        paddingReached = readFramev2_3(mp3FilePointer,ID3Tag);
+      }
+      printf("\nSuposed Size: %u bytes\n",tagSize);
+    }
+    else{
+      printf("Not yet supported tag version\n");
+    }
+  }
+  freeID3v2Tag(&ID3Tag);
+}
+
+
+void printTextFrame(ID3v2TextFrameType frame){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",frame.header.frameId);
+  printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
+  printf("Size: %u bytes\n",syncsafeToSize(frame.header.size));
+  printf("TextEncoding: %d\n",frame.textEncoding);
+  printf("Content: %s\n",frame.content);
+}
+void printAPICFrame(ID3v2APICFrame frame){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",frame.header.frameId);
+  printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
+  printf("Size: %u bytes\n",syncsafeToSize(frame.header.size));
+  printf("TextEncoding: %d\n",frame.textEncoding);
+  printf("apicframe.textEncoding: %u size:%ld\n",frame.textEncoding,sizeof(frame.textEncoding));
+  printf("apicframe.mimeType: %s size:%ld\n",frame.mimeType,strlen(frame.mimeType));
+  printf("apicframe.pictureType: %u size:%ld\n",frame.pictureType,sizeof(frame.pictureType));
+  printf("apicframe.description: %s size:%ld\n",frame.description,strlen(frame.description));
+  printf("apicframe.imageSize: %ld\n",frame.imageDataSize);
+  FILE *imageFile = fopen("cover.jpg", "wb");
+  fwrite(frame.imageData, 1, frame.imageDataSize, imageFile);
+  fclose(imageFile);
+}
+
+
+void printTag(ID3TagType ID3Tag){
+  if(ID3Tag.TALB != NULL) printTextFrame(*ID3Tag.TALB);
+  if(ID3Tag.TPE1 != NULL) printTextFrame(*ID3Tag.TPE1);
+  if(ID3Tag.TPE2 != NULL) printTextFrame(*ID3Tag.TPE2);
+  if(ID3Tag.TCOM != NULL) printTextFrame(*ID3Tag.TCOM);
+  if(ID3Tag.TDRC != NULL) printTextFrame(*ID3Tag.TDRC);
+  if(ID3Tag.TPOS != NULL) printTextFrame(*ID3Tag.TPOS);
+  if(ID3Tag.TCON != NULL) printTextFrame(*ID3Tag.TCON);
+  if(ID3Tag.TPE3 != NULL) printTextFrame(*ID3Tag.TPE3);
+  if(ID3Tag.TIT2 != NULL) printTextFrame(*ID3Tag.TIT2);
+  if(ID3Tag.TRCK != NULL) printTextFrame(*ID3Tag.TRCK);
+  if(ID3Tag.TSSE != NULL) printTextFrame(*ID3Tag.TSSE);
+
+  if(ID3Tag.APIC != NULL) printAPICFrame(*ID3Tag.APIC);
+}
 
 void initID3v2Tag(ID3TagType *tag){
   tag->APIC = NULL;
@@ -80,6 +148,7 @@ void freeID3v2Tag(ID3TagType *tag){
   }
 
 }
+
 void freeAPICFrame(ID3v2APICFrame* apicFrame){
   free(apicFrame->mimeType);
   free(apicFrame->description);
@@ -113,6 +182,7 @@ ID3v2APICFrame* getAPICFrame(uint8_t *frameContent, uint32_t frameSize){
   return apic;
   
 }
+
 uint32_t syncsafeToSize( uint8_t *size) {
   return (size[0] << 21) | (size[1] << 14) | (size[2] << 7) | size[3];
 }
@@ -160,7 +230,10 @@ int readFrame(FILE *mp3FilePointer, ID3TagType *ID3Tag){
   ID3v2FrameHeaderType header;
   fread(&header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer);
   uint32_t frameSize = syncsafeToSize(header.size);
-
+  if (memcmp(header.frameId, "\0\0\0\0", 4) == 0) {
+    printf("PADDING REACHED\n");
+    return 1;
+  }
   if(strncmp(header.frameId,"TALB",4)==0){
     storeTextFrameContet(mp3FilePointer,header,frameSize,&ID3Tag->TALB);
   }
@@ -199,7 +272,6 @@ int readFrame(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     fread(buffer, frameSize, 1, mp3FilePointer);
     ID3Tag->APIC = getAPICFrame(buffer,frameSize);
     ID3Tag->APIC->header = header;
-    // freeAPICFrame(apicFrame);
     free(buffer);
 
   }
@@ -211,7 +283,7 @@ int readFrame(FILE *mp3FilePointer, ID3TagType *ID3Tag){
 
   }
   // printf("FRAMEID: %s\n", header.frameId);
-  return frameSize+10;
+  return 0;
 }
 
 int readFramev2_3(FILE *mp3FilePointer, ID3TagType *ID3Tag){  
@@ -229,5 +301,4 @@ int readFramev2_3(FILE *mp3FilePointer, ID3TagType *ID3Tag){
   fread(buffer, frameSize, 1, mp3FilePointer);
   free(buffer);
   return 0;
-
 }
