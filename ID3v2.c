@@ -25,7 +25,7 @@ void readV2Tag(FILE *mp3FilePointer,ID3TagType *ID3Tag){
       printf("Not yet supported tag version\n");
     }
   }
-  freeID3v2Tag(&ID3Tag);
+  freeID3v2Tag(ID3Tag);
 }
 
 
