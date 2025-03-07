@@ -15,7 +15,6 @@ int main(){
   if (mp3FilePointer) {
     readV2Tag(mp3FilePointer,&ID3Tag);
     fclose(mp3FilePointer);
-    // freeID3v2Tag(&ID3Tag);
     return(0);
   }
   else printf("The file DOESN'T exist!\n");
