@@ -36,8 +36,4 @@ void readV2Tag(FILE*, ID3TagType*);
 
 void printTag(ID3TagType);
 
-uint32_t syncsafeToSize(uint8_t*);
-
-uint32_t sizeFromID3v23(uint8_t*);
-
 #endif // ID3V2_H

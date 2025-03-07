@@ -11,6 +11,6 @@ typedef struct {
     uint8_t size[4];
 } ID3v2HeaderType;
 
-int readHeader(FILE* mp3FilePointer, ID3v2HeaderType* header);
+void readHeader(FILE* mp3FilePointer, ID3v2HeaderType* header);
 
 #endif // ID3V2HEADER_H

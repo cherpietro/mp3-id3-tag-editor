@@ -1,4 +1,4 @@
-OBJ= ID3v2.o ID3v2Header.o ID3v2Frames.o
+OBJ= ID3v2.o ID3v2Header.o ID3v2Frames.o SizeReader.o
 CFLAGS=-g -Wall -Wextra -pedantic 
 all: compile
 	./a.out
@@ -18,6 +18,9 @@ ID3v2Frames.o: ID3v2Frames.c ID3v2Frames.h
 
 ID3v2Header.o: ID3v2Header.c ID3v2Header.h
 	gcc $(CFLAGS) -c ID3v2Header.c
+
+SizeReader.o.o: SizeReader.o. SizeReader.o 
+	gcc $(CFLAGS) -c SizeReader.o 
 
 clean:
 	rm -f a.out *.o cover.jpg

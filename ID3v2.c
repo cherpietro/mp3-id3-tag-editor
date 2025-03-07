@@ -1,31 +1,34 @@
 #include "ID3v2.h"
+#include "SizeReader.h"
 #include <string.h>
-
 
 void readV2Tag(FILE *mp3FilePointer,ID3TagType *ID3Tag){
   initID3v2Tag(ID3Tag);
-  if(readHeader(mp3FilePointer,&ID3Tag->header)){
-    printf("Version: 2.%d.%d\n",ID3Tag->header.version[0],ID3Tag->header.version[1]);
-    printf("Flag: %u\n",ID3Tag->header.flags);
-    uint32_t tagSize = syncsafeToSize(ID3Tag->header.size);
-    printf("Size: %u bytes\n",tagSize);
-    int paddingReached = 0;
-    if(ID3Tag->header.version[0] == 4){
-      while(ftell(mp3FilePointer) < tagSize + 10 && paddingReached != 1){
-        paddingReached = readFrame(mp3FilePointer,ID3Tag);
-      }
-      printTag(*ID3Tag);
+
+  readHeader(mp3FilePointer,&ID3Tag->header);
+  // printHeaderTag(ID3Tag->header);
+  printf("Version: 2.%d.%d\n",ID3Tag->header.version[0],ID3Tag->header.version[1]);
+  printf("Flag: %u\n",ID3Tag->header.flags);
+  uint32_t tagSize = syncsafeToSize(ID3Tag->header.size);
+  printf("Size: %u bytes\n",tagSize);
+
+  int paddingReached = 0;
+  if(ID3Tag->header.version[0] == 4){
+    while(ftell(mp3FilePointer) < tagSize + 10 && paddingReached != 1){
+      paddingReached = readFrame(mp3FilePointer,ID3Tag);
     }
-    else if(ID3Tag->header.version[0] == 3){
-      while(ftell(mp3FilePointer) < tagSize + 10 && paddingReached != 1){
-        paddingReached = readFramev2_3(mp3FilePointer);
-      }
-      printf("\nSuposed Size: %u bytes\n",tagSize);
-    }
-    else{
-      printf("Not yet supported tag version\n");
-    }
+    printTag(*ID3Tag);
   }
+  else if(ID3Tag->header.version[0] == 3){
+    while(ftell(mp3FilePointer) < tagSize + 10 && paddingReached != 1){
+      paddingReached = readFramev2_3(mp3FilePointer);
+    }
+    printf("\nSuposed Size: %u bytes\n",tagSize);
+  }
+  else{
+    printf("Not yet supported tag version\n");
+  }
+
   freeID3v2Tag(ID3Tag);
 }
 
@@ -122,14 +125,6 @@ void freeID3v2Tag(ID3TagType *tag){
     tag->APIC = NULL;
   }
 
-}
-
-uint32_t syncsafeToSize( uint8_t *size) {
-  return (size[0] << 21) | (size[1] << 14) | (size[2] << 7) | size[3];
-}
-
-uint32_t sizeFromID3v23(uint8_t *size) {
-  return (size[0] << 24) | (size[1] << 16) | (size[2] << 8) | size[3];
 }
 
 int readFrame(FILE *mp3FilePointer, ID3TagType *ID3Tag){  
