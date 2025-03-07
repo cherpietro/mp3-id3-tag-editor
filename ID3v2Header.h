@@ -11,6 +11,14 @@ typedef struct {
     uint8_t size[4];
 } ID3v2HeaderType;
 
-void readHeader(FILE* mp3FilePointer, ID3v2HeaderType* header);
+void storeHeader(FILE* , ID3v2HeaderType* );
+
+void printTagHeader(ID3v2HeaderType );
+
+int isID3v2Tag(ID3v2HeaderType);
+
+int getTagVersion(ID3v2HeaderType );
+
+int getTagSize(ID3v2HeaderType header);
 
 #endif // ID3V2HEADER_H
