@@ -1,7 +1,6 @@
-OBJ= ID3v2.o ID3v2Header.o ID3v2Frames.o SizeReader.o
+OBJ= ID3v2.o ID3v2Header.o ID3v2Frames.o SizeReader.o TextFrameStack.o
 CFLAGS=-g -Wall -Wextra -pedantic 
 CC=gcc
-# EXEC=id3_debug  # Nombre del ejecutable
 
 all: compile
 	./a.out
@@ -11,6 +10,9 @@ compile: clean $(OBJ)
 
 ID3v2.o: ID3v2.c ID3v2.h ID3v2Header.h
 	$(CC) $(CFLAGS) -c ID3v2.c
+
+TextFrameStack.o: TextFrameStack.c TextFrameStack.h
+	$(CC) $(CFLAGS) -c TextFrameStack.c
 
 ID3v2Frames.o: ID3v2Frames.c ID3v2Frames.h
 	$(CC) $(CFLAGS) -c ID3v2Frames.c

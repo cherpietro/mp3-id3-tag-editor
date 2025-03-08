@@ -11,7 +11,7 @@ int main(){
   FILE *mp3FilePointer;
   ID3TagType ID3Tag; 
 
-  mp3FilePointer = fopen("./files/jokin1.mp3","r");
+  mp3FilePointer = fopen("./files/EliteFour.mp3","r");
   if (mp3FilePointer) {
     readV2Tag(mp3FilePointer,&ID3Tag);
     fclose(mp3FilePointer);

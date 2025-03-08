@@ -15,6 +15,7 @@ void readV2Tag(FILE *mp3FilePointer,ID3TagType *ID3Tag){
         paddingReached = 0; //necessary=?
         tagSize = getTagSize(ID3Tag->header);
         while(ftell(mp3FilePointer) < tagSize + 10 && paddingReached != 1){
+          // paddingReached = storeNextFrame(mp3FilePointer,ID3Tag);          
           paddingReached = storeV2_4Frame(mp3FilePointer,ID3Tag);
         }
         printTag(*ID3Tag);
@@ -25,9 +26,15 @@ void readV2Tag(FILE *mp3FilePointer,ID3TagType *ID3Tag){
         paddingReached = 0;
         tagSize = getTagSize(ID3Tag->header);
         while(ftell(mp3FilePointer) < tagSize + 10 && paddingReached != 1){
-          paddingReached = readFramev2_3(mp3FilePointer,ID3Tag);
+          paddingReached = storeNextFrame(mp3FilePointer,ID3Tag);
+          // paddingReached = readFramev2_3(mp3FilePointer,ID3Tag);
         }
         printTag(*ID3Tag);
+        while(!isEmptyTextFrameStack(&ID3Tag->textFrameStak)){
+          printTextFrame(topTextFrameStack(ID3Tag->textFrameStak));
+          popTextFrameStack(&ID3Tag->textFrameStak);
+        }
+        freeTextFrameStack(&ID3Tag->textFrameStak);
         // printf("\nSuposed Size: %u bytes\n",tagSize);
         break;
       
@@ -103,6 +110,33 @@ int storeV2_4Frame(FILE *mp3FilePointer, ID3TagType *ID3Tag){
 
   }
   // printf("FRAMEID: %s\n", header.frameId);
+  return 0;
+}
+int storeNextFrame(FILE *mp3FilePointer, ID3TagType *tag){
+  ID3v2FrameHeaderType header;
+  readHeaderFrame(mp3FilePointer,&header);
+  uint32_t frameSize = getFrameV2_3Size(header);
+  if (memcmp(header.frameId, "\0\0\0\0", 4) == 0) {
+    printf("PADDING REACHED\n");
+    return 1;
+  }
+  else if(strncmp(header.frameId,"T",1)==0){
+    ID3v2TextFrameType *frame;
+    frame =  (ID3v2TextFrameType *) malloc(sizeof(ID3v2TextFrameType));
+    frame->header = header;
+    getTextFrame(mp3FilePointer,frameSize, frame,tag->header.version[0]);
+    
+    pushTextFrameStack(&tag->textFrameStak,*frame);
+    free(frame->content);
+    free(frame);
+  }
+  else{
+    printf("FRAMEID: %s\n", header.frameId);
+    printf("Size: %d\n", frameSize);
+    uint8_t *buffer = (uint8_t *)malloc(frameSize);
+    fread(buffer, frameSize, 1, mp3FilePointer);
+    free(buffer);
+  }
   return 0;
 }
 
@@ -233,6 +267,8 @@ void freeID3v2Tag(ID3TagType *tag){
 }
 
 void initID3v2Tag(ID3TagType *tag){
+  initTextFrameStack(&tag->textFrameStak);
+
   tag->APIC = NULL;
   tag->TALB = NULL;
   tag->TPE1 = NULL;

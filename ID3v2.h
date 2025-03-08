@@ -6,10 +6,11 @@
 #include <stdio.h>
 #include "ID3v2Header.h" 
 #include "ID3v2Frames.h"
-
+#include "TextFrameStack.h"
 
 typedef struct {
     ID3v2HeaderType header;
+    TextFrameStack textFrameStak;
     ID3v2TextFrameType *TALB;
     ID3v2TextFrameType *TPE1; 
     ID3v2TextFrameType *TPE2; 
@@ -23,6 +24,8 @@ typedef struct {
     ID3v2TextFrameType *TSSE;
     ID3v2APICFrame *APIC;
 } ID3TagType;
+
+int storeNextFrame(FILE*, ID3TagType*);
 
 void initID3v2Tag(ID3TagType *);
 
