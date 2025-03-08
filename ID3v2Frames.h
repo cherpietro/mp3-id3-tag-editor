@@ -48,6 +48,6 @@ uint32_t getFrameV2_4Size(ID3v2FrameHeaderType);
 
 uint32_t getFrameV2_3Size(ID3v2FrameHeaderType);
 
-void getTextFrame(FILE*, uint32_t,ID3v2TextFrameType *,int);
+void getTextFrame(FILE*, uint32_t,ID3v2TextFrameType *);
 
 #endif // ID3V2FRAMES_H
