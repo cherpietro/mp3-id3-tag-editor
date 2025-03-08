@@ -28,9 +28,9 @@ void initID3v2Tag(ID3TagType *);
 
 void freeID3v2Tag(ID3TagType *);
 
-int readFrame(FILE*, ID3TagType*);
+int storeV2_4Frame(FILE*, ID3TagType*);
 
-int readFramev2_3(FILE*);
+int readFramev2_3(FILE*, ID3TagType *);
 
 void readV2Tag(FILE*, ID3TagType*);
 

@@ -1,36 +1,6 @@
 #include "ID3v2Frames.h"
+#include "SizeReader.h"
 #include <string.h>
-
-void freeAPICFrame(ID3v2APICFrame* apicFrame){
-  free(apicFrame->mimeType);
-  free(apicFrame->description);
-  free(apicFrame);
-}
-
-void printAPICFrame(ID3v2APICFrame frame){
-  printf("\n----FRAME----\n");
-  printf("Frame ID: %s\n",frame.header.frameId);
-  printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
-  // printf("Size: %u bytes\n",syncsafeToSize(frame.header.size));
-  printf("TextEncoding: %d\n",frame.textEncoding);
-  printf("apicframe.textEncoding: %u size:%ld\n",frame.textEncoding,sizeof(frame.textEncoding));
-  printf("apicframe.mimeType: %s size:%ld\n",frame.mimeType,strlen(frame.mimeType));
-  printf("apicframe.pictureType: %u size:%ld\n",frame.pictureType,sizeof(frame.pictureType));
-  printf("apicframe.description: %s size:%ld\n",frame.description,strlen(frame.description));
-  printf("apicframe.imageSize: %ld\n",frame.imageDataSize);
-  FILE *imageFile = fopen("cover.jpg", "wb");
-  fwrite(frame.imageData, 1, frame.imageDataSize, imageFile);
-  fclose(imageFile);
-}
-void printTextFrame(ID3v2TextFrameType frame){
-  printf("\n----FRAME----\n");
-  printf("Frame ID: %s\n",frame.header.frameId);
-  printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
-  // printf("Size: %u bytes\n",syncsafeToSize(frame.header.size));
-  printf("TextEncoding: %d\n",frame.textEncoding);
-  printf("Content: %s\n",frame.content);
-}
-
 
 ID3v2APICFrame* getAPICFrame(uint8_t *frameContent, uint32_t frameSize){
   ID3v2APICFrame *apic = (ID3v2APICFrame *)malloc(sizeof(ID3v2APICFrame));
@@ -60,14 +30,21 @@ ID3v2APICFrame* getAPICFrame(uint8_t *frameContent, uint32_t frameSize){
   
 }
 
-int readFrameHeader(FILE *mp3FilePointer, ID3v2FrameHeaderType *header){
-  if (fread(header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer) == 1 ) {
-    return 1;
-  }
-  return -1;
+void readHeaderFrame(FILE *mp3FilePointer, ID3v2FrameHeaderType *header){
+  fread(header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer);
+  // if (fread(header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer) == 1 ) {
+  //   return 1;
+  // }
+  // return -1;
 }
 
+uint32_t getFrameV2_4Size(ID3v2FrameHeaderType header){
+  return syncsafeToSize(header.size);
+}
 
+uint32_t getFrameV2_3Size(ID3v2FrameHeaderType header){
+  return sizeFromID3v23(header.size);
+}
 
 void storeTextFrameContet(FILE *mp3FilePointer, ID3v2FrameHeaderType header, uint32_t frameSize,ID3v2TextFrameType **frame){
   *frame =  (ID3v2TextFrameType *) malloc(sizeof(ID3v2TextFrameType));
@@ -89,3 +66,48 @@ void storeTextFrameContet(FILE *mp3FilePointer, ID3v2FrameHeaderType header, uin
   free(frameContent);
 }
 
+void storeTextFrameV2_3Contet(FILE *mp3FilePointer, ID3v2FrameHeaderType header, uint32_t frameSize,ID3v2TextFrameType **frame){
+  *frame =  (ID3v2TextFrameType *) malloc(sizeof(ID3v2TextFrameType));
+  (*frame)->header = header;
+  uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+  fread(frameContent, frameSize, 1, mp3FilePointer);
+  (*frame)->textEncoding = frameContent[0];
+  char *contentPtr = (char *)frameContent + 1;
+  (*frame)->content = (char *)malloc(frameSize); //we will use the textEncoding byte to store the \0 of the string
+  strncpy((*frame)->content,contentPtr,frameSize-1);
+  (*frame)->content[frameSize-1] = '\0';
+  // printf("Frame size: %d; Content Len: %ld\n",frameSize,strlen((*frame)->content));
+  free(frameContent);
+}
+
+void printAPICFrame(ID3v2APICFrame frame){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",frame.header.frameId);
+  printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
+  // printf("Size: %u bytes\n",syncsafeToSize(frame.header.size));
+  printf("TextEncoding: %d\n",frame.textEncoding);
+  printf("apicframe.textEncoding: %u size:%ld\n",frame.textEncoding,sizeof(frame.textEncoding));
+  printf("apicframe.mimeType: %s size:%ld\n",frame.mimeType,strlen(frame.mimeType));
+  printf("apicframe.pictureType: %u size:%ld\n",frame.pictureType,sizeof(frame.pictureType));
+  printf("apicframe.description: %s size:%ld\n",frame.description,strlen(frame.description));
+  printf("apicframe.imageSize: %ld\n",frame.imageDataSize);
+  FILE *imageFile = fopen("cover.jpg", "wb");
+  fwrite(frame.imageData, 1, frame.imageDataSize, imageFile);
+  fclose(imageFile);
+}
+
+void printTextFrame(ID3v2TextFrameType frame){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",frame.header.frameId);
+  printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
+  // printf("Size: %u bytes\n",syncsafeToSize(frame.header.size));
+  printf("TextEncoding: %d\n",frame.textEncoding);
+  printf("Content: %s\n",frame.content);
+}
+
+//Init APIC Frame?
+void freeAPICFrame(ID3v2APICFrame* apicFrame){
+  free(apicFrame->mimeType);
+  free(apicFrame->description);
+  free(apicFrame);
+}
