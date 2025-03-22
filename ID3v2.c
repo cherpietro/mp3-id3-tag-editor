@@ -16,11 +16,12 @@ void readV2Tag(FILE *mp3FilePointer,ID3TagType *ID3Tag){
       while(ftell(mp3FilePointer) < tagSize + 10 && paddingReached != 1){
         paddingReached = storeNextFrame(mp3FilePointer,ID3Tag);
       }
-      while(!isEmptyTextFrameStack(&ID3Tag->textFrameStak)){
-        printTextFrame(topTextFrameStack(ID3Tag->textFrameStak));
-        popTextFrameStack(&ID3Tag->textFrameStak);
+      while(!isEmptyTextFrameList(ID3Tag->textFrameList)){
+        setFirstActiveTextFrameList(&ID3Tag->textFrameList);
+        printTextFrame(getTextFrameListActive(ID3Tag->textFrameList));
+        deleteActiveTextFrameList(&ID3Tag->textFrameList);
       }
-      printAPICFrame(*ID3Tag->APIC);
+      if(ID3Tag->APIC != NULL) printAPICFrame(*ID3Tag->APIC);
     }
     else{
       printf("Not yet supported tag version\n");
@@ -51,7 +52,7 @@ int storeNextFrame(FILE *mp3FilePointer, ID3TagType *tag){
     frame->header = header;
     getTextFrame(mp3FilePointer,frameSize, frame);
     
-    pushTextFrameStack(&tag->textFrameStak,*frame);
+    insertLastTextFrameList(&tag->textFrameList,*frame);
     free(frame->content);
     free(frame);
   }
@@ -74,7 +75,7 @@ int storeNextFrame(FILE *mp3FilePointer, ID3TagType *tag){
 }
 
 void freeID3v2Tag(ID3TagType *tag){
-  freeTextFrameStack(&tag->textFrameStak);
+  freeTextFrameList(&tag->textFrameList);
   if(tag->APIC != NULL){
     freeAPICFrame(tag->APIC);
     tag->APIC = NULL;
@@ -83,7 +84,7 @@ void freeID3v2Tag(ID3TagType *tag){
 }
 
 void initID3v2Tag(ID3TagType *tag){
-  initTextFrameStack(&tag->textFrameStak);
+  initTextFrameList(&tag->textFrameList);
   tag->APIC = NULL;
 }
 
