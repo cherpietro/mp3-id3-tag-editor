@@ -2,6 +2,38 @@
 #include "SizeReader.h"
 #include <string.h>
 
+void remove_id3v2_tag(FILE *mp3FilePointer,ID3TagType *ID3Tag){
+  fseek(mp3FilePointer, 0, SEEK_END);
+  printf("pipO");
+  uint32_t fileSize = ftell(mp3FilePointer);
+  storeHeader(mp3FilePointer,&ID3Tag->header);
+  if(isID3v2Tag(ID3Tag->header)){
+    if(getTagVersion(ID3Tag->header) == 3 || getTagVersion(ID3Tag->header) == 4){
+      uint32_t tagSize = getTagSize(ID3Tag->header);
+      fseek(mp3FilePointer, tagSize, SEEK_SET);
+      uint32_t remainingSize = fileSize - tagSize;
+      unsigned char *dataBuffer = (unsigned char *)malloc(remainingSize);
+      if (!dataBuffer) {
+          printf("error");
+          return;
+      }
+      size_t bytesRead = fread(dataBuffer, 1, remainingSize, mp3FilePointer);
+      FILE *temp = fopen("temp.mp3", "wb");
+      if (!temp) {
+        printf("error");
+        free(dataBuffer);
+        return;
+      }
+      fwrite(dataBuffer, 1, bytesRead, temp);
+      fclose(temp);
+      free(dataBuffer);
+
+      // remove(filename);
+      // rename("temp.mp3", filename);
+    }
+  }
+  else printf("pipO");
+}
 void readV2Tag(FILE *mp3FilePointer,ID3TagType *ID3Tag){
   int paddingReached;
   uint32_t tagSize;
@@ -87,4 +119,3 @@ void initID3v2Tag(ID3TagType *tag){
   initTextFrameList(&tag->textFrameList);
   tag->APIC = NULL;
 }
-

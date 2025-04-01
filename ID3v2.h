@@ -16,6 +16,12 @@ typedef struct {
 
 void readV2Tag(FILE*, ID3TagType*);
 
+void remove_id3v2_tag(FILE*, ID3TagType*);
+
+void writteTag(FILE*, ID3TagType*);
+
+void writeID3Tag(FILE *,ID3TagType*);
+
 int storeNextFrame(FILE*, ID3TagType*);
 
 void initID3v2Tag(ID3TagType *);
