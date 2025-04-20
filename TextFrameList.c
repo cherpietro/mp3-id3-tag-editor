@@ -1,88 +1,87 @@
 #include "TextFrameList.h"
-#include <string.h> 
-void initTextFrameList(TextFrameList *list){
-  list->first = NULL;
-  list->last = NULL;
-  list->active = NULL;
+#include <string.h>
+#include <stdlib.h>
+
+void initTextFrameList(TextFrameList *list) {
+    list->first = NULL;
+    list->last = NULL;
+    list->active = NULL;
 }
 
-void insertLastTextFrameList(TextFrameList *list, ID3v2TextFrameType frame){
-  // check the result of operation malloc!
-  TextFrameListElement *newElemPtr = (TextFrameListElement *)malloc(sizeof(TextFrameListElement));
-  newElemPtr->frame = frame;
-  newElemPtr->frame.content = strdup(frame.content);
-  if (!newElemPtr->frame.content) {
-    free(newElemPtr);
-    return;
-  }
-  if(list->first == NULL && list->first == NULL){
-    newElemPtr->next = newElemPtr;
-    newElemPtr->prev = newElemPtr;
+void insertLastTextFrameList(TextFrameList *list, ID3v2TextFrameType frame) {
+    TextFrameListElement *newElemPtr = (TextFrameListElement *)malloc(sizeof(TextFrameListElement));
+    if (!newElemPtr) return;
 
-    list->first = newElemPtr;
-    list->last = newElemPtr;
-  }
-  else{
-    newElemPtr->next = list->first;
+    newElemPtr->frame = frame;
+    newElemPtr->frame.content = frame.content ? strdup(frame.content) : NULL;
+
+    if (frame.content && !newElemPtr->frame.content) {
+        free(newElemPtr);
+        return;
+    }
+
+    newElemPtr->next = NULL;
     newElemPtr->prev = list->last;
 
-    list->last->next = newElemPtr;
-    list->first->prev = newElemPtr;
+    if (list->last != NULL) {
+        list->last->next = newElemPtr;
+    } else {
+        // La lista estaba vacía
+        list->first = newElemPtr;
+    }
+
     list->last = newElemPtr;
-  }
 }
 
-void setFirstActiveTextFrameList(TextFrameList *list){
-  list->active = list->first;
-}
-void setNextActiveTextFramelist(TextFrameList *list){
-  list->active = list->active->next;
+void setFirstActiveTextFrameList(TextFrameList *list) {
+    list->active = list->first;
 }
 
-void deleteActiveTextFrameList(TextFrameList *list){
-  if (list->active != NULL) {
-    if(list->active == list->first &&list->active == list->last ){
-      free(list->active->frame.content);
-      free(list->active);
-      list->first = NULL;
-      list->last = NULL;
-      list->active = NULL;
-      return;
+void setNextActiveTextFrameList(TextFrameList *list) {
+    if (list->active != NULL)
+        list->active = list->active->next;
+}
+
+void deleteActiveTextFrameList(TextFrameList *list) {
+    if (list->active == NULL) return;
+
+    TextFrameListElement *toDelete = list->active;
+
+    if (toDelete == list->first && toDelete == list->last) {
+        // Único elemento
+        list->first = NULL;
+        list->last = NULL;
+        list->active = NULL;
+    } else if (toDelete == list->first) {
+        list->first = toDelete->next;
+        list->first->prev = NULL;
+        list->active = list->first;
+    } else if (toDelete == list->last) {
+        list->last = toDelete->prev;
+        list->last->next = NULL;
+        list->active = NULL;
+    } else {
+        toDelete->prev->next = toDelete->next;
+        toDelete->next->prev = toDelete->prev;
+        list->active = toDelete->next;
     }
-    else if(list->active == list->first){
-      list->first = list->first->next;
-      
-      list->first->prev = list->last;
-      list->last->next = list->first;
+
+    free(toDelete->frame.content);
+    free(toDelete);
+}
+
+bool isEmptyTextFrameList(TextFrameList list) {
+    return (list.first == NULL && list.last == NULL);
+}
+
+void freeTextFrameList(TextFrameList *list) {
+    setFirstActiveTextFrameList(list);
+    while (!isEmptyTextFrameList(*list)) {
+        deleteActiveTextFrameList(list);
     }
-    else if(list->active == list->last){
-      list->last = list->last->prev;
-  
-      list->last->next = list->first;
-      list->first->prev = list->last;
-    }
-    else{
-      list->active->prev->next =  list->active->next;
-      list->active->next->prev =  list->active->prev;
-    }
-    list->active->next = NULL;
-    list->active->prev = NULL;
-    free(list->active);
-    list->active = NULL;
-  }
 }
 
 ID3v2TextFrameType getTextFrameListActive(TextFrameList list){
   return list.active->frame;
 }
 
-bool isEmptyTextFrameList(TextFrameList list){
-  return (list.first == NULL && list.last == NULL);
-}
-
-void freeTextFrameList(TextFrameList *list){
-  while(!isEmptyTextFrameList(*list)){
-    setFirstActiveTextFrameList(list);
-    deleteActiveTextFrameList(list);
-  }
-}
