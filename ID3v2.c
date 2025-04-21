@@ -38,6 +38,7 @@ void getRealSizeTag(ID3TagType *ID3Tag){
   printf("\nsize in tag: %d bytes\n",getTagSize(ID3Tag->header));
   int sizeCalculated = 10; //header
   ID3v2TextFrameType textFrame;
+  ID3v2COMMFrameType COMMFrame;
 
   setFirstActiveTextFrameList(&ID3Tag->textFrameList);
   while(ID3Tag->textFrameList.active != NULL){
@@ -46,6 +47,14 @@ void getRealSizeTag(ID3TagType *ID3Tag){
     if(ID3Tag->header.version[0] == 4) sizeCalculated = sizeCalculated + getFrameV2_4Size(textFrame.header) + 10;//+1 because of \0 
     else sizeCalculated = sizeCalculated + getFrameV2_3Size(textFrame.header) + 10;
     setNextActiveTextFrameList(&ID3Tag->textFrameList);
+  }
+  setFirstActiveCOMMFrameList(&ID3Tag->COMMFrameList);
+  while(ID3Tag->COMMFrameList.active != NULL){
+    // printf("iter\n");
+    COMMFrame = getCOMMFrameListActive(ID3Tag->COMMFrameList);
+    if(ID3Tag->header.version[0] == 4) sizeCalculated = sizeCalculated + getFrameV2_4Size(COMMFrame.header) + 10;//+1 because of \0 
+    else sizeCalculated = sizeCalculated + getFrameV2_3Size(COMMFrame.header) + 10;
+    setNextActiveCOMMFrameList(&ID3Tag->COMMFrameList);
   }
   if(ID3Tag->APIC != NULL) {
     size_t headerAPICsize;
@@ -119,6 +128,17 @@ int storeNextFrame(FILE *mp3FilePointer, ID3TagType *tag){
     
     insertLastTextFrameList(&tag->textFrameList,*frame);
     free(frame->content);
+    free(frame);
+  }
+  else if(strncmp(header.frameId,"COMM",4)==0){
+    ID3v2COMMFrameType *frame;
+    frame =  (ID3v2COMMFrameType *) malloc(sizeof(ID3v2COMMFrameType));
+    frame->header = header;
+    getCOMMFrame(mp3FilePointer,frameSize, frame);
+    
+    insertLastCOMMFrameList(&tag->COMMFrameList,*frame);
+    free(frame->actualText);
+    free(frame->contentDescript);
     free(frame);
   }
   else if(strncmp(header.frameId,"APIC",4)==0){

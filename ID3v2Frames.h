@@ -27,6 +27,14 @@ typedef struct {
   char *content;
 } ID3v2TextFrameType;
 
+typedef struct {
+  ID3v2FrameHeaderType header;
+  uint8_t textEncoding;
+  char language[3];
+  char *contentDescript;
+  char *actualText;
+} ID3v2COMMFrameType;
+
 
 void freeAPICFrame(ID3v2APICFrame*);
 
@@ -47,6 +55,8 @@ void readHeaderFrame(FILE*, ID3v2FrameHeaderType*);
 uint32_t getFrameV2_4Size(ID3v2FrameHeaderType);
 
 uint32_t getFrameV2_3Size(ID3v2FrameHeaderType);
+
+void getCOMMFrame(FILE *, uint32_t , ID3v2COMMFrameType *);
 
 void getTextFrame(FILE*, uint32_t,ID3v2TextFrameType *);
 

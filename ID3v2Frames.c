@@ -65,7 +65,34 @@ void storeTextFrameContet(FILE *mp3FilePointer, ID3v2FrameHeaderType header, uin
   // printf("Num of chars: %ld\n",strlen(contentPtr));
   free(frameContent);
 }
+void getCOMMFrame(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameType *frame){
+  uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+  fread(frameContent, frameSize, 1, mp3FilePointer);
 
+  size_t index = 0;
+  frame->textEncoding = frameContent[index++];
+  frame->language[0] = frameContent[index];
+  frame->language[1] = frameContent[index+1];
+  frame->language[2] = frameContent[index+2];
+  index+=3;
+
+  char *descPtr = (char *)frameContent + index;
+  size_t descSize = strlen(descPtr);
+  frame->contentDescript = (char *)malloc(descSize+1); //we will use the textEncoding byte to store the \0 of the string
+  strcpy(frame->contentDescript,descPtr);
+  frame->contentDescript[descSize] = '\0';
+  index += descSize+1;
+
+  char *contentPtr = (char *)frameContent + index;
+  size_t contentSize = ftell(mp3FilePointer) - index;
+  frame->actualText = (char *)malloc(contentSize); //we will use the textEncoding byte to store the \0 of the string
+  strcpy(frame->actualText,contentPtr);
+  // frame->actualText[contentSize] = '\0';
+
+  // printf("Frame size: %d; Content Len: %ld\n",frameSize,strlen((*frame)->content));
+  free(frameContent);
+  // return frame;
+}
 void getTextFrame(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TextFrameType *frame){
     uint8_t *frameContent = (uint8_t *)malloc(frameSize);
     fread(frameContent, frameSize, 1, mp3FilePointer);

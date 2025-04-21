@@ -12,10 +12,10 @@ int main(){
   ID3TagType ID3Tag; 
 
   // mp3FilePointer = fopen("./auxRemove.mp3","r");
-  // mp3FilePointer = fopen("./files/TimberHearth.mp3","r");
+  mp3FilePointer = fopen("./files/TimberHearth.mp3","r");
   // mp3FilePointer = fopen("./files/jokin1.mp3","r");
   // mp3FilePointer = fopen("./files/theme.mp3","r");
-  mp3FilePointer = fopen("./files/overture.mp3","r");
+  // mp3FilePointer = fopen("./files/overture.mp3","r");
   // mp3FilePointer = fopen("./files/gameFreak.mp3","r");
   if (mp3FilePointer) {
     readV2Tag(mp3FilePointer,&ID3Tag);

@@ -7,10 +7,12 @@
 #include "ID3v2Header.h" 
 #include "ID3v2Frames.h"
 #include "TextFrameList.h"
+#include "COMMFrameList.h"
 
 typedef struct {
     ID3v2HeaderType header;
     TextFrameList textFrameList;
+    COMMFrameList COMMFrameList;
     ID3v2APICFrame *APIC;
     size_t paddingSize;
 } ID3TagType;
