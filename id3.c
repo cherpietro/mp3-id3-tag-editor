@@ -11,11 +11,17 @@ int main(){
   FILE *mp3FilePointer;
   ID3TagType ID3Tag; 
 
-  mp3FilePointer = fopen("./auxRemove.mp3","r");
-  // mp3FilePointer = fopen("./files/overture.mp3","r");
+  // mp3FilePointer = fopen("./auxRemove.mp3","r");
+  // mp3FilePointer = fopen("./files/TimberHearth.mp3","r");
+  // mp3FilePointer = fopen("./files/jokin1.mp3","r");
+  // mp3FilePointer = fopen("./files/theme.mp3","r");
+  mp3FilePointer = fopen("./files/overture.mp3","r");
+  // mp3FilePointer = fopen("./files/gameFreak.mp3","r");
   if (mp3FilePointer) {
     readV2Tag(mp3FilePointer,&ID3Tag);
-    remove_id3v2_tag(mp3FilePointer,&ID3Tag);
+    getRealSizeTag(&ID3Tag);
+    // remove_id3v2_tag(mp3FilePointer,&ID3Tag);
+    freeID3v2Tag(&ID3Tag);
     fclose(mp3FilePointer);
     return(0);
   }

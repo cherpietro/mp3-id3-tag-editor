@@ -4,7 +4,7 @@
 
 void remove_id3v2_tag(FILE *mp3FilePointer,ID3TagType *ID3Tag){
   fseek(mp3FilePointer, 0, SEEK_END);
-  printf("pipO");
+  // printf("pipO");
   uint32_t fileSize = ftell(mp3FilePointer);
   storeHeader(mp3FilePointer,&ID3Tag->header);
   if(isID3v2Tag(ID3Tag->header)){
@@ -34,6 +34,31 @@ void remove_id3v2_tag(FILE *mp3FilePointer,ID3TagType *ID3Tag){
   }
   else printf("pipO");
 }
+void getRealSizeTag(ID3TagType *ID3Tag){
+  printf("\nsize in tag: %d bytes\n",getTagSize(ID3Tag->header));
+  int sizeCalculated = 10; //header
+  ID3v2TextFrameType textFrame;
+
+  setFirstActiveTextFrameList(&ID3Tag->textFrameList);
+  while(ID3Tag->textFrameList.active != NULL){
+    // printf("iter\n");
+    textFrame = getTextFrameListActive(ID3Tag->textFrameList);
+    if(ID3Tag->header.version[0] == 4) sizeCalculated = sizeCalculated + getFrameV2_4Size(textFrame.header) + 10;//+1 because of \0 
+    else sizeCalculated = sizeCalculated + getFrameV2_3Size(textFrame.header) + 10;
+    setNextActiveTextFrameList(&ID3Tag->textFrameList);
+  }
+  if(ID3Tag->APIC != NULL) {
+    size_t headerAPICsize;
+    if(ID3Tag->header.version[0] == 4) headerAPICsize = getFrameV2_4Size(ID3Tag->APIC->header)+10;
+    else headerAPICsize = getFrameV2_3Size(ID3Tag->APIC->header)+10;
+    sizeCalculated = sizeCalculated + headerAPICsize ;
+    // printf("CALCULATING APIC\n");
+  }
+  printf("Padding size: %ld bytes\n",ID3Tag->paddingSize);
+  printf("size calculated: %d bytes\n",sizeCalculated);
+  printf("Tag size removing padding: %ld bytes\n",(getTagSize(ID3Tag->header)+10)-ID3Tag->paddingSize);
+
+}
 void readV2Tag(FILE *mp3FilePointer,ID3TagType *ID3Tag){
   int paddingReached;
   uint32_t tagSize;
@@ -45,15 +70,22 @@ void readV2Tag(FILE *mp3FilePointer,ID3TagType *ID3Tag){
       printTagHeader(ID3Tag->header);
       paddingReached = 0;
       tagSize = getTagSize(ID3Tag->header);
-      while(ftell(mp3FilePointer) < tagSize + 10 && paddingReached != 1){
+      while(ftell(mp3FilePointer)< tagSize + 10 && paddingReached != 1){
         paddingReached = storeNextFrame(mp3FilePointer,ID3Tag);
+        // printf("PIPO %ld\n",ftell(mp3FilePointer));
       }
-      while(!isEmptyTextFrameList(ID3Tag->textFrameList)){
-        setFirstActiveTextFrameList(&ID3Tag->textFrameList);
-        printTextFrame(getTextFrameListActive(ID3Tag->textFrameList));
-        deleteActiveTextFrameList(&ID3Tag->textFrameList);
+      if (paddingReached){
+        // printf("Inicio del padding en: %ld\n",ftell(mp3FilePointer)-10);
+        ID3Tag->paddingSize = (getTagSize(ID3Tag->header))+10 - (ftell(mp3FilePointer))+10; //tag size doesn't include header 
+        // printf("padding size (3607): %ld\n",ID3Tag->paddingSize);
       }
-      if(ID3Tag->APIC != NULL) printAPICFrame(*ID3Tag->APIC);
+      // printf("PEPE %ld\n",tagSize);
+      // while(!isEmptyTextFrameList(ID3Tag->textFrameList)){
+      //   setFirstActiveTextFrameList(&ID3Tag->textFrameList);
+      //   printTextFrame(getTextFrameListActive(ID3Tag->textFrameList));
+      //   deleteActiveTextFrameList(&ID3Tag->textFrameList);
+      // }
+      // if(ID3Tag->APIC != NULL) printAPICFrame(*ID3Tag->APIC);
     }
     else{
       printf("Not yet supported tag version\n");
@@ -65,11 +97,12 @@ void readV2Tag(FILE *mp3FilePointer,ID3TagType *ID3Tag){
   
   
 
-  freeID3v2Tag(ID3Tag);
+  // freeID3v2Tag(ID3Tag);
 }
 
 int storeNextFrame(FILE *mp3FilePointer, ID3TagType *tag){
   ID3v2FrameHeaderType header;
+  // printf("before reading header: %ld\n",ftell(mp3FilePointer));
   readHeaderFrame(mp3FilePointer,&header);
   uint32_t frameSize; 
   if(tag->header.version[0] == 4) frameSize = getFrameV2_4Size(header); 
@@ -97,8 +130,9 @@ int storeNextFrame(FILE *mp3FilePointer, ID3TagType *tag){
 
   }
   else{
-    printf("FRAMEID: %s\n", header.frameId);
-    printf("Size: %d\n", frameSize);
+    printf("NOT SUPPORTED TAG %s: %ld\n", header.frameId,ftell(mp3FilePointer));
+    // printf("FRAMEID: %s\n", header.frameId);
+    // printf("Size: %d\n", frameSize);
     uint8_t *buffer = (uint8_t *)malloc(frameSize);
     fread(buffer, frameSize, 1, mp3FilePointer);
     free(buffer);

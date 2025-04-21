@@ -74,7 +74,9 @@ void getTextFrame(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TextFrameType *
     char *contentPtr = (char *)frameContent + 1;
     frame->content = (char *)malloc(frameSize); //we will use the textEncoding byte to store the \0 of the string
     strncpy(frame->content,contentPtr,frameSize-1);
-    if(frame->content[frameSize-1] != '\0') frame->content[frameSize-1] = '\0';
+    if(frame->content[frameSize-1] != '\0') {
+      frame->content[frameSize-1] = '\0';
+    }
     // printf("Frame size: %d; Content Len: %ld\n",frameSize,strlen((*frame)->content));
     free(frameContent);
     // return frame;
