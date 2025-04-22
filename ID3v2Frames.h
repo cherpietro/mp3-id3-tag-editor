@@ -36,28 +36,26 @@ typedef struct {
 } ID3v2COMMFrameType;
 
 
-void freeAPICFrame(ID3v2APICFrame*);
+void FramesV2_freeAPIC(ID3v2APICFrame*);
 
-void printAPICFrame(ID3v2APICFrame);
+void FramesV2_printAPIC(ID3v2APICFrame);
 
-void printTextFrame(ID3v2TextFrameType);
+void FramesV2_printTXTF(ID3v2TextFrameType);
 
-void printTextFrame(ID3v2TextFrameType);
+ID3v2APICFrame* FramesV2_getAPICFromBuffer(uint8_t*, uint32_t);
 
-ID3v2APICFrame* getAPICFrame(uint8_t*, uint32_t);
+void FramesV2_storeTXTF(FILE*, ID3v2FrameHeaderType, uint32_t, ID3v2TextFrameType**);
 
-void storeTextFrameContet(FILE*, ID3v2FrameHeaderType, uint32_t, ID3v2TextFrameType**);
+void FramesV2_storeTXTF_V2_3(FILE*, ID3v2FrameHeaderType, uint32_t, ID3v2TextFrameType**);
 
-void storeTextFrameV2_3Contet(FILE*, ID3v2FrameHeaderType, uint32_t, ID3v2TextFrameType**);
+void FramesV2_storeHeader(FILE*, ID3v2FrameHeaderType*);
 
-void readHeaderFrame(FILE*, ID3v2FrameHeaderType*);
+uint32_t FramesV2_getSize_V2_4(ID3v2FrameHeaderType);
 
-uint32_t getFrameV2_4Size(ID3v2FrameHeaderType);
+uint32_t FramesV2_getSize_V2_3(ID3v2FrameHeaderType);
 
-uint32_t getFrameV2_3Size(ID3v2FrameHeaderType);
+void FramesV2_getCOMM(FILE *, uint32_t , ID3v2COMMFrameType *);
 
-void getCOMMFrame(FILE *, uint32_t , ID3v2COMMFrameType *);
-
-void getTextFrame(FILE*, uint32_t,ID3v2TextFrameType *);
+void FramesV2_getTXTF(FILE*, uint32_t,ID3v2TextFrameType *);
 
 #endif // ID3V2FRAMES_H

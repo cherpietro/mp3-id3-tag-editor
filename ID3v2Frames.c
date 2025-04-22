@@ -2,7 +2,7 @@
 #include "SizeReader.h"
 #include <string.h>
 
-ID3v2APICFrame* getAPICFrame(uint8_t *frameContent, uint32_t frameSize){
+ID3v2APICFrame* FramesV2_getAPICFromBuffer(uint8_t *frameContent, uint32_t frameSize){
   ID3v2APICFrame *apic = (ID3v2APICFrame *)malloc(sizeof(ID3v2APICFrame));
   
   size_t index = 0;
@@ -30,7 +30,7 @@ ID3v2APICFrame* getAPICFrame(uint8_t *frameContent, uint32_t frameSize){
   
 }
 
-void readHeaderFrame(FILE *mp3FilePointer, ID3v2FrameHeaderType *header){
+void FramesV2_storeHeader(FILE *mp3FilePointer, ID3v2FrameHeaderType *header){
   fread(header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer);
   // if (fread(header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer) == 1 ) {
   //   return 1;
@@ -38,15 +38,15 @@ void readHeaderFrame(FILE *mp3FilePointer, ID3v2FrameHeaderType *header){
   // return -1;
 }
 
-uint32_t getFrameV2_4Size(ID3v2FrameHeaderType header){
+uint32_t FramesV2_getSize_V2_4(ID3v2FrameHeaderType header){
   return syncsafeToSize(header.size);
 }
 
-uint32_t getFrameV2_3Size(ID3v2FrameHeaderType header){
+uint32_t FramesV2_getSize_V2_3(ID3v2FrameHeaderType header){
   return sizeFromID3v23(header.size);
 }
 
-void storeTextFrameContet(FILE *mp3FilePointer, ID3v2FrameHeaderType header, uint32_t frameSize,ID3v2TextFrameType **frame){
+void FramesV2_storeTXTF(FILE *mp3FilePointer, ID3v2FrameHeaderType header, uint32_t frameSize,ID3v2TextFrameType **frame){
   *frame =  (ID3v2TextFrameType *) malloc(sizeof(ID3v2TextFrameType));
   (*frame)->header = header;
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
@@ -65,7 +65,7 @@ void storeTextFrameContet(FILE *mp3FilePointer, ID3v2FrameHeaderType header, uin
   // printf("Num of chars: %ld\n",strlen(contentPtr));
   free(frameContent);
 }
-void getCOMMFrame(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameType *frame){
+void FramesV2_getCOMM(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameType *frame){
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
   fread(frameContent, frameSize, 1, mp3FilePointer);
 
@@ -93,7 +93,7 @@ void getCOMMFrame(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameType *
   free(frameContent);
   // return frame;
 }
-void getTextFrame(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TextFrameType *frame){
+void FramesV2_getTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TextFrameType *frame){
     uint8_t *frameContent = (uint8_t *)malloc(frameSize);
     fread(frameContent, frameSize, 1, mp3FilePointer);
   
@@ -110,7 +110,7 @@ void getTextFrame(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TextFrameType *
 
   
 }
-void OLD_getTextFrame(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TextFrameType *frame,int version){
+void FramesV2_OLD_getTextFrame(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TextFrameType *frame,int version){
   if(version == 4){
     uint8_t *frameContent = (uint8_t *)malloc(frameSize);
     fread(frameContent, frameSize, 1, mp3FilePointer);
@@ -144,7 +144,7 @@ void OLD_getTextFrame(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TextFrameTy
   
 }
 
-void storeTextFrameV2_3Contet(FILE *mp3FilePointer, ID3v2FrameHeaderType header, uint32_t frameSize,ID3v2TextFrameType **frame){
+void FramesV2_storeTXTF_V2_3(FILE *mp3FilePointer, ID3v2FrameHeaderType header, uint32_t frameSize,ID3v2TextFrameType **frame){
   *frame =  (ID3v2TextFrameType *) malloc(sizeof(ID3v2TextFrameType));
   (*frame)->header = header;
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
@@ -158,7 +158,7 @@ void storeTextFrameV2_3Contet(FILE *mp3FilePointer, ID3v2FrameHeaderType header,
   free(frameContent);
 }
 
-void printAPICFrame(ID3v2APICFrame frame){
+void FramesV2_printAPIC(ID3v2APICFrame frame){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",frame.header.frameId);
   printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
@@ -174,7 +174,7 @@ void printAPICFrame(ID3v2APICFrame frame){
   fclose(imageFile);
 }
 
-void printTextFrame(ID3v2TextFrameType frame){
+void FramesV2_printTXTF(ID3v2TextFrameType frame){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",frame.header.frameId);
   printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
@@ -184,7 +184,7 @@ void printTextFrame(ID3v2TextFrameType frame){
 }
 
 //Init APIC Frame?
-void freeAPICFrame(ID3v2APICFrame* apicFrame){
+void FramesV2_freeAPIC(ID3v2APICFrame* apicFrame){
   free(apicFrame->mimeType);
   free(apicFrame->description);
   free(apicFrame);

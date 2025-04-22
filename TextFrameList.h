@@ -15,19 +15,19 @@ typedef struct{
   TextFrameListElement *active;
 }TextFrameList;
 
-void initTextFrameList(TextFrameList *);
+void ListTXTF_init(TextFrameList *);
 
-void insertLastTextFrameList(TextFrameList *, ID3v2TextFrameType);
+void ListTXTF_insertLast(TextFrameList *, ID3v2TextFrameType);
 
-void setFirstActiveTextFrameList(TextFrameList *);
+void ListTXTF_setFirstActive(TextFrameList *);
 
-void setNextActiveTextFrameList(TextFrameList *);
+void ListTXTF_setNextActive(TextFrameList *);
 
-void deleteActiveTextFrameList(TextFrameList *);
+void ListTXTF_deleteActive(TextFrameList *);
 
-ID3v2TextFrameType getTextFrameListActive(TextFrameList);
+ID3v2TextFrameType ListTXTF_getActive(TextFrameList);
 
-bool isEmptyTextFrameList(TextFrameList);
+bool ListTXTF_isEmpty(TextFrameList);
 
-void freeTextFrameList(TextFrameList *);
+void ListTXTF_freeList(TextFrameList *);
 #endif // TEXT_FRAME_LIST_H

@@ -2,13 +2,13 @@
 #include <string.h>
 #include <stdlib.h>
 
-void initCOMMFrameList(COMMFrameList *list) {
+void ListCOMM_init(COMMFrameList *list) {
     list->first = NULL;
     list->last = NULL;
     list->active = NULL;
 }
 
-void insertLastCOMMFrameList(COMMFrameList *list, ID3v2COMMFrameType frame) {
+void ListCOMM_insertLast(COMMFrameList *list, ID3v2COMMFrameType frame) {
     COMMFrameListElement *newElemPtr = (COMMFrameListElement *)malloc(sizeof(COMMFrameListElement));
     if (!newElemPtr) return;
 
@@ -40,16 +40,16 @@ void insertLastCOMMFrameList(COMMFrameList *list, ID3v2COMMFrameType frame) {
     list->last = newElemPtr;
 }
 
-void setFirstActiveCOMMFrameList(COMMFrameList *list) {
+void ListCOMM_setFirstActive(COMMFrameList *list) {
     list->active = list->first;
 }
 
-void setNextActiveCOMMFrameList(COMMFrameList *list) {
+void ListCOMM_setNextActive(COMMFrameList *list) {
     if (list->active != NULL)
         list->active = list->active->next;
 }
 
-void deleteActiveCOMMFrameList(COMMFrameList *list) {
+void ListCOMM_deleteActive(COMMFrameList *list) {
     if (list->active == NULL) return;
 
     COMMFrameListElement *toDelete = list->active;
@@ -78,18 +78,18 @@ void deleteActiveCOMMFrameList(COMMFrameList *list) {
     free(toDelete);
 }
 
-bool isEmptyCOMMFrameList(COMMFrameList list) {
+bool ListCOMM_isEmpty(COMMFrameList list) {
     return (list.first == NULL && list.last == NULL);
 }
 
-void freeCOMMFrameList(COMMFrameList *list) {
-    setFirstActiveCOMMFrameList(list);
-    while (!isEmptyCOMMFrameList(*list)) {
-        deleteActiveCOMMFrameList(list);
+void ListCOMM_freeList(COMMFrameList *list) {
+    ListCOMM_setFirstActive(list);
+    while (!ListCOMM_isEmpty(*list)) {
+        ListCOMM_deleteActive(list);
     }
 }
 
-ID3v2COMMFrameType getCOMMFrameListActive(COMMFrameList list){
+ID3v2COMMFrameType ListCOMM_getActive(COMMFrameList list){
   return list.active->frame;
 }
 

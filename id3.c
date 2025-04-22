@@ -10,18 +10,18 @@ void printAPICFrame(ID3v2APICFrame frame);
 int main(){
   FILE *mp3FilePointer;
   ID3TagType ID3Tag; 
-
-  // mp3FilePointer = fopen("./auxRemove.mp3","r");
-  mp3FilePointer = fopen("./files/TimberHearth.mp3","r");
-  // mp3FilePointer = fopen("./files/jokin1.mp3","r");
-  // mp3FilePointer = fopen("./files/theme.mp3","r");
-  // mp3FilePointer = fopen("./files/overture.mp3","r");
-  // mp3FilePointer = fopen("./files/gameFreak.mp3","r");
+  char *file = "./files/TimberHearth.mp3";
+  // char *file = "./auxRemove.mp3";
+  // char *file = "./files/jokin1.mp3";
+  // char *file = "./files/theme.mp3";
+  // char *file = "./files/overture.mp3";
+  // char *file = "./files/gameFreak.mp3";
+  mp3FilePointer = fopen(file,"r");
   if (mp3FilePointer) {
-    readV2Tag(mp3FilePointer,&ID3Tag);
-    getRealSizeTag(&ID3Tag);
-    // remove_id3v2_tag(mp3FilePointer,&ID3Tag);
-    freeID3v2Tag(&ID3Tag);
+    ID3v2_storeTagInStruct(mp3FilePointer,&ID3Tag);
+    ID3v2_getTagSizeOfTheStruct(&ID3Tag);
+    // ID3v2_removeTagFromFile(mp3FilePointer,&ID3Tag);
+    ID3v2_initID3v2Tag(&ID3Tag);
     fclose(mp3FilePointer);
     return(0);
   }

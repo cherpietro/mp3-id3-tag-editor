@@ -15,19 +15,19 @@ typedef struct{
   COMMFrameListElement *active;
 }COMMFrameList;
 
-void initCOMMFrameList(COMMFrameList *);
+void ListCOMM_init(COMMFrameList *);
 
-void insertLastCOMMFrameList(COMMFrameList *, ID3v2COMMFrameType);
+void ListCOMM_insertLast(COMMFrameList *, ID3v2COMMFrameType);
 
-void setFirstActiveCOMMFrameList(COMMFrameList *);
+void ListCOMM_setFirstActive(COMMFrameList *);
 
-void setNextActiveCOMMFrameList(COMMFrameList *);
+void ListCOMM_setNextActive(COMMFrameList *);
 
-void deleteActiveCOMMFrameList(COMMFrameList *);
+void ListCOMM_deleteActive(COMMFrameList *);
 
-ID3v2COMMFrameType getCOMMFrameListActive(COMMFrameList);
+ID3v2COMMFrameType ListCOMM_getActive(COMMFrameList);
 
-bool isEmptyCOMMFrameList(COMMFrameList);
+bool ListCOMM_isEmpty(COMMFrameList);
 
-void freeCOMMFrameList(COMMFrameList *);
+void ListCOMM_freeList(COMMFrameList *);
 #endif // COMM_FRAME_LIST_H

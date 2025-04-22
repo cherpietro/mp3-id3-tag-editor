@@ -2,13 +2,13 @@
 #include <string.h>
 #include <stdlib.h>
 
-void initTextFrameList(TextFrameList *list) {
+void ListTXTF_init(TextFrameList *list) {
     list->first = NULL;
     list->last = NULL;
     list->active = NULL;
 }
 
-void insertLastTextFrameList(TextFrameList *list, ID3v2TextFrameType frame) {
+void ListTXTF_insertLast(TextFrameList *list, ID3v2TextFrameType frame) {
     TextFrameListElement *newElemPtr = (TextFrameListElement *)malloc(sizeof(TextFrameListElement));
     if (!newElemPtr) return;
 
@@ -33,16 +33,16 @@ void insertLastTextFrameList(TextFrameList *list, ID3v2TextFrameType frame) {
     list->last = newElemPtr;
 }
 
-void setFirstActiveTextFrameList(TextFrameList *list) {
+void ListTXTF_setFirstActive(TextFrameList *list) {
     list->active = list->first;
 }
 
-void setNextActiveTextFrameList(TextFrameList *list) {
+void ListTXTF_setNextActive(TextFrameList *list) {
     if (list->active != NULL)
         list->active = list->active->next;
 }
 
-void deleteActiveTextFrameList(TextFrameList *list) {
+void ListTXTF_deleteActive(TextFrameList *list) {
     if (list->active == NULL) return;
 
     TextFrameListElement *toDelete = list->active;
@@ -70,18 +70,18 @@ void deleteActiveTextFrameList(TextFrameList *list) {
     free(toDelete);
 }
 
-bool isEmptyTextFrameList(TextFrameList list) {
+bool ListTXTF_isEmpty(TextFrameList list) {
     return (list.first == NULL && list.last == NULL);
 }
 
-void freeTextFrameList(TextFrameList *list) {
-    setFirstActiveTextFrameList(list);
-    while (!isEmptyTextFrameList(*list)) {
-        deleteActiveTextFrameList(list);
+void ListTXTF_freeList(TextFrameList *list) {
+    ListTXTF_setFirstActive(list);
+    while (!ListTXTF_isEmpty(*list)) {
+        ListTXTF_deleteActive(list);
     }
 }
 
-ID3v2TextFrameType getTextFrameListActive(TextFrameList list){
+ID3v2TextFrameType ListTXTF_getActive(TextFrameList list){
   return list.active->frame;
 }
 

@@ -17,19 +17,15 @@ typedef struct {
     size_t paddingSize;
 } ID3TagType;
 
-void readV2Tag(FILE*, ID3TagType*);
+void ID3v2_init(ID3TagType *);
 
-void remove_id3v2_tag(FILE*, ID3TagType*);
+void ID3v2_initID3v2Tag(ID3TagType *);
 
-void writteTag(FILE*, ID3TagType*);
+void ID3v2_storeTagInStruct(FILE*, ID3TagType*);
 
-void writeID3Tag(FILE *,ID3TagType*);
+void ID3v2_removeTagFromFile(FILE*);
 
-int storeNextFrame(FILE*, ID3TagType*);
+int ID3v2_storeNextFrameInStruct(FILE*, ID3TagType*);
 
-void initID3v2Tag(ID3TagType *);
-
-void freeID3v2Tag(ID3TagType *);
-
-void getRealSizeTag(ID3TagType *);
+void ID3v2_getTagSizeOfTheStruct(ID3TagType *);
 #endif // ID3V2_H
