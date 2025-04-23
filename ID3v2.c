@@ -78,33 +78,44 @@ void ID3v2_init(ID3TagType *tag){
 
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
   printf("\nsize in tag: %d bytes\n",HeaderV2_getTagSize(ID3Tag->header));
-  int sizeCalculated = 10; //header
+  size_t tagSizeOfStruct = 10; //header
   ID3v2TextFrameType textFrame;
   ID3v2COMMFrameType COMMFrame;
 
   ListTXTF_setFirstActive(&ID3Tag->textFrameList);
   while(ID3Tag->textFrameList.active != NULL){
     textFrame = ListTXTF_getActive(ID3Tag->textFrameList);
-    if(ID3Tag->header.version[0] == 4) sizeCalculated = sizeCalculated + FramesV2_getSize_V2_4(textFrame.header) + 10; 
-    else sizeCalculated = sizeCalculated + FramesV2_getSize_V2_3(textFrame.header) + 10;
+    tagSizeOfStruct += (ID3Tag->header.version[0] == 4 
+      ? FramesV2_getSize_V2_4(textFrame.header) 
+      : FramesV2_getSize_V2_3(textFrame.header)) + 10;
     ListTXTF_setNextActive(&ID3Tag->textFrameList);
   }
+
   ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
   while(ID3Tag->COMMFrameList.active != NULL){
     COMMFrame = ListCOMM_getActive(ID3Tag->COMMFrameList);
-    if(ID3Tag->header.version[0] == 4) sizeCalculated = sizeCalculated + FramesV2_getSize_V2_4(COMMFrame.header) + 10;
-    else sizeCalculated = sizeCalculated + FramesV2_getSize_V2_3(COMMFrame.header) + 10;
+    tagSizeOfStruct += (ID3Tag->header.version[0] == 4 
+              ? FramesV2_getSize_V2_4(COMMFrame.header) 
+              : FramesV2_getSize_V2_3(COMMFrame.header)) + 10;
     ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
   }
   if(ID3Tag->APIC != NULL) {
     size_t headerAPICsize;
-    if(ID3Tag->header.version[0] == 4) headerAPICsize = FramesV2_getSize_V2_4(ID3Tag->APIC->header)+10;
-    else headerAPICsize = FramesV2_getSize_V2_3(ID3Tag->APIC->header)+10;
-    sizeCalculated = sizeCalculated + headerAPICsize ;
+    headerAPICsize = (ID3Tag->header.version[0] == 4 
+      ? FramesV2_getSize_V2_4(ID3Tag->APIC->header) 
+      : FramesV2_getSize_V2_3(ID3Tag->APIC->header)) + 10;
+    tagSizeOfStruct = tagSizeOfStruct + headerAPICsize ;
   }
-  printf("Padding size: %ld bytes\n",ID3Tag->paddingSize);
-  printf("size calculated: %d bytes\n",sizeCalculated);
-  printf("Tag size removing padding: %ld bytes\n",(HeaderV2_getTagSize(ID3Tag->header)+10)-ID3Tag->paddingSize);
+
+  if((HeaderV2_getTagSize(ID3Tag->header) +10 - ID3Tag->paddingSize )== tagSizeOfStruct ){
+    printf("size is okay\n");
+  }
+  else{
+    printf("size is NOT okay %ld\n",(tagSizeOfStruct+10 - (int) ID3Tag->paddingSize ));
+  }
+  // printf("\nPadding size: %ld bytes\n",ID3Tag->paddingSize);
+  // printf("size calculated: %ld bytes\n",tagSizeOfStruct);
+  // printf("Tag size removing padding: %ld bytes\n",(HeaderV2_getTagSize(ID3Tag->header)+10)-ID3Tag->paddingSize);
 
 }
 
@@ -148,7 +159,7 @@ int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
     free(buffer);
   }
   else{
-    // printf("NOT SUPPORTED TAG %s: %ld\n", header.frameId,ftell(mp3FilePointer));
+    printf("NOT SUPPORTED TAG %s: %ld\n", header.frameId,ftell(mp3FilePointer));
     // printf("FRAMEID: %s\n", header.frameId);
     // printf("Size: %d\n", frameSize);
     uint8_t *buffer = (uint8_t *)malloc(frameSize);
