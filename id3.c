@@ -18,10 +18,13 @@ int main(){
   // char *file = "./files/gameFreak.mp3";
   mp3FilePointer = fopen(file,"r");
   if (mp3FilePointer) {
+    ID3v2_init(&ID3Tag);
+
     ID3v2_storeTagInStruct(mp3FilePointer,&ID3Tag);
     ID3v2_getTagSizeOfTheStruct(&ID3Tag);
     // ID3v2_removeTagFromFile(mp3FilePointer,&ID3Tag);
-    ID3v2_initID3v2Tag(&ID3Tag);
+    
+    ID3v2_free(&ID3Tag);
     fclose(mp3FilePointer);
     return(0);
   }

@@ -19,7 +19,7 @@ typedef struct {
 
 void ID3v2_init(ID3TagType *);
 
-void ID3v2_initID3v2Tag(ID3TagType *);
+void ID3v2_free(ID3TagType *);
 
 void ID3v2_storeTagInStruct(FILE*, ID3TagType*);
 

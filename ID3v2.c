@@ -2,6 +2,34 @@
 #include "SizeReader.h"
 #include <string.h>
 
+void ID3v2_storeTagInStruct(FILE *mp3FilePointer,ID3TagType *ID3Tag){
+  int paddingReached = 0;
+  uint32_t tagSize;
+  ID3v2_init(ID3Tag);
+
+  HeaderV2_storeHeader(mp3FilePointer,&ID3Tag->header);
+  if(HeaderV2_isID3v2Tag(ID3Tag->header)){
+    if(HeaderV2_getTagVersion(ID3Tag->header) == 3 || HeaderV2_getTagVersion(ID3Tag->header) == 4){
+      HeaderV2_printTagHeader(ID3Tag->header);
+      tagSize = HeaderV2_getTagSize(ID3Tag->header);
+
+      while(paddingReached != 1 && ftell(mp3FilePointer) < tagSize + 10){
+        paddingReached = ID3v2_storeNextFrameInStruct(mp3FilePointer,ID3Tag);
+      }
+      if (paddingReached){
+        ID3Tag->paddingSize = (HeaderV2_getTagSize(ID3Tag->header))+10 - (ftell(mp3FilePointer))+10; //tag size doesn't include header 
+      }
+
+    }
+    else{
+      printf("Not yet supported tag version\n");
+    }
+  }
+  else{
+    printf("Not ID3v2 Tag detected\n");
+  }
+}
+
 void ID3v2_removeTagFromFile(FILE *mp3FilePointer){
   fseek(mp3FilePointer, 0, SEEK_END);
   uint32_t fileSize = ftell(mp3FilePointer);
@@ -31,6 +59,23 @@ void ID3v2_removeTagFromFile(FILE *mp3FilePointer){
   }
   else printf("error, there is no ID3v2 Tag\n");
 }
+
+void ID3v2_free(ID3TagType *tag){
+  ListTXTF_freeList(&tag->textFrameList);
+  ListCOMM_freeList(&tag->COMMFrameList);
+  if(tag->APIC != NULL){
+    FramesV2_freeAPIC(tag->APIC);
+    tag->APIC = NULL;
+  }
+
+}
+
+void ID3v2_init(ID3TagType *tag){
+  ListTXTF_init(&tag->textFrameList);
+  ListCOMM_init(&tag->COMMFrameList);
+  tag->APIC = NULL;
+}
+
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
   printf("\nsize in tag: %d bytes\n",HeaderV2_getTagSize(ID3Tag->header));
   int sizeCalculated = 10; //header
@@ -61,32 +106,6 @@ void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
   printf("size calculated: %d bytes\n",sizeCalculated);
   printf("Tag size removing padding: %ld bytes\n",(HeaderV2_getTagSize(ID3Tag->header)+10)-ID3Tag->paddingSize);
 
-}
-void ID3v2_storeTagInStruct(FILE *mp3FilePointer,ID3TagType *ID3Tag){
-  int paddingReached;
-  uint32_t tagSize;
-  ID3v2_init(ID3Tag);
-
-  HeaderV2_storeHeader(mp3FilePointer,&ID3Tag->header);
-  if(HeaderV2_isID3v2Tag(ID3Tag->header)){
-    if(HeaderV2_getTagVersion(ID3Tag->header) == 3 || HeaderV2_getTagVersion(ID3Tag->header) == 4){
-      HeaderV2_printTagHeader(ID3Tag->header);
-      paddingReached = 0;
-      tagSize = HeaderV2_getTagSize(ID3Tag->header);
-      while(ftell(mp3FilePointer)< tagSize + 10 && paddingReached != 1){
-        paddingReached = ID3v2_storeNextFrameInStruct(mp3FilePointer,ID3Tag);
-      }
-      if (paddingReached){
-        ID3Tag->paddingSize = (HeaderV2_getTagSize(ID3Tag->header))+10 - (ftell(mp3FilePointer))+10; //tag size doesn't include header 
-      }
-    }
-    else{
-      printf("Not yet supported tag version\n");
-    }
-  }
-  else{
-    printf("Not ID3v2 Tag detected\n");
-  }
 }
 
 int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
@@ -123,10 +142,10 @@ int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
   else if(strncmp(header.frameId,"APIC",4)==0){
     uint8_t *buffer = (uint8_t *)malloc(frameSize);
     fread(buffer, frameSize, 1, mp3FilePointer);
-    tag->APIC = FramesV2_getAPICFromBuffer(buffer,frameSize);
+    FramesV2_storeAPIC(buffer,frameSize,&tag->APIC);
+    // tag->APIC = FramesV2_getAPICFromBuffer(buffer,frameSize);
     tag->APIC->header = header;
     free(buffer);
-
   }
   else{
     printf("NOT SUPPORTED TAG %s: %ld\n", header.frameId,ftell(mp3FilePointer));
@@ -137,18 +156,4 @@ int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
     free(buffer);
   }
   return 0;
-}
-
-void ID3v2_initID3v2Tag(ID3TagType *tag){
-  ListTXTF_freeList(&tag->textFrameList);
-  if(tag->APIC != NULL){
-    FramesV2_freeAPIC(tag->APIC);
-    tag->APIC = NULL;
-  }
-
-}
-
-void ID3v2_init(ID3TagType *tag){
-  ListTXTF_init(&tag->textFrameList);
-  tag->APIC = NULL;
 }

@@ -2,32 +2,29 @@
 #include "SizeReader.h"
 #include <string.h>
 
-ID3v2APICFrame* FramesV2_getAPICFromBuffer(uint8_t *frameContent, uint32_t frameSize){
-  ID3v2APICFrame *apic = (ID3v2APICFrame *)malloc(sizeof(ID3v2APICFrame));
+void FramesV2_storeAPIC(uint8_t *frameContent, uint32_t frameSize,ID3v2APICFrame** apic){
+  *apic = (ID3v2APICFrame *)malloc(sizeof(ID3v2APICFrame));
   
   size_t index = 0;
-  apic->textEncoding = frameContent[index++];
+  (*apic)->textEncoding = frameContent[index++];
 
   char *mimeType = (char*) frameContent + index;
   size_t mimeTypeLen = strlen(mimeType);
-  apic->mimeType = (char *)malloc(mimeTypeLen + 1); 
-  strcpy(apic->mimeType,mimeType);
+  (*apic)->mimeType = (char *)malloc(mimeTypeLen + 1); 
+  strcpy((*apic)->mimeType,mimeType);
   index+=mimeTypeLen + 1; //+1 to skip \0;
   
-  apic->pictureType = frameContent[index++];
+  (*apic)->pictureType = frameContent[index++];
 
   char *description = (char*) frameContent + index;
   size_t descriptionLen = strlen(description);
-  apic->description = (char *)malloc(descriptionLen + 1); 
-  strcpy(apic->description,description);
+  (*apic)->description = (char *)malloc(descriptionLen + 1); 
+  strcpy((*apic)->description,description);
   index += descriptionLen + 1; //+1 to skip \0;
 
-  apic->imageDataSize = frameSize - index;
-  apic->imageData = (uint8_t *)malloc(apic->imageDataSize);
-  memcpy(apic->imageData, frameContent + index, apic->imageDataSize);
-
-  return apic;
-  
+  (*apic)->imageDataSize = frameSize - index;
+  (*apic)->imageData = (uint8_t *)malloc((*apic)->imageDataSize);
+  memcpy((*apic)->imageData, frameContent + index, (*apic)->imageDataSize);
 }
 
 void FramesV2_storeHeader(FILE *mp3FilePointer, ID3v2FrameHeaderType *header){
@@ -109,53 +106,6 @@ void FramesV2_getTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TextFrameTy
     // return frame;
 
   
-}
-void FramesV2_OLD_getTextFrame(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TextFrameType *frame,int version){
-  if(version == 4){
-    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
-    fread(frameContent, frameSize, 1, mp3FilePointer);
-
-    int index = 0;
-    frame->textEncoding = frameContent[index++];
-    char *contentPtr = (char *)frameContent + index;
-    size_t contentLen = strlen(contentPtr);
-    if(frameSize - 1 - (contentLen+1) != 0){ // we have to substract 1 byte from textEncoding and 1 from \0 byte
-      printf("Error on size frame\n");
-      printf("Frame size: %d; Content Len: %ld\n",frameSize,contentLen);
-    }
-    frame->content = (char *)malloc(contentLen+1);
-    strcpy(frame->content,contentPtr);
-    // printf("Num of chars: %ld\n",strlen(contentPtr));
-    free(frameContent);
-  }
-  else if(version == 3){
-    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
-    fread(frameContent, frameSize, 1, mp3FilePointer);
-  
-    frame->textEncoding = frameContent[0];
-    char *contentPtr = (char *)frameContent + 1;
-    frame->content = (char *)malloc(frameSize); //we will use the textEncoding byte to store the \0 of the string
-    strncpy(frame->content,contentPtr,frameSize-1);
-    frame->content[frameSize-1] = '\0';
-    // printf("Frame size: %d; Content Len: %ld\n",frameSize,strlen((*frame)->content));
-    free(frameContent);
-    // return frame;
-  }
-  
-}
-
-void FramesV2_storeTXTF_V2_3(FILE *mp3FilePointer, ID3v2FrameHeaderType header, uint32_t frameSize,ID3v2TextFrameType **frame){
-  *frame =  (ID3v2TextFrameType *) malloc(sizeof(ID3v2TextFrameType));
-  (*frame)->header = header;
-  uint8_t *frameContent = (uint8_t *)malloc(frameSize);
-  fread(frameContent, frameSize, 1, mp3FilePointer);
-  (*frame)->textEncoding = frameContent[0];
-  char *contentPtr = (char *)frameContent + 1;
-  (*frame)->content = (char *)malloc(frameSize); //we will use the textEncoding byte to store the \0 of the string
-  strncpy((*frame)->content,contentPtr,frameSize-1);
-  (*frame)->content[frameSize-1] = '\0';
-  // printf("Frame size: %d; Content Len: %ld\n",frameSize,strlen((*frame)->content));
-  free(frameContent);
 }
 
 void FramesV2_printAPIC(ID3v2APICFrame frame){
