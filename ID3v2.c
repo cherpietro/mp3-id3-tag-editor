@@ -122,7 +122,7 @@ int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
     ID3v2TextFrameType *frame;
     frame =  (ID3v2TextFrameType *) malloc(sizeof(ID3v2TextFrameType));
     frame->header = header;
-    FramesV2_getTXTF(mp3FilePointer,frameSize, frame);
+    FramesV2_storeTXTF(mp3FilePointer,frameSize, frame);
     
     ListTXTF_insertLast(&tag->textFrameList,*frame);
     free(frame->content);
@@ -148,7 +148,7 @@ int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
     free(buffer);
   }
   else{
-    printf("NOT SUPPORTED TAG %s: %ld\n", header.frameId,ftell(mp3FilePointer));
+    // printf("NOT SUPPORTED TAG %s: %ld\n", header.frameId,ftell(mp3FilePointer));
     // printf("FRAMEID: %s\n", header.frameId);
     // printf("Size: %d\n", frameSize);
     uint8_t *buffer = (uint8_t *)malloc(frameSize);

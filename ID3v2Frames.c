@@ -43,25 +43,6 @@ uint32_t FramesV2_getSize_V2_3(ID3v2FrameHeaderType header){
   return sizeFromID3v23(header.size);
 }
 
-void FramesV2_storeTXTF(FILE *mp3FilePointer, ID3v2FrameHeaderType header, uint32_t frameSize,ID3v2TextFrameType **frame){
-  *frame =  (ID3v2TextFrameType *) malloc(sizeof(ID3v2TextFrameType));
-  (*frame)->header = header;
-  uint8_t *frameContent = (uint8_t *)malloc(frameSize);
-  fread(frameContent, frameSize, 1, mp3FilePointer);
-
-  int index = 0;
-  (*frame)->textEncoding = frameContent[index++];
-  char *contentPtr = (char *)frameContent + index;
-  size_t contentLen = strlen(contentPtr);
-  if(frameSize - 1 - (contentLen+1) != 0){ // we have to substract 1 byte from textEncoding and 1 from \0 byte
-    printf("Error on size frame\n");
-    printf("Frame size: %d; Content Len: %ld\n",frameSize,contentLen);
-  }
-  (*frame)->content = (char *)malloc(contentLen+1);
-  strcpy((*frame)->content,contentPtr);
-  // printf("Num of chars: %ld\n",strlen(contentPtr));
-  free(frameContent);
-}
 void FramesV2_getCOMM(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameType *frame){
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
   fread(frameContent, frameSize, 1, mp3FilePointer);
@@ -90,24 +71,18 @@ void FramesV2_getCOMM(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameTy
   free(frameContent);
   // return frame;
 }
-void FramesV2_getTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TextFrameType *frame){
-    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
-    fread(frameContent, frameSize, 1, mp3FilePointer);
-  
-    frame->textEncoding = frameContent[0];
-    char *contentPtr = (char *)frameContent + 1;
-    frame->content = (char *)malloc(frameSize); //we will use the textEncoding byte to store the \0 of the string
-    strncpy(frame->content,contentPtr,frameSize-1);
-    if(frame->content[frameSize-1] != '\0') {
-      frame->content[frameSize-1] = '\0';
-    }
-    // printf("Frame size: %d; Content Len: %ld\n",frameSize,strlen((*frame)->content));
-    free(frameContent);
-    // return frame;
 
-  
+void FramesV2_storeTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TextFrameType *frame){
+  uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+  fread(frameContent, frameSize, 1, mp3FilePointer);
+
+  frame->textEncoding = frameContent[0];
+  char *contentPtr = (char *)frameContent + 1;
+  frame->content = (char *)malloc(frameSize-1);
+  strncpy(frame->content,contentPtr,frameSize-1);
+
+  free(frameContent);
 }
-
 void FramesV2_printAPIC(ID3v2APICFrame frame){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",frame.header.frameId);

@@ -41,8 +41,7 @@ void FramesV2_freeAPIC(ID3v2APICFrame*);
 void FramesV2_printAPIC(ID3v2APICFrame);
 void FramesV2_storeAPIC(uint8_t*, uint32_t, ID3v2APICFrame**);
 
-void FramesV2_getTXTF(FILE*, uint32_t,ID3v2TextFrameType *);
-void FramesV2_storeTXTF(FILE*, ID3v2FrameHeaderType, uint32_t, ID3v2TextFrameType**);
+void FramesV2_storeTXTF(FILE*, uint32_t,ID3v2TextFrameType *);
 void FramesV2_printTXTF(ID3v2TextFrameType);
 
 void FramesV2_getCOMM(FILE *, uint32_t , ID3v2COMMFrameType *);
