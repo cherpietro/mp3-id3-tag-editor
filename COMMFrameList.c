@@ -1,21 +1,28 @@
-#include "TextFrameList.h"
+#include "COMMFrameList.h"
 #include <string.h>
 #include <stdlib.h>
 
-void ListTXTF_init(TextFrameList *list) {
+void ListCOMM_init(COMMFrameList *list) {
     list->first = NULL;
     list->last = NULL;
     list->active = NULL;
 }
 
-void ListTXTF_insertLast(TextFrameList *list, ID3v2TextFrameType frame) {
-    TextFrameListElement *newElemPtr = (TextFrameListElement *)malloc(sizeof(TextFrameListElement));
+void ListCOMM_insertLast(COMMFrameList *list, ID3v2COMMFrameType frame) {
+    COMMFrameListElement *newElemPtr = (COMMFrameListElement *)malloc(sizeof(COMMFrameListElement));
     if (!newElemPtr) return;
 
     newElemPtr->frame = frame;
-    newElemPtr->frame.content = frame.content ? strdup(frame.content) : NULL;
+    newElemPtr->frame.actualText = frame.actualText ? strdup(frame.actualText) : NULL;
 
-    if (frame.content && !newElemPtr->frame.content) {
+    if (frame.actualText && !newElemPtr->frame.actualText) {
+        free(newElemPtr);
+        return;
+    }
+
+    newElemPtr->frame.contentDescript = frame.contentDescript ? strdup(frame.contentDescript) : NULL;
+
+    if (frame.contentDescript && !newElemPtr->frame.contentDescript) {
         free(newElemPtr);
         return;
     }
@@ -33,19 +40,19 @@ void ListTXTF_insertLast(TextFrameList *list, ID3v2TextFrameType frame) {
     list->last = newElemPtr;
 }
 
-void ListTXTF_setFirstActive(TextFrameList *list) {
+void ListCOMM_setFirstActive(COMMFrameList *list) {
     list->active = list->first;
 }
 
-void ListTXTF_setNextActive(TextFrameList *list) {
+void ListCOMM_setNextActive(COMMFrameList *list) {
     if (list->active != NULL)
         list->active = list->active->next;
 }
 
-void ListTXTF_deleteActive(TextFrameList *list) {
+void ListCOMM_deleteActive(COMMFrameList *list) {
     if (list->active == NULL) return;
 
-    TextFrameListElement *toDelete = list->active;
+    COMMFrameListElement *toDelete = list->active;
 
     if (toDelete == list->first && toDelete == list->last) {
         // Único elemento
@@ -66,22 +73,23 @@ void ListTXTF_deleteActive(TextFrameList *list) {
         list->active = toDelete->next;
     }
 
-    free(toDelete->frame.content);
+    free(toDelete->frame.contentDescript);
+    free(toDelete->frame.actualText);
     free(toDelete);
 }
 
-bool ListTXTF_isEmpty(TextFrameList list) {
+bool ListCOMM_isEmpty(COMMFrameList list) {
     return (list.first == NULL && list.last == NULL);
 }
 
-void ListTXTF_freeList(TextFrameList *list) {
-    ListTXTF_setFirstActive(list);
-    while (!ListTXTF_isEmpty(*list)) {
-        ListTXTF_deleteActive(list);
+void ListCOMM_freeList(COMMFrameList *list) {
+    ListCOMM_setFirstActive(list);
+    while (!ListCOMM_isEmpty(*list)) {
+        ListCOMM_deleteActive(list);
     }
 }
 
-ID3v2TextFrameType ListTXTF_getActive(TextFrameList list){
+ID3v2COMMFrameType ListCOMM_getActive(COMMFrameList list){
   return list.active->frame;
 }
 
