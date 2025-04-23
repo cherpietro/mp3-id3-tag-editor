@@ -3,10 +3,6 @@
 #include <string.h>
 #include "ID3v2.h"
 
-
-void printTextFrame(ID3v2TextFrameType);
-void printAPICFrame(ID3v2APICFrame frame);
-
 int main(){
   FILE *mp3FilePointer;
   ID3TagType ID3Tag; 
