@@ -29,10 +29,6 @@ void FramesV2_storeAPIC(uint8_t *frameContent, uint32_t frameSize,ID3v2APICFrame
 
 void FramesV2_storeHeader(FILE *mp3FilePointer, ID3v2FrameHeaderType *header){
   fread(header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer);
-  // if (fread(header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer) == 1 ) {
-  //   return 1;
-  // }
-  // return -1;
 }
 
 uint32_t FramesV2_getSize_V2_4(ID3v2FrameHeaderType header){
