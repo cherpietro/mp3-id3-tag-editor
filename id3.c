@@ -9,7 +9,7 @@ int main(){
   // char *file = "./files/EliteFour.mp3"; //there are frames that aren't readed yet
   // char *file = "./files/jokin1.mp3"; //there are frames that aren't readed yet
   // char *file = "./auxRemove.mp3";
-  // char *file = "./files/TimberHearth.mp3";
+  char *file = "./files/TimberHearth.mp3";
   // char *file = "./files/theme.mp3";
   // char *file = "./files/overture.mp3";
   // char *file = "./files/gameFreak.mp3";
