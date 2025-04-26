@@ -23,8 +23,8 @@ int main(){
     ID3v2_getTagSizeOfTheStruct(&ID3Tag);
     ID3v2_removeTagFromFile(mp3FilePointer);
     FILE * fileToWritePtr = fopen(fileToWrite,"r");
-    ID3v2_writteTagIntoFile(fileToWritePtr,&ID3Tag);
-    // TIMBERHEARTH_ID3v2_writteTagIntoFile(fileToWritePtr,&ID3Tag);
+    // ID3v2_writteTagIntoFile(fileToWritePtr,&ID3Tag);
+    TIMBERHEARTH_ID3v2_writteTagIntoFile(fileToWritePtr,&ID3Tag);
     ID3v2_free(&ID3Tag);
     fclose(mp3FilePointer);
     // fclose(fileToWritePtr);

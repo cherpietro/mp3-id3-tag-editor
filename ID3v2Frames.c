@@ -74,9 +74,9 @@ void FramesV2_storeTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TextFrame
 
   frame->textEncoding = frameContent[0];
   char *contentPtr = (char *)frameContent + 1;
-  frame->content = (char *)malloc(frameSize-1);
-  strncpy(frame->content,contentPtr,frameSize-1);
-
+  TxtStr_storeTextString(&frame->content,contentPtr, frameSize-1);
+  // frame->content = (char *)malloc(frameSize-1);
+  // strncpy(frame->content,contentPtr,frameSize-1);
   free(frameContent);
 }
 void FramesV2_printAPIC(ID3v2APICFrame frame){
@@ -101,7 +101,7 @@ void FramesV2_printTXTF(ID3v2TextFrameType frame){
   printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
   // printf("Size: %u bytes\n",syncsafeToSize(frame.header.size));
   printf("TextEncoding: %d\n",frame.textEncoding);
-  printf("Content: %s\n",frame.content);
+  printf("Content: %s\n",frame.content.string);
 }
 
 //Init APIC Frame?
