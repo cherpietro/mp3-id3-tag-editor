@@ -1,19 +1,11 @@
 #include "TextString.h"
 #include "string.h"
-void TxtStr_storeTextString(TextStringType *txtStr, char *str, bool hasEndOfString){
-  int lenOfStrin = strlen(str);
-  if(hasEndOfString){
-    txtStr->string = (char*) malloc(lenOfStrin+1);
-    strncpy(txtStr->string,txtStr,lenOfStrin);
-    txtStr->string[lenOfStrin] = '\0';
-    txtStr->size = lenOfStrin + 1;
-  }
-  else{
-    txtStr->string = (char*) malloc(lenOfStrin);
-    strncpy(txtStr->string,txtStr,lenOfStrin);
-    txtStr->size = lenOfStrin;
-  }
-  txtStr->hasEndOfString = hasEndOfString;
+void TxtStr_storeTextString(TextStringType *txtStr, char *str, int sizeToSave){
+
+    txtStr->string =  (char *)malloc(sizeToSave);;
+    strncpy(txtStr->string,txtStr,sizeToSave);
+    txtStr->size = sizeToSave;
+    txtStr->hasEndOfString = txtStr->string[txtStr->size-1] == '\0';
 }
 
 int TxtStr_getStringLen(TextStringType txtStr){

@@ -9,7 +9,7 @@ typedef struct {
 } TextStringType;
 
 
-void TxtStr_storeTextString(TextStringType *, char *, bool);
+void TxtStr_storeTextString(TextStringType *, char *, int);
 
 int TxtStr_getStringLen(TextStringType);
 
