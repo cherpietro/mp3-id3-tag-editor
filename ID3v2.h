@@ -30,4 +30,6 @@ void ID3v2_writteTagIntoFile(FILE *, ID3TagType *);
 int ID3v2_storeNextFrameInStruct(FILE*, ID3TagType*);
 
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *);
+
+void TIMBERHEARTH_ID3v2_writteTagIntoFile(FILE *, ID3TagType *);
 #endif // ID3V2_H
