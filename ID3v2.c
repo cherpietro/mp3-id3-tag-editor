@@ -59,7 +59,7 @@ void TIMBERHEARTH_ID3v2_writteTagIntoFile(FILE *mp3FilePointer, ID3TagType *ID3T
   TXTFrame = ListTXTF_getActive(ID3Tag->textFrameList);
   fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
   fwrite(&TXTFrame.textEncoding,1, 1,temp);
-  fwrite(TXTFrame.content.string,1, (size_t)TXTFrame.content.size,temp);
+  fwrite(TXTFrame.content.string,1, TXTFrame.content.size,temp);
   ListTXTF_setNextActive(&ID3Tag->textFrameList);
   /**/
 
@@ -71,8 +71,8 @@ void TIMBERHEARTH_ID3v2_writteTagIntoFile(FILE *mp3FilePointer, ID3TagType *ID3T
     fwrite(&COMMFrame.header,1, sizeof(COMMFrame.header),temp);
     fwrite(&COMMFrame.textEncoding,1, 1,temp);
     fwrite(&COMMFrame.language,1, 3,temp);
-    fwrite(COMMFrame.contentDescript,1, (size_t)(strlen(COMMFrame.contentDescript)+1),temp);
-    fwrite(COMMFrame.actualText,1, (size_t)(strlen(COMMFrame.actualText)),temp);
+    fwrite(COMMFrame.contentDescript.string,1, TxtStr_getStringLen(COMMFrame.contentDescript),temp);
+    fwrite(COMMFrame.actualText.string,1, TxtStr_getStringLen(COMMFrame.actualText),temp);
     ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
   }
 
@@ -82,8 +82,7 @@ void TIMBERHEARTH_ID3v2_writteTagIntoFile(FILE *mp3FilePointer, ID3TagType *ID3T
     TXTFrame = ListTXTF_getActive(ID3Tag->textFrameList);
     fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
     fwrite(&TXTFrame.textEncoding,1, 1,temp);
-    // fwrite(TXTFrame.content,1, (size_t)(strlen(TXTFrame.content)+1),temp);
-    fwrite(TXTFrame.content.string,1, (size_t)TXTFrame.content.size,temp);
+    fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),temp);
     ListTXTF_setNextActive(&ID3Tag->textFrameList);
   }
   // char *padding = '\0';
@@ -99,62 +98,62 @@ void TIMBERHEARTH_ID3v2_writteTagIntoFile(FILE *mp3FilePointer, ID3TagType *ID3T
 
 }
 
-// void ID3v2_writteTagIntoFile(FILE *mp3FilePointer, ID3TagType *ID3Tag){
-//   //check the file has no tag
-//   fseek(mp3FilePointer,0,SEEK_END);
-//   uint32_t fileSize = ftell(mp3FilePointer);
-//   fseek(mp3FilePointer,0,SEEK_SET);
-//   unsigned char *dataBuffer = (unsigned char *)malloc(fileSize);
-//   if(!dataBuffer){
-//     printf("error");
-//     fclose(mp3FilePointer);
-//     return;
-//   }
+void ID3v2_writteTagIntoFile(FILE *mp3FilePointer, ID3TagType *ID3Tag){
+  //check the file has no tag
+  fseek(mp3FilePointer,0,SEEK_END);
+  uint32_t fileSize = ftell(mp3FilePointer);
+  fseek(mp3FilePointer,0,SEEK_SET);
+  unsigned char *dataBuffer = (unsigned char *)malloc(fileSize);
+  if(!dataBuffer){
+    printf("error");
+    fclose(mp3FilePointer);
+    return;
+  }
   
-//   fread(dataBuffer,1,fileSize,mp3FilePointer);
-//   FILE *temp = fopen("temp.mp3","w");
-//   if(!temp){
-//     printf("error");
-//     fclose(temp);
-//     return;
-//   }
-//   // header
-//   fwrite(&ID3Tag->header,1,sizeof(ID3Tag->header),temp);
+  fread(dataBuffer,1,fileSize,mp3FilePointer);
+  FILE *temp = fopen("temp.mp3","w");
+  if(!temp){
+    printf("error");
+    fclose(temp);
+    return;
+  }
+  // header
+  fwrite(&ID3Tag->header,1,sizeof(ID3Tag->header),temp);
 
-//   //COMMFrames
-//   ID3v2COMMFrameType COMMFrame;
-//   ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
-//   while(ID3Tag->COMMFrameList.active != NULL){
-//     COMMFrame = ListCOMM_getActive(ID3Tag->COMMFrameList);
-//     fwrite(&COMMFrame.header,1, sizeof(COMMFrame.header),temp);
-//     fwrite(&COMMFrame.textEncoding,1, 1,temp);
-//     fwrite(&COMMFrame.language,1, 3,temp);
-//     fwrite(COMMFrame.contentDescript,1, (size_t)(strlen(COMMFrame.contentDescript)+1),temp);
-//     fwrite(COMMFrame.actualText,1, (size_t)(strlen(COMMFrame.actualText)),temp);
-//     ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
-//   }
+  //COMMFrames
+  ID3v2COMMFrameType COMMFrame;
+  ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
+  while(ID3Tag->COMMFrameList.active != NULL){
+    COMMFrame = ListCOMM_getActive(ID3Tag->COMMFrameList);
+    fwrite(&COMMFrame.header,1, sizeof(COMMFrame.header),temp);
+    fwrite(&COMMFrame.textEncoding,1, 1,temp);
+    fwrite(&COMMFrame.language,1, 3,temp);
+    fwrite(COMMFrame.contentDescript.string,1, TxtStr_getStringLen(COMMFrame.contentDescript),temp);
+    fwrite(COMMFrame.actualText.string,1, TxtStr_getStringLen(COMMFrame.actualText),temp);
+    ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
+  }
 
-//   //TXTFrames
-//   ID3v2TextFrameType TXTFrame;
-//   ListTXTF_setFirstActive(&ID3Tag->textFrameList);
-//   while(ID3Tag->textFrameList.active != NULL){
-//     TXTFrame = ListTXTF_getActive(ID3Tag->textFrameList);
-//     fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
-//     fwrite(&TXTFrame.textEncoding,1, 1,temp);
-//     fwrite(TXTFrame.content,1, (size_t)(strlen(TXTFrame.content)),temp);
-//     ListTXTF_setNextActive(&ID3Tag->textFrameList);
-//   }
+  //TXTFrames
+  ID3v2TextFrameType TXTFrame;
+  ListTXTF_setFirstActive(&ID3Tag->textFrameList);
+  while(ID3Tag->textFrameList.active != NULL){
+    TXTFrame = ListTXTF_getActive(ID3Tag->textFrameList);
+    fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
+    fwrite(&TXTFrame.textEncoding,1, 1,temp);
+    fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),temp);
+    ListTXTF_setNextActive(&ID3Tag->textFrameList);
+  }
   
-//   //Padding
-//   char zero = 0;
-//   for (int i = 0; i <= (int) ID3Tag->paddingSize; i++) {
-//       fwrite(&zero, 1, 1, temp);
-//   }
+  //Padding
+  char zero = 0;
+  for (int i = 0; i < (int) ID3Tag->paddingSize; i++) {
+      fwrite(&zero, 1, 1, temp);
+  }
 
-//   // content
-//   fwrite(dataBuffer,1,fileSize,temp);
-//   fclose(temp);
-// }
+  // content
+  fwrite(dataBuffer,1,fileSize,temp);
+  fclose(temp);
+}
 
 void ID3v2_removeTagFromFile(FILE *mp3FilePointer){
   fseek(mp3FilePointer, 0, SEEK_SET);
@@ -275,8 +274,10 @@ int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
     FramesV2_getCOMM(mp3FilePointer,frameSize, frame);
     
     ListCOMM_insertLast(&tag->COMMFrameList,*frame);
-    free(frame->actualText);
-    free(frame->contentDescript);
+    // free(frame->actualText);
+    // free(frame->contentDescript);
+    TxtStr_freeTextString(&frame->actualText);
+    TxtStr_freeTextString(&frame->contentDescript);
     free(frame);
   }
   else if(strncmp(header.frameId,"APIC",4)==0){

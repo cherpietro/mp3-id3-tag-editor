@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-void TxtStr_storeTextString(TextStringType *txtStr, char *str, int sizeToSave){
+void TxtStr_storeTextString(TextStringType *txtStr, char *str, size_t sizeToSave){
 
     txtStr->string =  (char *)malloc(sizeToSave);;
     strncpy(txtStr->string,str,sizeToSave);
@@ -10,7 +10,7 @@ void TxtStr_storeTextString(TextStringType *txtStr, char *str, int sizeToSave){
     txtStr->hasEndOfString = txtStr->string[txtStr->size-1] == '\0';
 }
 
-int TxtStr_getStringLen(TextStringType txtStr){
+size_t TxtStr_getStringLen(TextStringType txtStr){
   return txtStr.size;
 }
 

@@ -51,21 +51,14 @@ void FramesV2_getCOMM(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameTy
   index+=3;
 
   char *descPtr = (char *)frameContent + index;
-  size_t descSize = strlen(descPtr);
-  frame->contentDescript = (char *)malloc(descSize+1); //we will use the textEncoding byte to store the \0 of the string
-  strcpy(frame->contentDescript,descPtr);
-  frame->contentDescript[descSize] = '\0';
-  index += descSize+1;
+  size_t descSize = strlen(descPtr)+1; //description ALWAYS has to have \0
+  TxtStr_storeTextString(&frame->contentDescript,descPtr, descSize);
+  index += descSize;
 
-  char *contentPtr = (char *)frameContent + index;
-  size_t contentSize = ftell(mp3FilePointer) - index;
-  frame->actualText = (char *)malloc(contentSize); //we will use the textEncoding byte to store the \0 of the string
-  strcpy(frame->actualText,contentPtr);
-  // frame->actualText[contentSize] = '\0';
-
-  // printf("Frame size: %d; Content Len: %ld\n",frameSize,strlen((*frame)->content));
+  char *contentPtr = (char *)frameContent + index ; 
+  size_t contentSize = frameSize - index ; //Check this operation
+  TxtStr_storeTextString(&frame->actualText,contentPtr, contentSize);
   free(frameContent);
-  // return frame;
 }
 
 void FramesV2_storeTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TextFrameType *frame){
@@ -75,8 +68,6 @@ void FramesV2_storeTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TextFrame
   frame->textEncoding = frameContent[0];
   char *contentPtr = (char *)frameContent + 1;
   TxtStr_storeTextString(&frame->content,contentPtr, frameSize-1);
-  // frame->content = (char *)malloc(frameSize-1);
-  // strncpy(frame->content,contentPtr,frameSize-1);
   free(frameContent);
 }
 void FramesV2_printAPIC(ID3v2APICFrame frame){
