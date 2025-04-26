@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "TextString.h"
 
 typedef struct {
   char frameId[4];
@@ -24,15 +25,16 @@ typedef struct {
 typedef struct {
   ID3v2FrameHeaderType header;
   uint8_t textEncoding;
-  char *content;
+  // char *content;
+  TextStringType content;
 } ID3v2TextFrameType;
 
 typedef struct {
   ID3v2FrameHeaderType header;
   uint8_t textEncoding;
   char language[3];
-  char *contentDescript;
-  char *actualText;
+  TextStringType contentDescript;
+  TextStringType actualText;
 } ID3v2COMMFrameType;
 
 void FramesV2_storeHeader(FILE*, ID3v2FrameHeaderType*);

@@ -8,21 +8,48 @@ void ListCOMM_init(COMMFrameList *list) {
     list->active = NULL;
 }
 
+// Función auxiliar para copiar un TextStringType
+static TextStringType copyTextString(const TextStringType *src) {
+    TextStringType dest;
+    dest.hasEndOfString = src->hasEndOfString;
+    dest.size = src->size;
+    if (src->string && src->size > 0) {
+        dest.string = (char *)malloc(src->size);
+        if (dest.string) {
+            memcpy(dest.string, src->string, src->size);
+        }
+    } else {
+        dest.string = NULL;
+    }
+    return dest;
+}
+
+// Función auxiliar para liberar un TextStringType
+static void freeTextString(TextStringType *txt) {
+    if (txt->string) {
+        free(txt->string);
+        txt->string = NULL;
+    }
+    txt->size = 0;
+    txt->hasEndOfString = false;
+}
+
 void ListCOMM_insertLast(COMMFrameList *list, ID3v2COMMFrameType frame) {
     COMMFrameListElement *newElemPtr = (COMMFrameListElement *)malloc(sizeof(COMMFrameListElement));
     if (!newElemPtr) return;
 
     newElemPtr->frame = frame;
-    newElemPtr->frame.actualText = frame.actualText ? strdup(frame.actualText) : NULL;
+    newElemPtr->frame.actualText = copyTextString(&frame.actualText);
 
-    if (frame.actualText && !newElemPtr->frame.actualText) {
+    if (frame.actualText.string && !newElemPtr->frame.actualText.string) {
         free(newElemPtr);
         return;
     }
 
-    newElemPtr->frame.contentDescript = frame.contentDescript ? strdup(frame.contentDescript) : NULL;
+    newElemPtr->frame.contentDescript = copyTextString(&frame.contentDescript);
 
-    if (frame.contentDescript && !newElemPtr->frame.contentDescript) {
+    if (frame.contentDescript.string && !newElemPtr->frame.contentDescript.string) {
+        freeTextString(&newElemPtr->frame.actualText);
         free(newElemPtr);
         return;
     }
@@ -73,8 +100,8 @@ void ListCOMM_deleteActive(COMMFrameList *list) {
         list->active = toDelete->next;
     }
 
-    free(toDelete->frame.contentDescript);
-    free(toDelete->frame.actualText);
+    freeTextString(&toDelete->frame.contentDescript);
+    freeTextString(&toDelete->frame.actualText);
     free(toDelete);
 }
 
@@ -89,7 +116,6 @@ void ListCOMM_freeList(COMMFrameList *list) {
     }
 }
 
-ID3v2COMMFrameType ListCOMM_getActive(COMMFrameList list){
-  return list.active->frame;
+ID3v2COMMFrameType ListCOMM_getActive(COMMFrameList list) {
+    return list.active->frame;
 }
-
