@@ -12,7 +12,6 @@ void ID3v2_storeTagInStruct(FILE *mp3FilePointer,ID3TagType *ID3Tag){
     if(HeaderV2_getTagVersion(ID3Tag->header) == 3 || HeaderV2_getTagVersion(ID3Tag->header) == 4){
       HeaderV2_printTagHeader(ID3Tag->header);
       tagSize = HeaderV2_getTagSize(ID3Tag->header);
-
       while(paddingReached != 1 && ftell(mp3FilePointer) < tagSize + 10){
         paddingReached = ID3v2_storeNextFrameInStruct(mp3FilePointer,ID3Tag);
       }
@@ -30,15 +29,142 @@ void ID3v2_storeTagInStruct(FILE *mp3FilePointer,ID3TagType *ID3Tag){
   }
 }
 
+
+void TIMBERHEARTH_ID3v2_writteTagIntoFile(FILE *mp3FilePointer, ID3TagType *ID3Tag){
+  //check the file has no tag
+  fseek(mp3FilePointer,0,SEEK_END);
+  uint32_t fileSize = ftell(mp3FilePointer);
+  fseek(mp3FilePointer,0,SEEK_SET);
+  unsigned char *dataBuffer = (unsigned char *)malloc(fileSize);
+  if(!dataBuffer){
+    printf("error");
+    fclose(mp3FilePointer);
+    return;
+  }
+  
+  fread(dataBuffer,1,fileSize,mp3FilePointer);
+  FILE *temp = fopen("temp.mp3","w");
+  if(!temp){
+    printf("error");
+    fclose(temp);
+    return;
+  }
+  // header
+  fwrite(&ID3Tag->header,1,sizeof(ID3Tag->header),temp);
+  
+
+  /*AUX*/
+  ID3v2TextFrameType TXTFrame;
+  ListTXTF_setFirstActive(&ID3Tag->textFrameList);
+  TXTFrame = ListTXTF_getActive(ID3Tag->textFrameList);
+  fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
+  fwrite(&TXTFrame.textEncoding,1, 1,temp);
+  fwrite(TXTFrame.content,1, (size_t)(strlen(TXTFrame.content)),temp);
+  ListTXTF_setNextActive(&ID3Tag->textFrameList);
+  /**/
+
+  //COMMFrames
+  ID3v2COMMFrameType COMMFrame;
+  ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
+  while(ID3Tag->COMMFrameList.active != NULL){
+    COMMFrame = ListCOMM_getActive(ID3Tag->COMMFrameList);
+    fwrite(&COMMFrame.header,1, sizeof(COMMFrame.header),temp);
+    fwrite(&COMMFrame.textEncoding,1, 1,temp);
+    fwrite(&COMMFrame.language,1, 3,temp);
+    fwrite(COMMFrame.contentDescript,1, (size_t)(strlen(COMMFrame.contentDescript)+1),temp);
+    fwrite(COMMFrame.actualText,1, (size_t)(strlen(COMMFrame.actualText)),temp);
+    ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
+  }
+
+  // ID3v2TextFrameType TXTFrame;
+  // ListTXTF_setFirstActive(&ID3Tag->textFrameList);
+  while(ID3Tag->textFrameList.active != NULL){
+    TXTFrame = ListTXTF_getActive(ID3Tag->textFrameList);
+    fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
+    fwrite(&TXTFrame.textEncoding,1, 1,temp);
+    // fwrite(TXTFrame.content,1, (size_t)(strlen(TXTFrame.content)+1),temp);
+    fwrite(TXTFrame.content,1, (size_t)(strlen(TXTFrame.content)),temp);
+    ListTXTF_setNextActive(&ID3Tag->textFrameList);
+  }
+  // char *padding = '\0';
+  char zero = 0;
+  for (int i = 0; i <= (int) ID3Tag->paddingSize; i++) {
+      fwrite(&zero, 1, 1, temp);
+  }
+  // fwrite(padding,ID3Tag->paddingSize, 1,temp);
+
+  // content
+  fwrite(dataBuffer,1,fileSize,temp);
+  fclose(temp);
+
+}
+
+void ID3v2_writteTagIntoFile(FILE *mp3FilePointer, ID3TagType *ID3Tag){
+  //check the file has no tag
+  fseek(mp3FilePointer,0,SEEK_END);
+  uint32_t fileSize = ftell(mp3FilePointer);
+  fseek(mp3FilePointer,0,SEEK_SET);
+  unsigned char *dataBuffer = (unsigned char *)malloc(fileSize);
+  if(!dataBuffer){
+    printf("error");
+    fclose(mp3FilePointer);
+    return;
+  }
+  
+  fread(dataBuffer,1,fileSize,mp3FilePointer);
+  FILE *temp = fopen("temp.mp3","w");
+  if(!temp){
+    printf("error");
+    fclose(temp);
+    return;
+  }
+  // header
+  fwrite(&ID3Tag->header,1,sizeof(ID3Tag->header),temp);
+
+  //COMMFrames
+  ID3v2COMMFrameType COMMFrame;
+  ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
+  while(ID3Tag->COMMFrameList.active != NULL){
+    COMMFrame = ListCOMM_getActive(ID3Tag->COMMFrameList);
+    fwrite(&COMMFrame.header,1, sizeof(COMMFrame.header),temp);
+    fwrite(&COMMFrame.textEncoding,1, 1,temp);
+    fwrite(&COMMFrame.language,1, 3,temp);
+    fwrite(COMMFrame.contentDescript,1, (size_t)(strlen(COMMFrame.contentDescript)+1),temp);
+    fwrite(COMMFrame.actualText,1, (size_t)(strlen(COMMFrame.actualText)),temp);
+    ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
+  }
+
+  //TXTFrames
+  ID3v2TextFrameType TXTFrame;
+  ListTXTF_setFirstActive(&ID3Tag->textFrameList);
+  while(ID3Tag->textFrameList.active != NULL){
+    TXTFrame = ListTXTF_getActive(ID3Tag->textFrameList);
+    fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
+    fwrite(&TXTFrame.textEncoding,1, 1,temp);
+    fwrite(TXTFrame.content,1, (size_t)(strlen(TXTFrame.content)),temp);
+    ListTXTF_setNextActive(&ID3Tag->textFrameList);
+  }
+  
+  //Padding
+  char zero = 0;
+  for (int i = 0; i <= (int) ID3Tag->paddingSize; i++) {
+      fwrite(&zero, 1, 1, temp);
+  }
+
+  // content
+  fwrite(dataBuffer,1,fileSize,temp);
+  fclose(temp);
+}
+
 void ID3v2_removeTagFromFile(FILE *mp3FilePointer){
-  fseek(mp3FilePointer, 0, SEEK_END);
+  fseek(mp3FilePointer, 0, SEEK_SET);
   uint32_t fileSize = ftell(mp3FilePointer);
   ID3v2HeaderType header;
   HeaderV2_storeHeader(mp3FilePointer,&header);
   if(HeaderV2_isID3v2Tag(header)){
     if(HeaderV2_getTagVersion(header) == 3 || HeaderV2_getTagVersion(header) == 4){
       uint32_t tagSize = HeaderV2_getTagSize(header);
-      fseek(mp3FilePointer, tagSize, SEEK_SET);
+      fseek(mp3FilePointer, tagSize+10, SEEK_SET);
       uint32_t remainingSize = fileSize - tagSize;
       unsigned char *dataBuffer = (unsigned char *)malloc(remainingSize);
       if (!dataBuffer) {
@@ -97,6 +223,7 @@ void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
     tagSizeOfStruct += (ID3Tag->header.version[0] == 4 
               ? FramesV2_getSize_V2_4(COMMFrame.header) 
               : FramesV2_getSize_V2_3(COMMFrame.header)) + 10;
+    printf("size COMM: %d\n",FramesV2_getSize_V2_4(COMMFrame.header));
     ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
   }
   if(ID3Tag->APIC != NULL) {
@@ -125,6 +252,8 @@ int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
   uint32_t frameSize; 
   if(tag->header.version[0] == 4) frameSize = FramesV2_getSize_V2_4(header); 
   else frameSize = FramesV2_getSize_V2_3(header);
+  // printf("FRAMEID: %s\n", header.frameId);
+
   if (memcmp(header.frameId, "\0\0\0\0", 4) == 0) {
     printf("PADDING REACHED\n");
     return 1;

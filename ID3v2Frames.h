@@ -7,7 +7,7 @@
 
 typedef struct {
   char frameId[4];
-  uint8_t size[4];
+  uint8_t size[4]; // without header. To full size add 10 bytes
   uint8_t flags[2];
 } ID3v2FrameHeaderType;
 
