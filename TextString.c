@@ -1,6 +1,6 @@
-#include "textString.h"
+#include "TextString.h"
 #include "string.h"
-void storeTextString(TextStringType *txtStr, char *str, bool hasEndOfString){
+void TxtStr_storeTextString(TextStringType *txtStr, char *str, bool hasEndOfString){
   int lenOfStrin = strlen(str);
   if(hasEndOfString){
     txtStr->string = (char*) malloc(lenOfStrin+1);
@@ -16,11 +16,11 @@ void storeTextString(TextStringType *txtStr, char *str, bool hasEndOfString){
   txtStr->hasEndOfString = hasEndOfString;
 }
 
-int getStringLen(TextStringType txtStr){
+int TxtStr_getStringLen(TextStringType txtStr){
   return txtStr.size;
 }
 
-void freeTextString(TextStringType *txtStr){
+void TxtStr_freeTextString(TextStringType *txtStr){
   if(txtStr->string != NULL){
     free(txtStr);
   }

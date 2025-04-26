@@ -9,10 +9,10 @@ typedef struct {
 } TextStringType;
 
 
-void storeTextString(TextStringType *, char *, bool);
+void TxtStr_storeTextString(TextStringType *, char *, bool);
 
-int getStringLen(TextStringType);
+int TxtStr_getStringLen(TextStringType);
 
-void freeTextString(TextStringType *);
+void TxtStr_freeTextString(TextStringType *);
 
 #endif //TEXTSTRING_H
