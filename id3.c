@@ -4,7 +4,9 @@
 #include "ID3v2.h"
 
 
-void storeRemoveAndWritte(FILE *,ID3TagType *);
+void storeAndWritte(char *);
+
+void testOverture();
 
 void testTimberHearth();
 
@@ -15,23 +17,32 @@ int main(){
   
   // char *file = "./files/theme.mp3";
   // char *file = "./files/nlp6.mp3";
-  // char *file = "./files/overture.mp3";
   // char *file = "./files/gameFreak.mp3";
-  testTimberHearth();
+  // char *file = "./files/auxFiles/overture.mp3";
+  // storeAndWritte(file);
+  testOverture();
+  // testTimberHearth();
   return 0;
 }
 
-// void storeRemoveAndWritte(FILE *mp3FilePointer,ID3TagType *ID3Tag){
-//   // char *fileToWrite = "./tagRemoved.mp3";
-//   // FILE * fileToWritePtr = fopen(fileToWrite,"r");
+void storeAndWritte(char *file){
+  ID3TagType ID3Tag;
+  ID3v2_init(&ID3Tag);
+  ID3v2_storeTagInStruct(file,&ID3Tag);
+  ID3v2_writteTagIntoFile(file,&ID3Tag);
+  ID3v2_free(&ID3Tag);
+}
 
-//   // ID3v2_storeTagInStruct(mp3FilePointer,ID3Tag);
-//   // ID3v2_getTagSizeOfTheStruct(ID3Tag);
-//   // ID3v2_removeTagFromFile(mp3FilePointer);
-
-//   // ID3v2_writteTagIntoFile(fileToWritePtr,ID3Tag);
-//   // fclose(fileToWritePtr);
-// }
+void testOverture(){
+  ID3TagType ID3Tag;
+  char *file = "./files/auxFiles/overture.mp3";
+  ID3v2_init(&ID3Tag);
+  ID3v2_storeTagInStruct(file,&ID3Tag);
+  ID3v2_writteTagIntoFile(file,&ID3Tag);
+  ID3v2_free(&ID3Tag);
+  printf("Difference between files: \n");
+  system("cmp -l ./files/overture.mp3 ./files/auxFiles/overture.mp3 | wc -l");
+}
 
 void testTimberHearth(){
   ID3TagType ID3Tag;

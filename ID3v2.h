@@ -25,7 +25,7 @@ void ID3v2_storeTagInStruct(char*, ID3TagType*);
 
 void ID3v2_removeTagFromFile(char*);
 
-void ID3v2_writteTagIntoFile(FILE *, ID3TagType *);
+void ID3v2_writteTagIntoFile(char *, ID3TagType *);
 
 int ID3v2_storeNextFrameInStruct(FILE*, ID3TagType*);
 
