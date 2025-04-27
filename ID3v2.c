@@ -2,30 +2,35 @@
 #include "SizeReader.h"
 #include <string.h>
 
-void ID3v2_storeTagInStruct(FILE *mp3FilePointer,ID3TagType *ID3Tag){
-  int paddingReached = 0;
-  uint32_t tagSize;
-  ID3v2_init(ID3Tag);
+void ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
+  FILE *mp3FilePointer = fopen(file,"r");
+  if (mp3FilePointer) {
+    int paddingReached = 0;
+    uint32_t tagSize;
+    HeaderV2_storeHeader(mp3FilePointer,&ID3Tag->header);
+    if(HeaderV2_isID3v2Tag(ID3Tag->header)){
+      if(HeaderV2_getTagVersion(ID3Tag->header) == 3 || HeaderV2_getTagVersion(ID3Tag->header) == 4){
+        HeaderV2_printTagHeader(ID3Tag->header);
+        tagSize = HeaderV2_getTagSize(ID3Tag->header);
+        while(paddingReached != 1 && ftell(mp3FilePointer) < tagSize + 10){
+          paddingReached = ID3v2_storeNextFrameInStruct(mp3FilePointer,ID3Tag);
+        }
+        if (paddingReached){
+          ID3Tag->paddingSize = (HeaderV2_getTagSize(ID3Tag->header))+10 - (ftell(mp3FilePointer))+10; //tag size doesn't include header 
+        }
 
-  HeaderV2_storeHeader(mp3FilePointer,&ID3Tag->header);
-  if(HeaderV2_isID3v2Tag(ID3Tag->header)){
-    if(HeaderV2_getTagVersion(ID3Tag->header) == 3 || HeaderV2_getTagVersion(ID3Tag->header) == 4){
-      HeaderV2_printTagHeader(ID3Tag->header);
-      tagSize = HeaderV2_getTagSize(ID3Tag->header);
-      while(paddingReached != 1 && ftell(mp3FilePointer) < tagSize + 10){
-        paddingReached = ID3v2_storeNextFrameInStruct(mp3FilePointer,ID3Tag);
       }
-      if (paddingReached){
-        ID3Tag->paddingSize = (HeaderV2_getTagSize(ID3Tag->header))+10 - (ftell(mp3FilePointer))+10; //tag size doesn't include header 
+      else{
+        printf("Not yet supported tag version\n");
       }
-
     }
     else{
-      printf("Not yet supported tag version\n");
+      printf("Not ID3v2 Tag detected\n");
     }
+    fclose(mp3FilePointer);
   }
-  else{
-    printf("Not ID3v2 Tag detected\n");
+  else {
+    printf("The file DOESN'T exist!\n");
   }
 }
 
@@ -164,34 +169,41 @@ void ID3v2_writteTagIntoFile(FILE *mp3FilePointer, ID3TagType *ID3Tag){
   fclose(temp);
 }
 
-void ID3v2_removeTagFromFile(FILE *mp3FilePointer){
-  fseek(mp3FilePointer, 0, SEEK_SET);
-  uint32_t fileSize = ftell(mp3FilePointer);
-  ID3v2HeaderType header;
-  HeaderV2_storeHeader(mp3FilePointer,&header);
-  if(HeaderV2_isID3v2Tag(header)){
-    if(HeaderV2_getTagVersion(header) == 3 || HeaderV2_getTagVersion(header) == 4){
-      uint32_t tagSize = HeaderV2_getTagSize(header);
-      fseek(mp3FilePointer, tagSize+10, SEEK_SET);
-      uint32_t remainingSize = fileSize - tagSize;
-      unsigned char *dataBuffer = (unsigned char *)malloc(remainingSize);
-      if (!dataBuffer) {
+void ID3v2_removeTagFromFile(char*file){
+  FILE *mp3FilePointer = fopen(file,"r");
+  if (mp3FilePointer) {
+    fseek(mp3FilePointer, 0, SEEK_SET);
+    uint32_t fileSize = ftell(mp3FilePointer);
+    ID3v2HeaderType header;
+    HeaderV2_storeHeader(mp3FilePointer,&header);
+    if(HeaderV2_isID3v2Tag(header)){
+      if(HeaderV2_getTagVersion(header) == 3 || HeaderV2_getTagVersion(header) == 4){
+        uint32_t tagSize = HeaderV2_getTagSize(header);
+        fseek(mp3FilePointer, tagSize+10, SEEK_SET);
+        uint32_t remainingSize = fileSize - tagSize;
+        unsigned char *dataBuffer = (unsigned char *)malloc(remainingSize);
+        if (!dataBuffer) {
+            printf("error\n");
+            return;
+        }
+        size_t bytesRead = fread(dataBuffer, 1, remainingSize, mp3FilePointer);
+        FILE *temp = fopen("tagRemoved.mp3", "wb");
+        if (!temp) {
           printf("error\n");
+          free(dataBuffer);
           return;
-      }
-      size_t bytesRead = fread(dataBuffer, 1, remainingSize, mp3FilePointer);
-      FILE *temp = fopen("tagRemoved.mp3", "wb");
-      if (!temp) {
-        printf("error\n");
+        }
+        fwrite(dataBuffer, 1, bytesRead, temp);
+        fclose(temp);
         free(dataBuffer);
-        return;
       }
-      fwrite(dataBuffer, 1, bytesRead, temp);
-      fclose(temp);
-      free(dataBuffer);
     }
+    else printf("error, there is no ID3v2 Tag\n");
+    fclose(mp3FilePointer);
   }
-  else printf("error, there is no ID3v2 Tag\n");
+  else {
+    printf("The file DOESN'T exist!\n");
+  }
 }
 
 void ID3v2_free(ID3TagType *tag){

@@ -21,38 +21,29 @@ int main(){
   return 0;
 }
 
-void storeRemoveAndWritte(FILE *mp3FilePointer,ID3TagType *ID3Tag){
-  char *fileToWrite = "./tagRemoved.mp3";
-  FILE * fileToWritePtr = fopen(fileToWrite,"r");
+// void storeRemoveAndWritte(FILE *mp3FilePointer,ID3TagType *ID3Tag){
+//   // char *fileToWrite = "./tagRemoved.mp3";
+//   // FILE * fileToWritePtr = fopen(fileToWrite,"r");
 
-  ID3v2_storeTagInStruct(mp3FilePointer,ID3Tag);
-  ID3v2_getTagSizeOfTheStruct(ID3Tag);
-  ID3v2_removeTagFromFile(mp3FilePointer);
+//   // ID3v2_storeTagInStruct(mp3FilePointer,ID3Tag);
+//   // ID3v2_getTagSizeOfTheStruct(ID3Tag);
+//   // ID3v2_removeTagFromFile(mp3FilePointer);
 
-  ID3v2_writteTagIntoFile(fileToWritePtr,ID3Tag);
-  fclose(fileToWritePtr);
-}
+//   // ID3v2_writteTagIntoFile(fileToWritePtr,ID3Tag);
+//   // fclose(fileToWritePtr);
+// }
 
 void testTimberHearth(){
-  FILE *mp3FilePointer;
   ID3TagType ID3Tag;
   char *file = "./files/TimberHearth.mp3";
-  mp3FilePointer = fopen(file,"r");
-  if (mp3FilePointer) {
-    ID3v2_init(&ID3Tag);
-    ID3v2_storeTagInStruct(mp3FilePointer,&ID3Tag);
-    ID3v2_removeTagFromFile(mp3FilePointer);
-    fclose(mp3FilePointer);
-
-    char *fileToWrite = "./tagRemoved.mp3";
-    FILE * fileToWritePtr = fopen(fileToWrite,"r");
-    TIMBERHEARTH_ID3v2_writteTagIntoFile(fileToWritePtr,&ID3Tag);
-    ID3v2_free(&ID3Tag);
-    printf("Difference between files: \n");
-    system("cmp -l ./files/TimberHearth.mp3 ./temp.mp3 | wc -l");
-  }
-  else {
-    printf("The file DOESN'T exist!\n");
-  }
+  ID3v2_init(&ID3Tag);
+  ID3v2_storeTagInStruct(file,&ID3Tag);
+  ID3v2_removeTagFromFile(file);
   
+  char *fileToWrite = "./tagRemoved.mp3";
+  FILE * fileToWritePtr = fopen(fileToWrite,"r");
+  TIMBERHEARTH_ID3v2_writteTagIntoFile(fileToWritePtr,&ID3Tag);
+  ID3v2_free(&ID3Tag);
+  printf("Difference between files: \n");
+  system("cmp -l ./files/TimberHearth.mp3 ./temp.mp3 | wc -l");
 }
