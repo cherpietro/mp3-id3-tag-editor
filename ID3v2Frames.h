@@ -32,7 +32,7 @@ typedef struct {
   uint8_t textEncoding;
   // char *content;
   TextStringType content;
-} ID3v2TextFrameType;
+} ID3v2TXTFrameType;
 
 typedef struct {
   ID3v2FrameHeaderType header;
@@ -63,14 +63,17 @@ void FramesV2_saveAPICImage(ID3v2APICFrame);
 void FramesV2_printAPIC(ID3v2APICFrame);
 
 //change name to getTXTF
-void FramesV2_storeTXTF(FILE*, uint32_t,ID3v2TextFrameType *);
-void FramesV2_printTXTF(ID3v2TextFrameType);
+void FramesV2_storeTXTF(FILE*, uint32_t,ID3v2TXTFrameType *);
+void FramesV2_printTXTF(ID3v2TXTFrameType);
+void FramesV2_freeTXTF(ID3v2TXTFrameType**);
 
 void FramesV2_getCOMM(FILE *, uint32_t , ID3v2COMMFrameType *);
 void FramesV2_printCOMM(ID3v2COMMFrameType);
+void FramesV2_freeCOMM(ID3v2COMMFrameType**);
 
 void FramesV2_getPRIV(FILE *, uint32_t , ID3v2PRIVFrameType *);
 void FramesV2_printPRIV(ID3v2PRIVFrameType);
+void FramesV2_freePRIV(ID3v2PRIVFrameType**);
 
 void FramesV2_storeMDCI(FILE*, uint32_t, ID3v2MCDIFrameType**);
 void FramesV2_freeMCDI(ID3v2MCDIFrameType**);

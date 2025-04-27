@@ -1,9 +1,10 @@
 #include "ID3v2.h"
 #include "SizeReader.h"
 #include <string.h>
+#include "stdbool.h"
 
 void ID3v2_init(ID3TagType *tag){
-  ListTXTF_init(&tag->textFrameList);
+  ListTXTF_init(&tag->TXTFrameList);
   ListCOMM_init(&tag->COMMFrameList);
   ListPRIV_init(&tag->PRIVFrameList);
   tag->APIC = NULL;
@@ -12,7 +13,7 @@ void ID3v2_init(ID3TagType *tag){
 }
 
 void ID3v2_free(ID3TagType *tag){
-  ListTXTF_freeList(&tag->textFrameList);
+  ListTXTF_freeList(&tag->TXTFrameList);
   ListCOMM_freeList(&tag->COMMFrameList);
   ListPRIV_freeList(&tag->PRIVFrameList);
   if(tag->APIC != NULL) FramesV2_freeAPIC(&tag->APIC); 
@@ -27,7 +28,7 @@ void ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
     HeaderV2_storeHeader(mp3FilePointer,&ID3Tag->header);
     if(HeaderV2_isID3v2Tag(ID3Tag->header)){
         uint32_t tagSize = HeaderV2_getTagSize(ID3Tag->header);
-        while(paddingReached != 1 && ftell(mp3FilePointer) < tagSize + 10){
+        while(!paddingReached && ftell(mp3FilePointer) < tagSize + 10){
           paddingReached = ID3v2_storeNextFrameInStruct(mp3FilePointer,ID3Tag);
         }
         if (paddingReached) ID3Tag->paddingSize = (HeaderV2_getTagSize(ID3Tag->header))+10 - (ftell(mp3FilePointer))+10; //tag size doesn't include header 
@@ -36,6 +37,62 @@ void ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
     fclose(mp3FilePointer);
   }
   else printf("The file DOESN'T exist!\n");
+}
+
+int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
+  ID3v2FrameHeaderType header;
+  FramesV2_storeHeader(mp3FilePointer,&header);
+  uint32_t frameSize = FramesV2_getFrameSize(tag->header.version[0],header); 
+  if (memcmp(header.frameId, "\0\0\0\0", 4) == 0) return true;
+  else if(strncmp(header.frameId,"T",1)==0){
+    ID3v2TXTFrameType *TXTF;
+    TXTF =  (ID3v2TXTFrameType *) malloc(sizeof(ID3v2TXTFrameType));
+    TXTF->header = header;
+
+    FramesV2_storeTXTF(mp3FilePointer,frameSize, TXTF);
+    ListTXTF_insertLast(&tag->TXTFrameList,*TXTF);
+    FramesV2_freeTXTF(&TXTF);
+  }
+  else if(strncmp(header.frameId,"COMM",4)==0){
+    ID3v2COMMFrameType *COMM;
+    COMM =  (ID3v2COMMFrameType *) malloc(sizeof(ID3v2COMMFrameType));
+    COMM->header = header;
+
+    FramesV2_getCOMM(mp3FilePointer,frameSize, COMM);
+    ListCOMM_insertLast(&tag->COMMFrameList,*COMM);
+    FramesV2_freeCOMM(&COMM);
+  }
+  else if(strncmp(header.frameId,"MCDI",4)==0){
+    FramesV2_storeMDCI(mp3FilePointer,frameSize, &tag->MCDI);
+    tag->MCDI->header = header;
+  }
+  else if(strncmp(header.frameId,"POPM",4)==0){
+    FramesV2_storePOPM(mp3FilePointer,frameSize, &tag->POPM);
+    tag->POPM->header = header;
+  }
+  else if(strncmp(header.frameId,"PRIV",4)==0){
+    ID3v2PRIVFrameType *PRIV;
+    PRIV =  (ID3v2PRIVFrameType *) malloc(sizeof(ID3v2PRIVFrameType));
+    PRIV->header = header;
+
+    FramesV2_getPRIV(mp3FilePointer,frameSize, PRIV);
+    ListPRIV_insertLast(&tag->PRIVFrameList,*PRIV);
+    FramesV2_freePRIV(&PRIV);
+  }
+  else if(strncmp(header.frameId,"APIC",4)==0){
+    uint8_t *buffer = (uint8_t *)malloc(frameSize);
+    fread(buffer, frameSize, 1, mp3FilePointer);
+    FramesV2_storeAPIC(buffer,frameSize,&tag->APIC);
+    tag->APIC->header = header;
+    free(buffer);
+  }
+  else{
+    printf("NOT SUPPORTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+    uint8_t *buffer = (uint8_t *)malloc(frameSize);
+    fread(buffer, frameSize, 1, mp3FilePointer);
+    free(buffer);
+  }
+  return 0;
 }
 
 void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
@@ -75,14 +132,14 @@ void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     }
 
     //TXTFrames
-    ID3v2TextFrameType TXTFrame;
-    ListTXTF_setFirstActive(&ID3Tag->textFrameList);
-    while(ID3Tag->textFrameList.active != NULL){
-      TXTFrame = ListTXTF_getActive(ID3Tag->textFrameList);
+    ID3v2TXTFrameType TXTFrame;
+    ListTXTF_setFirstActive(&ID3Tag->TXTFrameList);
+    while(ID3Tag->TXTFrameList.active != NULL){
+      TXTFrame = ListTXTF_getActive(ID3Tag->TXTFrameList);
       fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
       fwrite(&TXTFrame.textEncoding,1, 1,temp);
       fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),temp);
-      ListTXTF_setNextActive(&ID3Tag->textFrameList);
+      ListTXTF_setNextActive(&ID3Tag->TXTFrameList);
     }
     //PRIVFrames
     ID3v2PRIVFrameType PRIVFrame;
@@ -175,14 +232,14 @@ void ID3v2_removeTagFromFile(char*file){
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
   printf("\nsize in tag: %d bytes\n",HeaderV2_getTagSize(ID3Tag->header));
   size_t tagSizeOfStruct = 10; //header
-  ID3v2TextFrameType textFrame;
+  ID3v2TXTFrameType textFrame;
   ID3v2COMMFrameType COMMFrame;
 
-  ListTXTF_setFirstActive(&ID3Tag->textFrameList);
-  while(ID3Tag->textFrameList.active != NULL){
-    textFrame = ListTXTF_getActive(ID3Tag->textFrameList);
+  ListTXTF_setFirstActive(&ID3Tag->TXTFrameList);
+  while(ID3Tag->TXTFrameList.active != NULL){
+    textFrame = ListTXTF_getActive(ID3Tag->TXTFrameList);
     tagSizeOfStruct += FramesV2_getFrameSize(ID3Tag->header.version[0],textFrame.header) + 10;
-    ListTXTF_setNextActive(&ID3Tag->textFrameList);
+    ListTXTF_setNextActive(&ID3Tag->TXTFrameList);
   }
 
   ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
@@ -205,75 +262,6 @@ void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
   }
 }
 
-int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
-  ID3v2FrameHeaderType header;
-  FramesV2_storeHeader(mp3FilePointer,&header);
-  uint32_t frameSize = FramesV2_getFrameSize(tag->header.version[0],header); 
-  // if(tag->header.version[0] == 4) frameSize = FramesV2_getSize_V2_4(header); 
-  // else frameSize = FramesV2_getSize_V2_3(header);
-  // printf("FRAMEID: %s\n", header.frameId);
-
-  if (memcmp(header.frameId, "\0\0\0\0", 4) == 0) {
-    // printf("PADDING REACHED %ld\n",ftell(mp3FilePointer));
-    return 1;
-  }
-  else if(strncmp(header.frameId,"T",1)==0){
-    ID3v2TextFrameType *frame;
-    frame =  (ID3v2TextFrameType *) malloc(sizeof(ID3v2TextFrameType));
-    frame->header = header;
-    FramesV2_storeTXTF(mp3FilePointer,frameSize, frame);
-    
-    ListTXTF_insertLast(&tag->textFrameList,*frame);
-    TxtStr_freeTextString(&frame->content);
-    free(frame);
-  }
-  else if(strncmp(header.frameId,"COMM",4)==0){
-    ID3v2COMMFrameType *frame;
-    frame =  (ID3v2COMMFrameType *) malloc(sizeof(ID3v2COMMFrameType));
-    frame->header = header;
-    FramesV2_getCOMM(mp3FilePointer,frameSize, frame);
-    
-    ListCOMM_insertLast(&tag->COMMFrameList,*frame);
-    TxtStr_freeTextString(&frame->actualText);
-    TxtStr_freeTextString(&frame->contentDescript);
-    free(frame);
-  }
-  else if(strncmp(header.frameId,"MCDI",4)==0){
-    FramesV2_storeMDCI(mp3FilePointer,frameSize, &tag->MCDI);
-    tag->MCDI->header = header;
-  }
-  else if(strncmp(header.frameId,"POPM",4)==0){
-    FramesV2_storePOPM(mp3FilePointer,frameSize, &tag->POPM);
-    tag->POPM->header = header;
-  }
-  else if(strncmp(header.frameId,"PRIV",4)==0){
-    ID3v2PRIVFrameType *frame;
-    frame =  (ID3v2PRIVFrameType *) malloc(sizeof(ID3v2PRIVFrameType));
-    frame->header = header;
-    FramesV2_getPRIV(mp3FilePointer,frameSize, frame);
-    
-    ListPRIV_insertLast(&tag->PRIVFrameList,*frame);
-    TxtStr_freeTextString(&frame->owner);
-    TxtStr_freeTextString(&frame->privateData);
-    free(frame);
-  }
-  else if(strncmp(header.frameId,"APIC",4)==0){
-    uint8_t *buffer = (uint8_t *)malloc(frameSize);
-    fread(buffer, frameSize, 1, mp3FilePointer);
-    FramesV2_storeAPIC(buffer,frameSize,&tag->APIC);
-    tag->APIC->header = header;
-    free(buffer);
-  }
-  else{
-    printf("NOT SUPPORTED TAG %s: %ld\n", header.frameId,ftell(mp3FilePointer));
-    // printf("FRAMEID: %s\n", header.frameId);
-    // printf("Size: %d\n", frameSize);
-    uint8_t *buffer = (uint8_t *)malloc(frameSize);
-    fread(buffer, frameSize, 1, mp3FilePointer);
-    free(buffer);
-  }
-  return 0;
-}
 
 void ID3v2_saveAPICImage(ID3TagType *ID3Tag){
   FramesV2_saveAPICImage(*ID3Tag->APIC);
@@ -284,12 +272,12 @@ void printTag(ID3TagType *ID3Tag){
   HeaderV2_printTagHeader(ID3Tag->header);
     
   //TXTFrames
-  ID3v2TextFrameType TXTFrame;
-  ListTXTF_setFirstActive(&ID3Tag->textFrameList);
-  while(ID3Tag->textFrameList.active != NULL){
-    TXTFrame = ListTXTF_getActive(ID3Tag->textFrameList);
+  ID3v2TXTFrameType TXTFrame;
+  ListTXTF_setFirstActive(&ID3Tag->TXTFrameList);
+  while(ID3Tag->TXTFrameList.active != NULL){
+    TXTFrame = ListTXTF_getActive(ID3Tag->TXTFrameList);
     FramesV2_printTXTF(TXTFrame);
-    ListTXTF_setNextActive(&ID3Tag->textFrameList);
+    ListTXTF_setNextActive(&ID3Tag->TXTFrameList);
   }
   
   //COMMFrames

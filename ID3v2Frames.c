@@ -77,7 +77,7 @@ void FramesV2_getPRIV(FILE *mp3FilePointer, uint32_t frameSize, ID3v2PRIVFrameTy
   free(frameContent);
 }
 
-void FramesV2_storeTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TextFrameType *frame){
+void FramesV2_storeTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TXTFrameType *frame){
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
   fread(frameContent, frameSize, 1, mp3FilePointer);
 
@@ -104,7 +104,7 @@ void FramesV2_saveAPICImage(ID3v2APICFrame frame){
   printf("File saved in ./cover.jpg\n");
 }
 
-void FramesV2_printTXTF(ID3v2TextFrameType frame){
+void FramesV2_printTXTF(ID3v2TXTFrameType frame){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",frame.header.frameId);
   printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
@@ -174,6 +174,23 @@ void FramesV2_storeAPIC(uint8_t *frameContent, uint32_t frameSize,ID3v2APICFrame
   memcpy((*apic)->imageData, frameContent + index, (*apic)->imageDataSize);
 }
 
+void FramesV2_freePRIV(ID3v2PRIVFrameType** PRIV){
+  TxtStr_freeTextString(&(*PRIV)->owner);
+  TxtStr_freeTextString(&(*PRIV)->privateData);
+  free(*PRIV);
+  *PRIV = NULL;
+}
+void FramesV2_freeCOMM(ID3v2COMMFrameType** COMM){
+  TxtStr_freeTextString(&(*COMM)->actualText);
+  TxtStr_freeTextString(&(*COMM)->contentDescript);
+  free(*COMM);
+  *COMM = NULL;
+}
+void FramesV2_freeTXTF(ID3v2TXTFrameType** TXTF){
+  TxtStr_freeTextString(&(*TXTF)->content);
+  free(*TXTF);
+  *TXTF = NULL;
+}
 void FramesV2_freeAPIC(ID3v2APICFrame** APIC){
   TxtStr_freeTextString(&(*APIC)->mimeType);
   TxtStr_freeTextString(&(*APIC)->description);
