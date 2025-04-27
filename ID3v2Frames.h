@@ -15,9 +15,9 @@ typedef struct {
 typedef struct {
   ID3v2FrameHeaderType header;
   uint8_t textEncoding;   
-  char *mimeType;
+  TextStringType mimeType;
   uint8_t pictureType;    
-  char *description;
+  TextStringType description;
   uint8_t *imageData;     
   size_t imageDataSize;   
 } ID3v2APICFrame;

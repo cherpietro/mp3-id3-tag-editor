@@ -286,6 +286,7 @@ int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
     FramesV2_storeAPIC(buffer,frameSize,&tag->APIC);
     // tag->APIC = FramesV2_getAPICFromBuffer(buffer,frameSize);
     tag->APIC->header = header;
+    // FramesV2_printAPIC(*tag->APIC);
     free(buffer);
   }
   else{
