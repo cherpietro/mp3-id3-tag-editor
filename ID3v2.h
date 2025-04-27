@@ -16,6 +16,7 @@ typedef struct {
     COMMFrameList COMMFrameList;
     PRIVFrameList PRIVFrameList;
     ID3v2MCDIFrameType *MCDI;
+    ID3v2POPMFrameType *POPM; //LIST
     ID3v2APICFrame *APIC;
     size_t paddingSize;
 } ID3TagType;
@@ -38,9 +39,4 @@ int ID3v2_storeNextFrameInStruct(FILE*, ID3TagType*);
 
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *);
 
-void TIMBERHEARTH_ID3v2_writteTagIntoFile(char *, ID3TagType *);
-
-void JOKIN3_ID3v2_writteTagIntoFile(char *, ID3TagType *);
-
-void ELITEFOUR_ID3v2_writteTagIntoFile(char *, ID3TagType *);
 #endif // ID3V2_H
