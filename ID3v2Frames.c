@@ -9,18 +9,20 @@ void FramesV2_storeAPIC(uint8_t *frameContent, uint32_t frameSize,ID3v2APICFrame
   (*apic)->textEncoding = frameContent[index++];
 
   char *mimeType = (char*) frameContent + index;
-  size_t mimeTypeLen = strlen(mimeType);
-  (*apic)->mimeType = (char *)malloc(mimeTypeLen + 1); 
-  strcpy((*apic)->mimeType,mimeType);
-  index+=mimeTypeLen + 1; //+1 to skip \0;
+  size_t mimeTypeLen = strlen(mimeType)+1;
+  TxtStr_storeTextString(&(*apic)->mimeType,mimeType,mimeTypeLen);
+  // (*apic)->mimeType = (char *)malloc(mimeTypeLen + 1); 
+  // strcpy((*apic)->mimeType,mimeType);
+  index+=mimeTypeLen;
   
   (*apic)->pictureType = frameContent[index++];
 
   char *description = (char*) frameContent + index;
-  size_t descriptionLen = strlen(description);
-  (*apic)->description = (char *)malloc(descriptionLen + 1); 
-  strcpy((*apic)->description,description);
-  index += descriptionLen + 1; //+1 to skip \0;
+  size_t descriptionLen = strlen(description)+1;
+  TxtStr_storeTextString(&(*apic)->description,description,descriptionLen);
+  // (*apic)->description = (char *)malloc(descriptionLen + 1); 
+  // strcpy((*apic)->description,description);
+  index += descriptionLen;;
 
   (*apic)->imageDataSize = frameSize - index;
   (*apic)->imageData = (uint8_t *)malloc((*apic)->imageDataSize);
@@ -77,9 +79,9 @@ void FramesV2_printAPIC(ID3v2APICFrame frame){
   // printf("Size: %u bytes\n",syncsafeToSize(frame.header.size));
   printf("TextEncoding: %d\n",frame.textEncoding);
   printf("apicframe.textEncoding: %u size:%ld\n",frame.textEncoding,sizeof(frame.textEncoding));
-  printf("apicframe.mimeType: %s size:%ld\n",frame.mimeType,strlen(frame.mimeType));
+  printf("apicframe.mimeType: %s size:%ld\n",frame.mimeType.string,frame.mimeType.size);
   printf("apicframe.pictureType: %u size:%ld\n",frame.pictureType,sizeof(frame.pictureType));
-  printf("apicframe.description: %s size:%ld\n",frame.description,strlen(frame.description));
+  printf("apicframe.description: %s size:%ld\n",frame.description.string,frame.description.size);
   printf("apicframe.imageSize: %ld\n",frame.imageDataSize);
   FILE *imageFile = fopen("cover.jpg", "wb");
   fwrite(frame.imageData, 1, frame.imageDataSize, imageFile);
@@ -97,7 +99,7 @@ void FramesV2_printTXTF(ID3v2TextFrameType frame){
 
 //Init APIC Frame?
 void FramesV2_freeAPIC(ID3v2APICFrame* apicFrame){
-  free(apicFrame->mimeType);
-  free(apicFrame->description);
+  TxtStr_freeTextString(&apicFrame->mimeType);
+  TxtStr_freeTextString(&apicFrame->description);
   free(apicFrame);
 }

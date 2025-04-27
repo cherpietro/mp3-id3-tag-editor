@@ -144,6 +144,15 @@ void ID3v2_writteTagIntoFile(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     ListTXTF_setNextActive(&ID3Tag->textFrameList);
   }
   
+  //APIC
+  if(ID3Tag->APIC != NULL){
+    fwrite(&ID3Tag->APIC->header,1, sizeof(ID3Tag->APIC->header),temp);
+    fwrite(&ID3Tag->APIC->textEncoding,1, 1,temp);
+    fwrite(ID3Tag->APIC->mimeType.string,1, TxtStr_getStringLen(ID3Tag->APIC->mimeType),temp);
+    fwrite(&ID3Tag->APIC->pictureType,1, 1,temp);
+    fwrite(ID3Tag->APIC->description.string,1, TxtStr_getStringLen(ID3Tag->APIC->description),temp);
+    fwrite(ID3Tag->APIC->imageData,1,ID3Tag->APIC->imageDataSize ,temp);
+  }
   //Padding
   char zero = 0;
   for (int i = 0; i < (int) ID3Tag->paddingSize; i++) {
@@ -251,10 +260,10 @@ int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
   uint32_t frameSize; 
   if(tag->header.version[0] == 4) frameSize = FramesV2_getSize_V2_4(header); 
   else frameSize = FramesV2_getSize_V2_3(header);
-  // printf("FRAMEID: %s\n", header.frameId);
+  printf("FRAMEID: %s\n", header.frameId);
 
   if (memcmp(header.frameId, "\0\0\0\0", 4) == 0) {
-    printf("PADDING REACHED\n");
+    printf("PADDING REACHED %ld\n",ftell(mp3FilePointer));
     return 1;
   }
   else if(strncmp(header.frameId,"T",1)==0){
@@ -286,6 +295,7 @@ int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
     FramesV2_storeAPIC(buffer,frameSize,&tag->APIC);
     // tag->APIC = FramesV2_getAPICFromBuffer(buffer,frameSize);
     tag->APIC->header = header;
+    // FramesV2_printAPIC(*tag->APIC);
     free(buffer);
   }
   else{

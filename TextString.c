@@ -5,7 +5,7 @@
 void TxtStr_storeTextString(TextStringType *txtStr, char *str, size_t sizeToSave){
 
     txtStr->string =  (char *)malloc(sizeToSave);;
-    strncpy(txtStr->string,str,sizeToSave);
+    memcpy(txtStr->string,str,sizeToSave);
     txtStr->size = sizeToSave;
     txtStr->hasEndOfString = txtStr->string[txtStr->size-1] == '\0';
 }
