@@ -4,6 +4,8 @@
 #include "ID3v2.h"
 
 
+void storeTag(char *);
+
 void storeAndSaveAPIC(char *);
 
 void storeAndWritte(char *);
@@ -14,6 +16,10 @@ void testOverture();
 
 void testTimberHearth();
 
+void testJokin3();
+
+void testEliteFour();
+
 int main(){
   
   // char *file = "./files/EliteFour.mp3"; //there are frames that aren't readed yet
@@ -22,14 +28,27 @@ int main(){
   // char *file = "./files/theme.mp3";
   // char *file = "./files/nlp6.mp3";
   // char *file = "./files/gameFreak.mp3";
-  char *file = "./files/auxFiles/overture.mp3";
-  storeAndSaveAPIC(file);
+  // char *file = "./files/jokin3.mp3"; 
+  // storeTag(file);
+  
+  
+  // char *file = "./files/auxFiles/overture.mp3";
+  // storeAndSaveAPIC(file);
   // storeAndPrint(file);
   // storeAndWritte(file);
   
+  testEliteFour();
   // testOverture();
   // testTimberHearth();
+  // testJokin3();
   return 0;
+}
+
+void storeTag(char *file){
+  ID3TagType ID3Tag;
+  ID3v2_init(&ID3Tag);
+  ID3v2_storeTagInStruct(file,&ID3Tag);
+  ID3v2_free(&ID3Tag);
 }
 
 void storeAndPrint(char *file){
@@ -67,6 +86,17 @@ void testOverture(){
   system("cmp -l ./files/overture.mp3 ./files/auxFiles/overture.mp3 | wc -l");
 }
 
+void testEliteFour(){
+  ID3TagType ID3Tag;
+  char *file = "./files/auxFiles/EliteFour.mp3";  
+  ID3v2_init(&ID3Tag);
+  ID3v2_storeTagInStruct(file,&ID3Tag);
+  ELITEFOUR_ID3v2_writteTagIntoFile(file,&ID3Tag);
+  ID3v2_free(&ID3Tag);
+  
+  printf("Difference between files: \n");
+  system("cmp -l ./files/EliteFour.mp3 ./files/auxFiles/EliteFour.mp3 | wc -l");
+}
 void testTimberHearth(){
   ID3TagType ID3Tag;
   char *file = "./files/auxFiles/TimberHearth.mp3";
@@ -77,4 +107,27 @@ void testTimberHearth(){
   
   printf("Difference between files: \n");
   system("cmp -l ./files/TimberHearth.mp3 ./files/auxFiles/TimberHearth.mp3 | wc -l");
+}
+// void testTimberHearth(){
+//   ID3TagType ID3Tag;
+//   char *file = "./files/auxFiles/TimberHearth.mp3";
+//   ID3v2_init(&ID3Tag);
+//   ID3v2_storeTagInStruct(file,&ID3Tag);
+//   TIMBERHEARTH_ID3v2_writteTagIntoFile(file,&ID3Tag);
+//   ID3v2_free(&ID3Tag);
+  
+//   printf("Difference between files: \n");
+//   system("cmp -l ./files/TimberHearth.mp3 ./files/auxFiles/TimberHearth.mp3 | wc -l");
+// }
+
+void testJokin3(){
+  ID3TagType ID3Tag;
+  char *file = "./files/auxFiles/jokin3.mp3";
+  ID3v2_init(&ID3Tag);
+  ID3v2_storeTagInStruct(file,&ID3Tag);
+  JOKIN3_ID3v2_writteTagIntoFile(file,&ID3Tag);
+  ID3v2_free(&ID3Tag);
+  
+  printf("Difference between files: \n");
+  system("cmp -l ./files/jokin3.mp3 ./files/auxFiles/jokin3.mp3 | wc -l");
 }
