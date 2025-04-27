@@ -12,13 +12,7 @@ void storeAndWritte(char *);
 
 void storeAndPrint(char *);
 
-void testOverture();
 
-void testTimberHearth();
-
-void testJokin3();
-
-void testEliteFour();
 
 int main(){
   
@@ -37,11 +31,6 @@ int main(){
   // storeAndSaveAPIC(file);
   // storeAndPrint(file);
   // storeAndWritte(file);
-  
-  testEliteFour();
-  // testOverture();
-  // testTimberHearth();
-  // testJokin3();
   return 0;
 }
 
@@ -74,61 +63,4 @@ void storeAndWritte(char *file){
   ID3v2_storeTagInStruct(file,&ID3Tag);
   ID3v2_writteTagIntoFile(file,&ID3Tag);
   ID3v2_free(&ID3Tag);
-}
-
-void testOverture(){
-  ID3TagType ID3Tag;
-  char *file = "./files/auxFiles/overture.mp3";
-  ID3v2_init(&ID3Tag);
-  ID3v2_storeTagInStruct(file,&ID3Tag);
-  ID3v2_writteTagIntoFile(file,&ID3Tag);
-  ID3v2_free(&ID3Tag);
-  printf("Difference between files: \n");
-  system("cmp -l ./files/overture.mp3 ./files/auxFiles/overture.mp3 | wc -l");
-}
-
-void testEliteFour(){
-  ID3TagType ID3Tag;
-  char *file = "./files/auxFiles/EliteFour.mp3";  
-  ID3v2_init(&ID3Tag);
-  ID3v2_storeTagInStruct(file,&ID3Tag);
-  ELITEFOUR_ID3v2_writteTagIntoFile(file,&ID3Tag);
-  ID3v2_free(&ID3Tag);
-  
-  printf("Difference between files: \n");
-  system("cmp -l ./files/EliteFour.mp3 ./files/auxFiles/EliteFour.mp3 | wc -l");
-}
-void testTimberHearth(){
-  ID3TagType ID3Tag;
-  char *file = "./files/auxFiles/TimberHearth.mp3";
-  ID3v2_init(&ID3Tag);
-  ID3v2_storeTagInStruct(file,&ID3Tag);
-  TIMBERHEARTH_ID3v2_writteTagIntoFile(file,&ID3Tag);
-  ID3v2_free(&ID3Tag);
-  
-  printf("Difference between files: \n");
-  system("cmp -l ./files/TimberHearth.mp3 ./files/auxFiles/TimberHearth.mp3 | wc -l");
-}
-// void testTimberHearth(){
-//   ID3TagType ID3Tag;
-//   char *file = "./files/auxFiles/TimberHearth.mp3";
-//   ID3v2_init(&ID3Tag);
-//   ID3v2_storeTagInStruct(file,&ID3Tag);
-//   TIMBERHEARTH_ID3v2_writteTagIntoFile(file,&ID3Tag);
-//   ID3v2_free(&ID3Tag);
-  
-//   printf("Difference between files: \n");
-//   system("cmp -l ./files/TimberHearth.mp3 ./files/auxFiles/TimberHearth.mp3 | wc -l");
-// }
-
-void testJokin3(){
-  ID3TagType ID3Tag;
-  char *file = "./files/auxFiles/jokin3.mp3";
-  ID3v2_init(&ID3Tag);
-  ID3v2_storeTagInStruct(file,&ID3Tag);
-  JOKIN3_ID3v2_writteTagIntoFile(file,&ID3Tag);
-  ID3v2_free(&ID3Tag);
-  
-  printf("Difference between files: \n");
-  system("cmp -l ./files/jokin3.mp3 ./files/auxFiles/jokin3.mp3 | wc -l");
 }

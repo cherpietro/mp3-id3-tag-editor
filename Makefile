@@ -8,6 +8,10 @@ all: compile
 compile: clean $(OBJ)
 	$(CC) $(CFLAGS) id3.c $(OBJ)
 
+test: clean $(OBJ)
+	$(CC) $(CFLAGS) test.c $(OBJ)
+	./a.out
+	
 ID3v2.o: ID3v2.c ID3v2.h ID3v2Header.h
 	$(CC) $(CFLAGS) -c ID3v2.c
 
