@@ -9,6 +9,7 @@
 #include "TXTFrameList.h"
 #include "COMMFrameList.h"
 #include "PRIVFrameList.h"
+#include "stdbool.h"
 
 typedef struct {
     ID3v2HeaderType header;
@@ -51,7 +52,7 @@ void ID3v2_free(ID3TagType *);
 
 void ID3v2_storeTagInStruct(char*, ID3TagType*);
 
-int ID3v2_storeNextFrameInStruct(FILE*, ID3TagType*);
+bool ID3v2_storeNextFrameInStruct(FILE*, ID3TagType*);
 
 void ID3v2_writteTagIntoFile(char *, ID3TagType *);
 
