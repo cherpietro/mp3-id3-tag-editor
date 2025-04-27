@@ -26,16 +26,13 @@ void ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
     int paddingReached = 0;
     HeaderV2_storeHeader(mp3FilePointer,&ID3Tag->header);
     if(HeaderV2_isID3v2Tag(ID3Tag->header)){
-      if(HeaderV2_getTagVersion(ID3Tag->header) == 3 || HeaderV2_getTagVersion(ID3Tag->header) == 4){
         uint32_t tagSize = HeaderV2_getTagSize(ID3Tag->header);
         while(paddingReached != 1 && ftell(mp3FilePointer) < tagSize + 10){
           paddingReached = ID3v2_storeNextFrameInStruct(mp3FilePointer,ID3Tag);
         }
         if (paddingReached) ID3Tag->paddingSize = (HeaderV2_getTagSize(ID3Tag->header))+10 - (ftell(mp3FilePointer))+10; //tag size doesn't include header 
-      }
-      else printf("Not yet supported tag version\n");
     }
-    else printf("Not ID3v2 Tag detected\n");
+    else printf("Not ID3v2 Tag detected or not yet supported version\n");
     fclose(mp3FilePointer);
   }
   else printf("The file DOESN'T exist!\n");
