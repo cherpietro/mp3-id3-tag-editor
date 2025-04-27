@@ -18,9 +18,9 @@ int main(){
   // char *file = "./files/theme.mp3";
   // char *file = "./files/nlp6.mp3";
   // char *file = "./files/gameFreak.mp3";
-  // char *file = "./files/auxFiles/overture.mp3";
-  // storeAndWritte(file);
-  testOverture();
+  char *file = "./files/auxFiles/overture.mp3";
+  storeAndWritte(file);
+  // testOverture();
   // testTimberHearth();
   return 0;
 }

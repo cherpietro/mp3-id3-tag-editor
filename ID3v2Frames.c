@@ -2,33 +2,6 @@
 #include "SizeReader.h"
 #include <string.h>
 
-void FramesV2_storeAPIC(uint8_t *frameContent, uint32_t frameSize,ID3v2APICFrame** apic){
-  *apic = (ID3v2APICFrame *)malloc(sizeof(ID3v2APICFrame));
-  
-  size_t index = 0;
-  (*apic)->textEncoding = frameContent[index++];
-
-  char *mimeType = (char*) frameContent + index;
-  size_t mimeTypeLen = strlen(mimeType)+1;
-  TxtStr_storeTextString(&(*apic)->mimeType,mimeType,mimeTypeLen);
-  // (*apic)->mimeType = (char *)malloc(mimeTypeLen + 1); 
-  // strcpy((*apic)->mimeType,mimeType);
-  index+=mimeTypeLen;
-  
-  (*apic)->pictureType = frameContent[index++];
-
-  char *description = (char*) frameContent + index;
-  size_t descriptionLen = strlen(description)+1;
-  TxtStr_storeTextString(&(*apic)->description,description,descriptionLen);
-  // (*apic)->description = (char *)malloc(descriptionLen + 1); 
-  // strcpy((*apic)->description,description);
-  index += descriptionLen;;
-
-  (*apic)->imageDataSize = frameSize - index;
-  (*apic)->imageData = (uint8_t *)malloc((*apic)->imageDataSize);
-  memcpy((*apic)->imageData, frameContent + index, (*apic)->imageDataSize);
-}
-
 void FramesV2_storeHeader(FILE *mp3FilePointer, ID3v2FrameHeaderType *header){
   fread(header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer);
 }
@@ -40,6 +13,7 @@ uint32_t FramesV2_getSize_V2_4(ID3v2FrameHeaderType header){
 uint32_t FramesV2_getSize_V2_3(ID3v2FrameHeaderType header){
   return sizeFromID3v23(header.size);
 }
+
 
 void FramesV2_getCOMM(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameType *frame){
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
@@ -76,7 +50,6 @@ void FramesV2_printAPIC(ID3v2APICFrame frame){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",frame.header.frameId);
   printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
-  // printf("Size: %u bytes\n",syncsafeToSize(frame.header.size));
   printf("TextEncoding: %d\n",frame.textEncoding);
   printf("apicframe.textEncoding: %u size:%ld\n",frame.textEncoding,sizeof(frame.textEncoding));
   printf("apicframe.mimeType: %s size:%ld\n",frame.mimeType.string,frame.mimeType.size);
@@ -97,9 +70,33 @@ void FramesV2_printTXTF(ID3v2TextFrameType frame){
   printf("Content: %s\n",frame.content.string);
 }
 
+void FramesV2_storeAPIC(uint8_t *frameContent, uint32_t frameSize,ID3v2APICFrame** apic){
+  *apic = (ID3v2APICFrame *)malloc(sizeof(ID3v2APICFrame));
+  
+  size_t index = 0;
+  (*apic)->textEncoding = frameContent[index++];
+
+  char *mimeType = (char*) frameContent + index;
+  size_t mimeTypeLen = strlen(mimeType)+1;
+  TxtStr_storeTextString(&(*apic)->mimeType,mimeType,mimeTypeLen);
+  index+=mimeTypeLen;
+  
+  (*apic)->pictureType = frameContent[index++];
+
+  char *description = (char*) frameContent + index;
+  size_t descriptionLen = strlen(description)+1;
+  TxtStr_storeTextString(&(*apic)->description,description,descriptionLen);
+  index += descriptionLen;;
+
+  (*apic)->imageDataSize = frameSize - index;
+  (*apic)->imageData = (uint8_t *)malloc((*apic)->imageDataSize);
+  memcpy((*apic)->imageData, frameContent + index, (*apic)->imageDataSize);
+}
+
 //Init APIC Frame?
 void FramesV2_freeAPIC(ID3v2APICFrame* apicFrame){
   TxtStr_freeTextString(&apicFrame->mimeType);
   TxtStr_freeTextString(&apicFrame->description);
   free(apicFrame);
 }
+
