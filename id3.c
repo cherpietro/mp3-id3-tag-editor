@@ -24,13 +24,13 @@ int main(){
   // char *file = "./files/nlp6.mp3";
   // char *file = "./files/gameFreak.mp3";
   // char *file = "./files/jokin3.mp3"; 
-  storeTag(file);
+  // storeTag(file);
   
   
   // char *file = "./files/auxFiles/overture.mp3";
   // char *file = "./files/auxFiles/EliteFour.mp3";
   // storeAndSaveAPIC(file);
-  // storeAndPrint(file);
+  storeAndPrint(file);
   // storeAndWritte(file);
   return 0;
 }

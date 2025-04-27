@@ -1,6 +1,8 @@
 #include "ID3v2.h"
 #include "SizeReader.h"
 #include "FileFrameManager.h"
+#include "PrintFrameManager.h"
+
 #include <string.h>
 
 void ID3v2_init(ID3TagType *ID3Tag){
@@ -205,44 +207,16 @@ void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
   }
 }
 
-
 void ID3v2_saveAPICImage(ID3TagType *ID3Tag){
   FramesV2_saveAPICImage(*ID3Tag->APIC);
 }
 
 void printTag(ID3TagType *ID3Tag){
-  // header
   HeaderV2_printTagHeader(ID3Tag->header);
-    
-  //TXTFrames
-  ID3v2TXTFrameType TXTFrame;
-  ListTXTF_setFirstActive(&ID3Tag->TXTFrameList);
-  while(ID3Tag->TXTFrameList.active != NULL){
-    TXTFrame = ListTXTF_getActive(ID3Tag->TXTFrameList);
-    FramesV2_printTXTF(TXTFrame);
-    ListTXTF_setNextActive(&ID3Tag->TXTFrameList);
-  }
-  
-  //COMMFrames
-  ID3v2COMMFrameType COMMFrame;
-  ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
-  while(ID3Tag->COMMFrameList.active != NULL){
-    COMMFrame = ListCOMM_getActive(ID3Tag->COMMFrameList);
-    FramesV2_printCOMM(COMMFrame);
-    ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
-  }
-
-  //PRIVFrames
-  ID3v2PRIVFrameType PRIVFrame;
-  ListPRIV_setFirstActive(&ID3Tag->PRIVFrameList);
-  while(ID3Tag->PRIVFrameList.active != NULL){
-    PRIVFrame = ListPRIV_getActive(ID3Tag->PRIVFrameList);
-    FramesV2_printPRIV(PRIVFrame);
-    ListPRIV_setNextActive(&ID3Tag->PRIVFrameList);
-  }
-
-  //APIC
-  if(ID3Tag->APIC != NULL){
-  FramesV2_printAPIC(*ID3Tag->APIC);
-  }
+  PrintFrame_PrintTXTFrames(&ID3Tag->TXTFrameList);  
+  PrintFrame_PrintCOMMFrames(&ID3Tag->COMMFrameList);
+  PrintFrame_PrintPRIVFrames(&ID3Tag->PRIVFrameList);
+  if(ID3Tag->APIC != NULL) FramesV2_printAPIC(*ID3Tag->APIC);
+  if(ID3Tag->MCDI != NULL) FramesV2_printMDCI(*ID3Tag->MCDI);
+  if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);
 }

@@ -139,6 +139,20 @@ void FramesV2_printCOMM(ID3v2COMMFrameType frame){
   
 }
 
+void FramesV2_printMDCI(ID3v2MCDIFrameType MDCI){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",MDCI.header.frameId);
+  printf("Flags: %u %u\n",MDCI.header.flags[0],MDCI.header.flags[1]);
+}
+
+void FramesV2_printPOPM(ID3v2POPMFrameType POPM){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",POPM.header.frameId);
+  printf("Flags: %u %u\n",POPM.header.flags[0],POPM.header.flags[1]);
+  printf("User email: %s\n",POPM.userEmail.string);
+  printf("Ratin: %d\n",POPM.rating);
+}
+
 void FramesV2_printPRIV(ID3v2PRIVFrameType frame){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",frame.header.frameId);

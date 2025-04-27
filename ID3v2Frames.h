@@ -77,9 +77,11 @@ void FramesV2_freePRIV(ID3v2PRIVFrameType**);
 
 void FramesV2_storeMDCI(FILE*, uint32_t, ID3v2MCDIFrameType**);
 void FramesV2_freeMCDI(ID3v2MCDIFrameType**);
+void FramesV2_printMDCI(ID3v2MCDIFrameType);
 
 void FramesV2_storePOPM(FILE*, uint32_t, ID3v2POPMFrameType**);
 void FramesV2_freePOPM(ID3v2POPMFrameType**);
+void FramesV2_printPOPM(ID3v2POPMFrameType);
 
 uint32_t FramesV2_getFrameSize(int ,ID3v2FrameHeaderType);
 
