@@ -4,7 +4,11 @@
 #include "ID3v2.h"
 
 
+void storeAndSaveAPIC(char *);
+
 void storeAndWritte(char *);
+
+void storeAndPrint(char *);
 
 void testOverture();
 
@@ -19,10 +23,29 @@ int main(){
   // char *file = "./files/nlp6.mp3";
   // char *file = "./files/gameFreak.mp3";
   char *file = "./files/auxFiles/overture.mp3";
-  storeAndWritte(file);
+  storeAndSaveAPIC(file);
+  // storeAndPrint(file);
+  // storeAndWritte(file);
+  
   // testOverture();
   // testTimberHearth();
   return 0;
+}
+
+void storeAndPrint(char *file){
+  ID3TagType ID3Tag;
+  ID3v2_init(&ID3Tag);
+  ID3v2_storeTagInStruct(file,&ID3Tag);
+  printTag(&ID3Tag);
+  ID3v2_free(&ID3Tag);
+}
+
+void storeAndSaveAPIC(char *file){
+  ID3TagType ID3Tag;
+  ID3v2_init(&ID3Tag);
+  ID3v2_storeTagInStruct(file,&ID3Tag);
+  ID3v2_saveAPICImage(&ID3Tag);
+  ID3v2_free(&ID3Tag);
 }
 
 void storeAndWritte(char *file){

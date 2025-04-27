@@ -10,7 +10,7 @@ void ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
     HeaderV2_storeHeader(mp3FilePointer,&ID3Tag->header);
     if(HeaderV2_isID3v2Tag(ID3Tag->header)){
       if(HeaderV2_getTagVersion(ID3Tag->header) == 3 || HeaderV2_getTagVersion(ID3Tag->header) == 4){
-        HeaderV2_printTagHeader(ID3Tag->header);
+        // HeaderV2_printTagHeader(ID3Tag->header);
         tagSize = HeaderV2_getTagSize(ID3Tag->header);
         while(paddingReached != 1 && ftell(mp3FilePointer) < tagSize + 10){
           paddingReached = ID3v2_storeNextFrameInStruct(mp3FilePointer,ID3Tag);
@@ -199,10 +199,10 @@ int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
   uint32_t frameSize; 
   if(tag->header.version[0] == 4) frameSize = FramesV2_getSize_V2_4(header); 
   else frameSize = FramesV2_getSize_V2_3(header);
-  printf("FRAMEID: %s\n", header.frameId);
+  // printf("FRAMEID: %s\n", header.frameId);
 
   if (memcmp(header.frameId, "\0\0\0\0", 4) == 0) {
-    printf("PADDING REACHED %ld\n",ftell(mp3FilePointer));
+    // printf("PADDING REACHED %ld\n",ftell(mp3FilePointer));
     return 1;
   }
   else if(strncmp(header.frameId,"T",1)==0){
@@ -309,4 +309,34 @@ void TIMBERHEARTH_ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     remove(file);
     rename("temp.mp3",file);
   }
+}
+void ID3v2_saveAPICImage(ID3TagType *ID3Tag){
+  FramesV2_saveAPICImage(*ID3Tag->APIC);
+}
+void printTag(ID3TagType *ID3Tag){
+  // header
+  HeaderV2_printTagHeader(ID3Tag->header);
+    
+  //TXTFrames
+  ID3v2TextFrameType TXTFrame;
+  ListTXTF_setFirstActive(&ID3Tag->textFrameList);
+  while(ID3Tag->textFrameList.active != NULL){
+    TXTFrame = ListTXTF_getActive(ID3Tag->textFrameList);
+    FramesV2_printTXTF(TXTFrame);
+    ListTXTF_setNextActive(&ID3Tag->textFrameList);
+  }
+  
+  //  //COMMFrames
+   ID3v2COMMFrameType COMMFrame;
+   ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
+   while(ID3Tag->COMMFrameList.active != NULL){
+     COMMFrame = ListCOMM_getActive(ID3Tag->COMMFrameList);
+     FramesV2_printCOMM(COMMFrame);
+     ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
+   }
+
+   //APIC
+   if(ID3Tag->APIC != NULL){
+    FramesV2_printAPIC(*ID3Tag->APIC);
+   }
 }

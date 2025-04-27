@@ -51,14 +51,17 @@ void FramesV2_printAPIC(ID3v2APICFrame frame){
   printf("Frame ID: %s\n",frame.header.frameId);
   printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
   printf("TextEncoding: %d\n",frame.textEncoding);
-  printf("apicframe.textEncoding: %u size:%ld\n",frame.textEncoding,sizeof(frame.textEncoding));
-  printf("apicframe.mimeType: %s size:%ld\n",frame.mimeType.string,frame.mimeType.size);
-  printf("apicframe.pictureType: %u size:%ld\n",frame.pictureType,sizeof(frame.pictureType));
-  printf("apicframe.description: %s size:%ld\n",frame.description.string,frame.description.size);
+  printf("MIME type: %s\n",frame.mimeType.string);
+  printf("apicframe.pictureType: %u\n",frame.pictureType);
+  printf("apicframe.description: %s\n",frame.description.string);
   printf("apicframe.imageSize: %ld\n",frame.imageDataSize);
+}
+
+void FramesV2_saveAPICImage(ID3v2APICFrame frame){
   FILE *imageFile = fopen("cover.jpg", "wb");
   fwrite(frame.imageData, 1, frame.imageDataSize, imageFile);
   fclose(imageFile);
+  printf("File saved in ./cover.jpg\n");
 }
 
 void FramesV2_printTXTF(ID3v2TextFrameType frame){
@@ -67,7 +70,38 @@ void FramesV2_printTXTF(ID3v2TextFrameType frame){
   printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
   // printf("Size: %u bytes\n",syncsafeToSize(frame.header.size));
   printf("TextEncoding: %d\n",frame.textEncoding);
-  printf("Content: %s\n",frame.content.string);
+  // printf("Content: %.*s\n",(int)frame.content.size,frame.content.string);
+  printf("Content: ");
+  for (int i = 0; i < (int)frame.content.size; i++) {
+    if(frame.content.string[i] == '\0') printf(" ");
+    else putchar(frame.content.string[i]);
+  }
+  printf("\n");
+
+}
+
+void FramesV2_printCOMM(ID3v2COMMFrameType frame){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",frame.header.frameId);
+  printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
+  // printf("Size: %u bytes\n",syncsafeToSize(frame.header.size));
+  printf("TextEncoding: %d\n",frame.textEncoding);
+  printf("Language: %s\n",frame.language);
+  // printf("Descript: %s\n",frame.contentDescript.string);
+  printf("Descript: ");
+  for (int i = 0; i < (int)frame.contentDescript.size; i++) {
+    if(frame.contentDescript.string[i] == '\0') printf(" ");
+    else putchar(frame.contentDescript.string[i]);
+  }
+  printf("\n");
+  // printf("Text: %s\n",frame.actualText.string);
+  printf("Text: ");
+  for (int i = 0; i < (int)frame.actualText.size; i++) {
+    if(frame.actualText.string[i] == '\0') printf(" ");
+    else putchar(frame.actualText.string[i]);
+  }
+  printf("\n");
+  
 }
 
 void FramesV2_storeAPIC(uint8_t *frameContent, uint32_t frameSize,ID3v2APICFrame** apic){
