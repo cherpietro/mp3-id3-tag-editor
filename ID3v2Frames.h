@@ -64,7 +64,6 @@ void FramesV2_printCOMM(ID3v2COMMFrameType);
 void FramesV2_getPRIV(FILE *, uint32_t , ID3v2PRIVFrameType *);
 void FramesV2_printPRIV(ID3v2PRIVFrameType);
 
-void FramesV2_getMCDI(FILE *, uint32_t , ID3v2MCDIFrameType *);
 void FramesV2_freeMCDI(ID3v2MCDIFrameType*);
 void FramesV2_storeMDCI(FILE*, uint32_t, ID3v2MCDIFrameType**);
 
