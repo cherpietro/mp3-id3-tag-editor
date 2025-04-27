@@ -16,16 +16,10 @@ void ID3v2_free(ID3TagType *tag){
   ListCOMM_freeList(&tag->COMMFrameList);
   ListPRIV_freeList(&tag->PRIVFrameList);
   if(tag->APIC != NULL) FramesV2_freeAPIC(&tag->APIC); 
-  if(tag->MCDI != NULL){
-    FramesV2_freeMCDI(tag->MCDI);
-    tag->MCDI = NULL;
-  }
-  if(tag->POPM != NULL){
-    FramesV2_freePOPM(tag->POPM);
-    tag->POPM = NULL;
-  }
-
+  if(tag->MCDI != NULL) FramesV2_freeMCDI(&tag->MCDI);
+  if(tag->POPM != NULL) FramesV2_freePOPM(&tag->POPM);
 }
+
 void ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
   FILE *mp3FilePointer = fopen(file,"r");
   if (mp3FilePointer) {

@@ -65,16 +65,6 @@ void FramesV2_storePOPM(FILE *mp3FilePointer, uint32_t frameSize,ID3v2POPMFrameT
   free(frameContent);
 }
 
-void FramesV2_freeMCDI(ID3v2MCDIFrameType *MCDIFrame){
-  TxtStr_freeTextString(&MCDIFrame->CDTOC);
-  free(MCDIFrame);
-}
-
-void FramesV2_freePOPM(ID3v2POPMFrameType *POPMFrame){
-  TxtStr_freeTextString(&POPMFrame->userEmail);
-  free(POPMFrame);
-}
-
 void FramesV2_getPRIV(FILE *mp3FilePointer, uint32_t frameSize, ID3v2PRIVFrameType *frame){
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
   fread(frameContent, frameSize, 1, mp3FilePointer);
@@ -188,11 +178,22 @@ void FramesV2_storeAPIC(uint8_t *frameContent, uint32_t frameSize,ID3v2APICFrame
   memcpy((*apic)->imageData, frameContent + index, (*apic)->imageDataSize);
 }
 
-void FramesV2_freeAPIC(ID3v2APICFrame** apicFrame){
-  TxtStr_freeTextString(&(*apicFrame)->mimeType);
-  TxtStr_freeTextString(&(*apicFrame)->description);
-  free(&(*apicFrame)->imageData);
-  free(*apicFrame);
-  *apicFrame = NULL;
+void FramesV2_freeAPIC(ID3v2APICFrame** APIC){
+  TxtStr_freeTextString(&(*APIC)->mimeType);
+  TxtStr_freeTextString(&(*APIC)->description);
+  free(&(*APIC)->imageData);
+  free(*APIC);
+  *APIC = NULL;
 }
+void FramesV2_freeMCDI(ID3v2MCDIFrameType **MCDI){
+  TxtStr_freeTextString(&(*MCDI)->CDTOC);
+  free(*MCDI);
+  *MCDI = NULL;
+}
+void FramesV2_freePOPM(ID3v2POPMFrameType **POPM){
+  TxtStr_freeTextString(&(*POPM)->userEmail);
+  free(*POPM);
+  *POPM = NULL;
+}
+
 

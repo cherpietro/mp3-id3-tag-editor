@@ -73,10 +73,10 @@ void FramesV2_getPRIV(FILE *, uint32_t , ID3v2PRIVFrameType *);
 void FramesV2_printPRIV(ID3v2PRIVFrameType);
 
 void FramesV2_storeMDCI(FILE*, uint32_t, ID3v2MCDIFrameType**);
-void FramesV2_freeMCDI(ID3v2MCDIFrameType*);
+void FramesV2_freeMCDI(ID3v2MCDIFrameType**);
 
 void FramesV2_storePOPM(FILE*, uint32_t, ID3v2POPMFrameType**);
-void FramesV2_freePOPM(ID3v2POPMFrameType*);
+void FramesV2_freePOPM(ID3v2POPMFrameType**);
 
 
 /*this should be on header?*/
