@@ -15,7 +15,7 @@ typedef struct {
     TextFrameList textFrameList;
     COMMFrameList COMMFrameList;
     PRIVFrameList PRIVFrameList;
-    ID3v2MCDIFrameType MCDI;
+    ID3v2MCDIFrameType *MCDI;
     ID3v2APICFrame *APIC;
     size_t paddingSize;
 } ID3TagType;

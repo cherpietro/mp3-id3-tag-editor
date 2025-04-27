@@ -33,12 +33,12 @@ int main(){
   
   
   // char *file = "./files/auxFiles/overture.mp3";
-  char *file = "./files/auxFiles/EliteFour.mp3";
+  // char *file = "./files/auxFiles/EliteFour.mp3";
   // storeAndSaveAPIC(file);
   // storeAndPrint(file);
-  storeAndWritte(file);
+  // storeAndWritte(file);
   
-  // testEliteFour();
+  testEliteFour();
   // testOverture();
   // testTimberHearth();
   // testJokin3();

@@ -84,8 +84,8 @@ void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     }
     
     //MCDI
-    fwrite(&ID3Tag->MCDI.header,1, sizeof(ID3Tag->MCDI.header),temp);
-    fwrite(ID3Tag->MCDI.CDTOC.string,1, TxtStr_getStringLen(ID3Tag->MCDI.CDTOC),temp);
+    fwrite(&ID3Tag->MCDI->header,1, sizeof(ID3Tag->MCDI->header),temp);
+    fwrite(ID3Tag->MCDI->CDTOC.string,1, TxtStr_getStringLen(ID3Tag->MCDI->CDTOC),temp);
 
     //APIC
     if(ID3Tag->APIC != NULL){
@@ -159,7 +159,10 @@ void ID3v2_free(ID3TagType *tag){
     FramesV2_freeAPIC(tag->APIC);
     tag->APIC = NULL;
   }
-  //FREE MCDI
+  if(tag->MCDI != NULL){
+    FramesV2_freeMCDI(tag->MCDI);
+    tag->MCDI = NULL;
+  }
 
 }
 
@@ -168,6 +171,7 @@ void ID3v2_init(ID3TagType *tag){
   ListCOMM_init(&tag->COMMFrameList);
   ListPRIV_init(&tag->PRIVFrameList);
   tag->APIC = NULL;
+  tag->MCDI = NULL;
 }
 
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
@@ -244,8 +248,9 @@ int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
     free(frame);
   }
   else if(strncmp(header.frameId,"MCDI",4)==0){
-    tag->MCDI.header = header;
-    FramesV2_getMCDI(mp3FilePointer,frameSize, &tag->MCDI);
+    // FramesV2_getMCDI(mp3FilePointer,frameSize, &tag->MCDI);
+    FramesV2_storeMDCI(mp3FilePointer,frameSize, &tag->MCDI);
+    tag->MCDI->header = header;
   }
   else if(strncmp(header.frameId,"PRIV",4)==0){
     ID3v2PRIVFrameType *frame;
@@ -478,8 +483,8 @@ void ELITEFOUR_ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     }
 
     //MCDI
-    fwrite(&ID3Tag->MCDI.header,1, sizeof(ID3Tag->MCDI.header),temp);
-    fwrite(ID3Tag->MCDI.CDTOC.string,1, TxtStr_getStringLen(ID3Tag->MCDI.CDTOC),temp);
+    fwrite(&ID3Tag->MCDI->header,1, sizeof(ID3Tag->MCDI->header),temp);
+    fwrite(ID3Tag->MCDI->CDTOC.string,1, TxtStr_getStringLen(ID3Tag->MCDI->CDTOC),temp);
 
     //PRIVFrames
     for(int i = 0; i<3; i++){

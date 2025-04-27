@@ -37,13 +37,30 @@ void FramesV2_getCOMM(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameTy
   free(frameContent);
 }
 
-//refractor
 void FramesV2_getMCDI(FILE *mp3FilePointer, uint32_t frameSize, ID3v2MCDIFrameType *frame){
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
   fread(frameContent, frameSize, 1, mp3FilePointer);
   char *ptr = (char *)frameContent;
   TxtStr_storeTextString(&frame->CDTOC,ptr, frameSize);
   free(frameContent);
+}
+
+void FramesV2_storeMDCI(FILE *mp3FilePointer, uint32_t frameSize,ID3v2MCDIFrameType** MDCI){
+  *MDCI = (ID3v2MCDIFrameType *)malloc(sizeof(ID3v2MCDIFrameType));
+  uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+  fread(frameContent, frameSize, 1, mp3FilePointer);
+  char *ptr = (char *)frameContent;
+  TxtStr_storeTextString(&(*MDCI)->CDTOC,ptr, frameSize);
+  free(frameContent);
+  
+  // *MDCI = (ID3v2MCDIFrameType *)malloc(sizeof(ID3v2MCDIFrameType));
+  // (*MDCI)->CDTOC = (uint8_t *)malloc(frameSize);
+
+}
+
+void FramesV2_freeMCDI(ID3v2MCDIFrameType *MCDIFrame){
+  TxtStr_freeTextString(&MCDIFrame->CDTOC);
+  free(MCDIFrame);
 }
 
 void FramesV2_getPRIV(FILE *mp3FilePointer, uint32_t frameSize, ID3v2PRIVFrameType *frame){
