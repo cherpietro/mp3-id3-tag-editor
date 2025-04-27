@@ -1,5 +1,6 @@
 #include "ID3v2Header.h"
 #include "SizeReader.h"
+#include "stdbool.h"
 
 void HeaderV2_storeHeader(FILE* mp3FilePointer, ID3v2HeaderType* header) {
     fread(header, sizeof(ID3v2HeaderType), 1, mp3FilePointer);
@@ -13,7 +14,7 @@ void HeaderV2_printTagHeader(ID3v2HeaderType header){
 }
 
 int HeaderV2_isID3v2Tag(ID3v2HeaderType header){
-    return header.tag[0] == 'I' && header.tag[1] == 'D' && header.tag[2] == '3';
+    return ( header.tag[0] == 'I' && header.tag[1] == 'D' && header.tag[2] == '3' && (HeaderV2_getTagVersion(header) == 3 || HeaderV2_getTagVersion(header) == 4));
 }
 
 int HeaderV2_getTagVersion(ID3v2HeaderType header){

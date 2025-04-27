@@ -1,9 +1,9 @@
-#include "TextFrameList.h"
+#include "TXTFrameList.h"
 #include "TextString.h"
 #include <string.h>
 #include <stdlib.h>
 
-void ListTXTF_init(TextFrameList *list) {
+void ListTXTF_init(TXTFrameList *list) {
     list->first = NULL;
     list->last = NULL;
     list->active = NULL;
@@ -24,8 +24,8 @@ static TextStringType copyTextString(const TextStringType *src) {
     return dest;
 }
 
-void ListTXTF_insertLast(TextFrameList *list, ID3v2TextFrameType frame) {
-    TextFrameListElement *newElemPtr = (TextFrameListElement *)malloc(sizeof(TextFrameListElement));
+void ListTXTF_insertLast(TXTFrameList *list, ID3v2TXTFrameType frame) {
+    TXTFrameListElement *newElemPtr = (TXTFrameListElement *)malloc(sizeof(TXTFrameListElement));
     if (!newElemPtr) return;
 
     newElemPtr->frame = frame;
@@ -48,19 +48,19 @@ void ListTXTF_insertLast(TextFrameList *list, ID3v2TextFrameType frame) {
     list->last = newElemPtr;
 }
 
-void ListTXTF_setFirstActive(TextFrameList *list) {
+void ListTXTF_setFirstActive(TXTFrameList *list) {
     list->active = list->first;
 }
 
-void ListTXTF_setNextActive(TextFrameList *list) {
+void ListTXTF_setNextActive(TXTFrameList *list) {
     if (list->active != NULL)
         list->active = list->active->next;
 }
 
-void ListTXTF_deleteActive(TextFrameList *list) {
+void ListTXTF_deleteActive(TXTFrameList *list) {
     if (list->active == NULL) return;
 
-    TextFrameListElement *toDelete = list->active;
+    TXTFrameListElement *toDelete = list->active;
 
     if (toDelete == list->first && toDelete == list->last) {
         list->first = NULL;
@@ -83,17 +83,17 @@ void ListTXTF_deleteActive(TextFrameList *list) {
     free(toDelete);
 }
 
-bool ListTXTF_isEmpty(TextFrameList list) {
+bool ListTXTF_isEmpty(TXTFrameList list) {
     return (list.first == NULL && list.last == NULL);
 }
 
-void ListTXTF_freeList(TextFrameList *list) {
+void ListTXTF_freeList(TXTFrameList *list) {
     ListTXTF_setFirstActive(list);
     while (!ListTXTF_isEmpty(*list)) {
         ListTXTF_deleteActive(list);
     }
 }
 
-ID3v2TextFrameType ListTXTF_getActive(TextFrameList list) {
+ID3v2TXTFrameType ListTXTF_getActive(TXTFrameList list) {
     return list.active->frame;
 }
