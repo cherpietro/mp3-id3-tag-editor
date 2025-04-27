@@ -2,6 +2,30 @@
 #include "SizeReader.h"
 #include <string.h>
 
+void ID3v2_init(ID3TagType *tag){
+  ListTXTF_init(&tag->textFrameList);
+  ListCOMM_init(&tag->COMMFrameList);
+  ListPRIV_init(&tag->PRIVFrameList);
+  tag->APIC = NULL;
+  tag->MCDI = NULL;
+  tag->POPM = NULL;
+}
+
+void ID3v2_free(ID3TagType *tag){
+  ListTXTF_freeList(&tag->textFrameList);
+  ListCOMM_freeList(&tag->COMMFrameList);
+  ListPRIV_freeList(&tag->PRIVFrameList);
+  if(tag->APIC != NULL) FramesV2_freeAPIC(&tag->APIC); 
+  if(tag->MCDI != NULL){
+    FramesV2_freeMCDI(tag->MCDI);
+    tag->MCDI = NULL;
+  }
+  if(tag->POPM != NULL){
+    FramesV2_freePOPM(tag->POPM);
+    tag->POPM = NULL;
+  }
+
+}
 void ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
   FILE *mp3FilePointer = fopen(file,"r");
   if (mp3FilePointer) {
@@ -16,7 +40,6 @@ void ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
           paddingReached = ID3v2_storeNextFrameInStruct(mp3FilePointer,ID3Tag);
         }
         if (paddingReached) ID3Tag->paddingSize = (HeaderV2_getTagSize(ID3Tag->header))+10 - (ftell(mp3FilePointer))+10; //tag size doesn't include header 
-
       }
       else printf("Not yet supported tag version\n");
     }
@@ -159,34 +182,6 @@ void ID3v2_removeTagFromFile(char*file){
   }
 }
 
-void ID3v2_free(ID3TagType *tag){
-  ListTXTF_freeList(&tag->textFrameList);
-  ListCOMM_freeList(&tag->COMMFrameList);
-  ListPRIV_freeList(&tag->PRIVFrameList);
-  if(tag->APIC != NULL){
-    FramesV2_freeAPIC(tag->APIC);
-    tag->APIC = NULL;
-  }
-  if(tag->MCDI != NULL){
-    FramesV2_freeMCDI(tag->MCDI);
-    tag->MCDI = NULL;
-  }
-  if(tag->POPM != NULL){
-    FramesV2_freePOPM(tag->POPM);
-    tag->POPM = NULL;
-  }
-
-}
-
-void ID3v2_init(ID3TagType *tag){
-  ListTXTF_init(&tag->textFrameList);
-  ListCOMM_init(&tag->COMMFrameList);
-  ListPRIV_init(&tag->PRIVFrameList);
-  tag->APIC = NULL;
-  tag->MCDI = NULL;
-  tag->POPM = NULL;
-}
-
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
   printf("\nsize in tag: %d bytes\n",HeaderV2_getTagSize(ID3Tag->header));
   size_t tagSizeOfStruct = 10; //header
@@ -296,7 +291,6 @@ int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
   }
   return 0;
 }
-
 
 void ID3v2_saveAPICImage(ID3TagType *ID3Tag){
   FramesV2_saveAPICImage(*ID3Tag->APIC);

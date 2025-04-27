@@ -55,12 +55,10 @@ typedef struct {
   char counter[4];
 } ID3v2POPMFrameType;
 
-
-
 void FramesV2_storeHeader(FILE*, ID3v2FrameHeaderType*);
 
 void FramesV2_storeAPIC(uint8_t*, uint32_t, ID3v2APICFrame**);
-void FramesV2_freeAPIC(ID3v2APICFrame*);
+void FramesV2_freeAPIC(ID3v2APICFrame**);
 void FramesV2_saveAPICImage(ID3v2APICFrame);
 void FramesV2_printAPIC(ID3v2APICFrame);
 

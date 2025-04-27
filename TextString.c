@@ -17,5 +17,8 @@ size_t TxtStr_getStringLen(TextStringType txtStr){
 void TxtStr_freeTextString(TextStringType *txtStr){
   if(txtStr->string != NULL){
     free(txtStr->string);
+    txtStr->string = NULL;
+    txtStr->size = 0;
+    txtStr->hasEndOfString = false;
   }
 }

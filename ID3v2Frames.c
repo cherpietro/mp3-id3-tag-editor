@@ -188,10 +188,11 @@ void FramesV2_storeAPIC(uint8_t *frameContent, uint32_t frameSize,ID3v2APICFrame
   memcpy((*apic)->imageData, frameContent + index, (*apic)->imageDataSize);
 }
 
-//Init APIC Frame?
-void FramesV2_freeAPIC(ID3v2APICFrame* apicFrame){
-  TxtStr_freeTextString(&apicFrame->mimeType);
-  TxtStr_freeTextString(&apicFrame->description);
-  free(apicFrame);
+void FramesV2_freeAPIC(ID3v2APICFrame** apicFrame){
+  TxtStr_freeTextString(&(*apicFrame)->mimeType);
+  TxtStr_freeTextString(&(*apicFrame)->description);
+  free(&(*apicFrame)->imageData);
+  free(*apicFrame);
+  *apicFrame = NULL;
 }
 
