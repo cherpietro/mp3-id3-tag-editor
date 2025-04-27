@@ -102,7 +102,6 @@ void ID3v2_removeTagFromFile(char*file){
     ID3v2HeaderType header;
     HeaderV2_storeHeader(mp3FilePointer,&header);
     if(HeaderV2_isID3v2Tag(header)){
-      if(HeaderV2_getTagVersion(header) == 3 || HeaderV2_getTagVersion(header) == 4){
         uint32_t tagSize = HeaderV2_getTagSize(header);
         fseek(mp3FilePointer, tagSize+10, SEEK_SET);
         uint32_t remainingSize = fileSize - tagSize;
@@ -125,15 +124,11 @@ void ID3v2_removeTagFromFile(char*file){
         remove(file);
         rename("tagRemoved.mp3",file);
       }
-    }
-    else printf("error, there is no ID3v2 Tag\n");
+    else printf("Not ID3v2 Tag detected or not yet supported version\n");
     fclose(mp3FilePointer);
   }
-  else {
-    printf("The file DOESN'T exist!\n");
-  }
+  else printf("The file DOESN'T exist!\n");
 }
-
 
 void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
   ID3v2_removeTagFromFile(file);
