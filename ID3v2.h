@@ -21,15 +21,19 @@ void ID3v2_init(ID3TagType *);
 
 void ID3v2_free(ID3TagType *);
 
-void ID3v2_storeTagInStruct(FILE*, ID3TagType*);
+void printTag(ID3TagType *);
 
-void ID3v2_removeTagFromFile(FILE*);
+void ID3v2_storeTagInStruct(char*, ID3TagType*);
 
-void ID3v2_writteTagIntoFile(FILE *, ID3TagType *);
+void ID3v2_removeTagFromFile(char*);
+
+void ID3v2_writteTagIntoFile(char *, ID3TagType *);
+
+void ID3v2_saveAPICImage(ID3TagType *);
 
 int ID3v2_storeNextFrameInStruct(FILE*, ID3TagType*);
 
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *);
 
-void TIMBERHEARTH_ID3v2_writteTagIntoFile(FILE *, ID3TagType *);
+void TIMBERHEARTH_ID3v2_writteTagIntoFile(char *, ID3TagType *);
 #endif // ID3V2_H

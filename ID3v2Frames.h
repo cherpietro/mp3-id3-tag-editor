@@ -42,11 +42,13 @@ void FramesV2_storeHeader(FILE*, ID3v2FrameHeaderType*);
 void FramesV2_freeAPIC(ID3v2APICFrame*);
 void FramesV2_printAPIC(ID3v2APICFrame);
 void FramesV2_storeAPIC(uint8_t*, uint32_t, ID3v2APICFrame**);
+void FramesV2_saveAPICImage(ID3v2APICFrame);
 
 void FramesV2_storeTXTF(FILE*, uint32_t,ID3v2TextFrameType *);
 void FramesV2_printTXTF(ID3v2TextFrameType);
 
 void FramesV2_getCOMM(FILE *, uint32_t , ID3v2COMMFrameType *);
+void FramesV2_printCOMM(ID3v2COMMFrameType);
 
 /*this should be on header?*/
 uint32_t FramesV2_getSize_V2_4(ID3v2FrameHeaderType);
