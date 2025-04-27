@@ -17,7 +17,31 @@ typedef struct {
     PRIVFrameList PRIVFrameList;
     ID3v2MCDIFrameType *MCDI;
     ID3v2POPMFrameType *POPM; //LIST
-    ID3v2APICFrame *APIC;
+    ID3v2APICFrame *APIC; //LIST
+    /*TO IMPLEMENT*/
+    int UFID; //LIST
+    int LISTWXXX;
+    int IPLS;
+    int ETCO;
+    int MLLT;
+    int SYTC;
+    int USLT; //LIST
+    int SYLT; //LIST
+    int RVAD;
+    int EQUA;
+    int RVRB;
+    int GEOB; //LIST
+    int PCNT;
+    int RBUF;
+    int AENC;
+    int LINK;
+    int POSS;
+    int USER;
+    int OWNE;
+    int COMR;
+    int ENCR;
+    int GRID;
+    /**/
     size_t paddingSize;
 } ID3TagType;
 
