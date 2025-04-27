@@ -11,9 +11,10 @@ int main(){
   // char *file = "./auxRemove.mp3";
   // char *file = "./files/TimberHearth.mp3";
   // char *file = "./aux.mp3";
+  char *file = "./aux2.mp3";
   char *fileToWrite = "./tagRemoved.mp3";
   // char *file = "./files/theme.mp3";
-  char *file = "./files/nlp6.mp3";
+  // char *file = "./files/nlp6.mp3";
   // char *file = "./files/overture.mp3";
   // char *file = "./files/gameFreak.mp3";
   mp3FilePointer = fopen(file,"r");
@@ -22,9 +23,9 @@ int main(){
     
     ID3v2_storeTagInStruct(mp3FilePointer,&ID3Tag);
     ID3v2_getTagSizeOfTheStruct(&ID3Tag);
-    // ID3v2_removeTagFromFile(mp3FilePointer);
+    ID3v2_removeTagFromFile(mp3FilePointer);
     FILE * fileToWritePtr = fopen(fileToWrite,"r");
-    // ID3v2_writteTagIntoFile(fileToWritePtr,&ID3Tag);
+    ID3v2_writteTagIntoFile(fileToWritePtr,&ID3Tag);
     // TIMBERHEARTH_ID3v2_writteTagIntoFile(fileToWritePtr,&ID3Tag);
     ID3v2_free(&ID3Tag);
     fclose(mp3FilePointer);
