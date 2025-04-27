@@ -1,5 +1,6 @@
 #include "ID3v2.h"
 #include "SizeReader.h"
+#include "FileFrameManager.h"
 #include <string.h>
 
 void ID3v2_init(ID3TagType *ID3Tag){
@@ -153,67 +154,14 @@ void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     // header
     fwrite(&ID3Tag->header,1,sizeof(ID3Tag->header),temp);
 
-    //COMMFrames
-    ID3v2COMMFrameType COMMFrame;
-    ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
-    while(ID3Tag->COMMFrameList.active != NULL){
-      COMMFrame = ListCOMM_getActive(ID3Tag->COMMFrameList);
-      fwrite(&COMMFrame.header,1, sizeof(COMMFrame.header),temp);
-      fwrite(&COMMFrame.textEncoding,1, 1,temp);
-      fwrite(&COMMFrame.language,1, 3,temp);
-      fwrite(COMMFrame.contentDescript.string,1, TxtStr_getStringLen(COMMFrame.contentDescript),temp);
-      fwrite(COMMFrame.actualText.string,1, TxtStr_getStringLen(COMMFrame.actualText),temp);
-      ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
-    }
-
-    //TXTFrames
-    ID3v2TXTFrameType TXTFrame;
-    ListTXTF_setFirstActive(&ID3Tag->TXTFrameList);
-    while(ID3Tag->TXTFrameList.active != NULL){
-      TXTFrame = ListTXTF_getActive(ID3Tag->TXTFrameList);
-      fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
-      fwrite(&TXTFrame.textEncoding,1, 1,temp);
-      fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),temp);
-      ListTXTF_setNextActive(&ID3Tag->TXTFrameList);
-    }
-    //PRIVFrames
-    ID3v2PRIVFrameType PRIVFrame;
-    ListPRIV_setFirstActive(&ID3Tag->PRIVFrameList);
-    while(ID3Tag->PRIVFrameList.active != NULL){
-      PRIVFrame = ListPRIV_getActive(ID3Tag->PRIVFrameList);
-      fwrite(&PRIVFrame.header,1, sizeof(PRIVFrame.header),temp);
-      fwrite(PRIVFrame.owner.string,1, TxtStr_getStringLen(PRIVFrame.owner),temp);
-      fwrite(PRIVFrame.privateData.string,1, TxtStr_getStringLen(PRIVFrame.privateData),temp);
-      ListPRIV_setNextActive(&ID3Tag->PRIVFrameList);
-    }
+    FileManager_writteCOMMFramesInFile(temp,&ID3Tag->COMMFrameList);
+    FileManager_writteTXTFramesInFile(temp,&ID3Tag->TXTFrameList);
+    FileManager_writtePRIVFramesInFile(temp,&ID3Tag->PRIVFrameList);
+    if(ID3Tag->MCDI != NULL) FileManager_writteMCDIFrameInFile(temp,*ID3Tag->MCDI);
+    if(ID3Tag->APIC != NULL) FileManager_writteAPICFrameInFile(temp,*ID3Tag->APIC);
+    if(ID3Tag->POPM != NULL) FileManager_writtePOPMFrameInFile(temp,*ID3Tag->POPM);
+    FileManager_writtePadding(temp,ID3Tag->paddingSize);
     
-    //MCDI
-    if(ID3Tag->MCDI != NULL){
-      fwrite(&ID3Tag->MCDI->header,1, sizeof(ID3Tag->MCDI->header),temp);
-      fwrite(ID3Tag->MCDI->CDTOC.string,1, TxtStr_getStringLen(ID3Tag->MCDI->CDTOC),temp);
-    }
-    //APIC
-    if(ID3Tag->APIC != NULL){
-      fwrite(&ID3Tag->APIC->header,1, sizeof(ID3Tag->APIC->header),temp);
-      fwrite(&ID3Tag->APIC->textEncoding,1, 1,temp);
-      fwrite(ID3Tag->APIC->mimeType.string,1, TxtStr_getStringLen(ID3Tag->APIC->mimeType),temp);
-      fwrite(&ID3Tag->APIC->pictureType,1, 1,temp);
-      fwrite(ID3Tag->APIC->description.string,1, TxtStr_getStringLen(ID3Tag->APIC->description),temp);
-      fwrite(ID3Tag->APIC->imageData,1,ID3Tag->APIC->imageDataSize ,temp);
-    }
-    //POPM
-    if(ID3Tag->POPM != NULL){
-      fwrite(&ID3Tag->POPM->header,1, sizeof(ID3Tag->APIC->header),temp);
-      fwrite(ID3Tag->POPM->userEmail.string,1, TxtStr_getStringLen(ID3Tag->POPM->userEmail),temp);
-      fwrite(&ID3Tag->POPM->rating,1, 1,temp);
-      fwrite(&ID3Tag->POPM->counter,1, 4,temp);
-    }
-    //Padding
-    char zero = 0;
-    for (int i = 0; i < (int) ID3Tag->paddingSize; i++) {
-        fwrite(&zero, 1, 1, temp);
-    }
-
     // content
     fwrite(dataBuffer,1,fileSize,temp);
     fclose(temp);
@@ -222,7 +170,6 @@ void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     rename("temp.mp3",file);
   }
 }
-
 
 //IMPLEMENT REMAINING TAGS
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){

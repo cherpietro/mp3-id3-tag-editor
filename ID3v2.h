@@ -18,7 +18,7 @@ typedef struct {
     PRIVFrameList PRIVFrameList;
     ID3v2MCDIFrameType *MCDI;
     ID3v2POPMFrameType *POPM; //LIST
-    ID3v2APICFrame *APIC; //LIST
+    ID3v2APICFrameType *APIC; //LIST
     /*TO IMPLEMENT*/
     int UFID; //LIST
     int LISTWXXX;

@@ -1,4 +1,4 @@
-OBJ= ID3v2.o ID3v2Header.o ID3v2Frames.o SizeReader.o TXTFrameList.o COMMFrameList.o TextString.o PRIVFrameList.o
+OBJ= ID3v2.o ID3v2Header.o ID3v2Frames.o SizeReader.o TXTFrameList.o COMMFrameList.o TextString.o PRIVFrameList.o FileFrameManager.o
 CFLAGS=-g -Wall -Wextra -pedantic 
 CC=gcc
 
@@ -17,6 +17,9 @@ ID3v2.o: ID3v2.c ID3v2.h ID3v2Header.h
 
 TXTFrameList.o: TXTFrameList.c TXTFrameList.h
 	$(CC) $(CFLAGS) -c TXTFrameList.c
+
+FileFrameManager.o: FileFrameManager.c FileFrameManager.h
+	$(CC) $(CFLAGS) -c FileFrameManager.c
 
 COMMFrameList.o: COMMFrameList.c COMMFrameList.h
 	$(CC) $(CFLAGS) -c COMMFrameList.c

@@ -20,7 +20,7 @@ typedef struct {
   TextStringType description;
   uint8_t *imageData;     
   size_t imageDataSize;   
-} ID3v2APICFrame;
+} ID3v2APICFrameType;
 
 typedef struct {
   ID3v2FrameHeaderType header; 
@@ -57,10 +57,10 @@ typedef struct {
 
 void FramesV2_storeHeader(FILE*, ID3v2FrameHeaderType*);
 
-void FramesV2_storeAPIC(uint8_t*, uint32_t, ID3v2APICFrame**);
-void FramesV2_freeAPIC(ID3v2APICFrame**);
-void FramesV2_saveAPICImage(ID3v2APICFrame);
-void FramesV2_printAPIC(ID3v2APICFrame);
+void FramesV2_storeAPIC(uint8_t*, uint32_t, ID3v2APICFrameType**);
+void FramesV2_freeAPIC(ID3v2APICFrameType**);
+void FramesV2_saveAPICImage(ID3v2APICFrameType);
+void FramesV2_printAPIC(ID3v2APICFrameType);
 
 //change name to getTXTF
 void FramesV2_storeTXTF(FILE*, uint32_t,ID3v2TXTFrameType *);
