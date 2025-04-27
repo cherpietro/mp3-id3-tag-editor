@@ -72,7 +72,21 @@ void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
       fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),temp);
       ListTXTF_setNextActive(&ID3Tag->textFrameList);
     }
+    //PRIVFrames
+    ID3v2PRIVFrameType PRIVFrame;
+    ListPRIV_setFirstActive(&ID3Tag->PRIVFrameList);
+    while(ID3Tag->PRIVFrameList.active != NULL){
+      PRIVFrame = ListPRIV_getActive(ID3Tag->PRIVFrameList);
+      fwrite(&PRIVFrame.header,1, sizeof(PRIVFrame.header),temp);
+      fwrite(PRIVFrame.owner.string,1, TxtStr_getStringLen(PRIVFrame.owner),temp);
+      fwrite(PRIVFrame.privateData.string,1, TxtStr_getStringLen(PRIVFrame.privateData),temp);
+      ListPRIV_setNextActive(&ID3Tag->PRIVFrameList);
+    }
     
+    //MCDI
+    fwrite(&ID3Tag->MCDI.header,1, sizeof(ID3Tag->MCDI.header),temp);
+    fwrite(ID3Tag->MCDI.CDTOC.string,1, TxtStr_getStringLen(ID3Tag->MCDI.CDTOC),temp);
+
     //APIC
     if(ID3Tag->APIC != NULL){
       fwrite(&ID3Tag->APIC->header,1, sizeof(ID3Tag->APIC->header),temp);
