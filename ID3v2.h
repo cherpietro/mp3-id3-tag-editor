@@ -8,12 +8,40 @@
 #include "ID3v2Frames.h"
 #include "TextFrameList.h"
 #include "COMMFrameList.h"
+#include "PRIVFrameList.h"
 
 typedef struct {
     ID3v2HeaderType header;
     TextFrameList textFrameList;
     COMMFrameList COMMFrameList;
-    ID3v2APICFrame *APIC;
+    PRIVFrameList PRIVFrameList;
+    ID3v2MCDIFrameType *MCDI;
+    ID3v2POPMFrameType *POPM; //LIST
+    ID3v2APICFrame *APIC; //LIST
+    /*TO IMPLEMENT*/
+    int UFID; //LIST
+    int LISTWXXX;
+    int IPLS;
+    int ETCO;
+    int MLLT;
+    int SYTC;
+    int USLT; //LIST
+    int SYLT; //LIST
+    int RVAD;
+    int EQUA;
+    int RVRB;
+    int GEOB; //LIST
+    int PCNT;
+    int RBUF;
+    int AENC;
+    int LINK;
+    int POSS;
+    int USER;
+    int OWNE;
+    int COMR;
+    int ENCR;
+    int GRID;
+    /**/
     size_t paddingSize;
 } ID3TagType;
 
@@ -35,5 +63,4 @@ int ID3v2_storeNextFrameInStruct(FILE*, ID3TagType*);
 
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *);
 
-void TIMBERHEARTH_ID3v2_writteTagIntoFile(char *, ID3TagType *);
 #endif // ID3V2_H

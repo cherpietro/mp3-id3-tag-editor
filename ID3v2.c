@@ -72,7 +72,22 @@ void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
       fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),temp);
       ListTXTF_setNextActive(&ID3Tag->textFrameList);
     }
+    //PRIVFrames
+    ID3v2PRIVFrameType PRIVFrame;
+    ListPRIV_setFirstActive(&ID3Tag->PRIVFrameList);
+    while(ID3Tag->PRIVFrameList.active != NULL){
+      PRIVFrame = ListPRIV_getActive(ID3Tag->PRIVFrameList);
+      fwrite(&PRIVFrame.header,1, sizeof(PRIVFrame.header),temp);
+      fwrite(PRIVFrame.owner.string,1, TxtStr_getStringLen(PRIVFrame.owner),temp);
+      fwrite(PRIVFrame.privateData.string,1, TxtStr_getStringLen(PRIVFrame.privateData),temp);
+      ListPRIV_setNextActive(&ID3Tag->PRIVFrameList);
+    }
     
+    //MCDI
+    if(ID3Tag->MCDI != NULL){
+      fwrite(&ID3Tag->MCDI->header,1, sizeof(ID3Tag->MCDI->header),temp);
+      fwrite(ID3Tag->MCDI->CDTOC.string,1, TxtStr_getStringLen(ID3Tag->MCDI->CDTOC),temp);
+    }
     //APIC
     if(ID3Tag->APIC != NULL){
       fwrite(&ID3Tag->APIC->header,1, sizeof(ID3Tag->APIC->header),temp);
@@ -81,6 +96,13 @@ void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
       fwrite(&ID3Tag->APIC->pictureType,1, 1,temp);
       fwrite(ID3Tag->APIC->description.string,1, TxtStr_getStringLen(ID3Tag->APIC->description),temp);
       fwrite(ID3Tag->APIC->imageData,1,ID3Tag->APIC->imageDataSize ,temp);
+    }
+    //POPM
+    if(ID3Tag->POPM != NULL){
+      fwrite(&ID3Tag->POPM->header,1, sizeof(ID3Tag->APIC->header),temp);
+      fwrite(ID3Tag->POPM->userEmail.string,1, TxtStr_getStringLen(ID3Tag->POPM->userEmail),temp);
+      fwrite(&ID3Tag->POPM->rating,1, 1,temp);
+      fwrite(&ID3Tag->POPM->counter,1, 4,temp);
     }
     //Padding
     char zero = 0;
@@ -140,9 +162,18 @@ void ID3v2_removeTagFromFile(char*file){
 void ID3v2_free(ID3TagType *tag){
   ListTXTF_freeList(&tag->textFrameList);
   ListCOMM_freeList(&tag->COMMFrameList);
+  ListPRIV_freeList(&tag->PRIVFrameList);
   if(tag->APIC != NULL){
     FramesV2_freeAPIC(tag->APIC);
     tag->APIC = NULL;
+  }
+  if(tag->MCDI != NULL){
+    FramesV2_freeMCDI(tag->MCDI);
+    tag->MCDI = NULL;
+  }
+  if(tag->POPM != NULL){
+    FramesV2_freePOPM(tag->POPM);
+    tag->POPM = NULL;
   }
 
 }
@@ -150,7 +181,10 @@ void ID3v2_free(ID3TagType *tag){
 void ID3v2_init(ID3TagType *tag){
   ListTXTF_init(&tag->textFrameList);
   ListCOMM_init(&tag->COMMFrameList);
+  ListPRIV_init(&tag->PRIVFrameList);
   tag->APIC = NULL;
+  tag->MCDI = NULL;
+  tag->POPM = NULL;
 }
 
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
@@ -226,6 +260,25 @@ int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
     TxtStr_freeTextString(&frame->contentDescript);
     free(frame);
   }
+  else if(strncmp(header.frameId,"MCDI",4)==0){
+    FramesV2_storeMDCI(mp3FilePointer,frameSize, &tag->MCDI);
+    tag->MCDI->header = header;
+  }
+  else if(strncmp(header.frameId,"POPM",4)==0){
+    FramesV2_storePOPM(mp3FilePointer,frameSize, &tag->POPM);
+    tag->POPM->header = header;
+  }
+  else if(strncmp(header.frameId,"PRIV",4)==0){
+    ID3v2PRIVFrameType *frame;
+    frame =  (ID3v2PRIVFrameType *) malloc(sizeof(ID3v2PRIVFrameType));
+    frame->header = header;
+    FramesV2_getPRIV(mp3FilePointer,frameSize, frame);
+    
+    ListPRIV_insertLast(&tag->PRIVFrameList,*frame);
+    TxtStr_freeTextString(&frame->owner);
+    TxtStr_freeTextString(&frame->privateData);
+    free(frame);
+  }
   else if(strncmp(header.frameId,"APIC",4)==0){
     uint8_t *buffer = (uint8_t *)malloc(frameSize);
     fread(buffer, frameSize, 1, mp3FilePointer);
@@ -245,74 +298,10 @@ int ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *tag){
 }
 
 
-void TIMBERHEARTH_ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
-  ID3v2_removeTagFromFile(file);
-
-  FILE *mp3FilePointer = fopen(file,"r");
-  if(mp3FilePointer){
-    fseek(mp3FilePointer,0,SEEK_END);
-    uint32_t fileSize = ftell(mp3FilePointer);
-    fseek(mp3FilePointer,0,SEEK_SET);
-    unsigned char *dataBuffer = (unsigned char *)malloc(fileSize);
-    if(!dataBuffer){
-      printf("error");
-      fclose(mp3FilePointer);
-      return;
-    }
-    fread(dataBuffer,1,fileSize,mp3FilePointer);
-    fclose(mp3FilePointer);
-
-    FILE *temp = fopen("temp.mp3","w");
-    if(!temp){
-      printf("error");
-      fclose(temp);
-      return;
-    }
-    // header
-    fwrite(&ID3Tag->header,1,sizeof(ID3Tag->header),temp);
-    /*AUX*/
-    ID3v2TextFrameType TXTFrame;
-    ListTXTF_setFirstActive(&ID3Tag->textFrameList);
-    TXTFrame = ListTXTF_getActive(ID3Tag->textFrameList);
-    fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
-    fwrite(&TXTFrame.textEncoding,1, 1,temp);
-    fwrite(TXTFrame.content.string,1, TXTFrame.content.size,temp);
-    ListTXTF_setNextActive(&ID3Tag->textFrameList);
-    /**/
-    //COMMFrames
-    ID3v2COMMFrameType COMMFrame;
-    ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
-    while(ID3Tag->COMMFrameList.active != NULL){
-      COMMFrame = ListCOMM_getActive(ID3Tag->COMMFrameList);
-      fwrite(&COMMFrame.header,1, sizeof(COMMFrame.header),temp);
-      fwrite(&COMMFrame.textEncoding,1, 1,temp);
-      fwrite(&COMMFrame.language,1, 3,temp);
-      fwrite(COMMFrame.contentDescript.string,1, TxtStr_getStringLen(COMMFrame.contentDescript),temp);
-      fwrite(COMMFrame.actualText.string,1, TxtStr_getStringLen(COMMFrame.actualText),temp);
-      ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
-    }
-    while(ID3Tag->textFrameList.active != NULL){
-      TXTFrame = ListTXTF_getActive(ID3Tag->textFrameList);
-      fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
-      fwrite(&TXTFrame.textEncoding,1, 1,temp);
-      fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),temp);
-      ListTXTF_setNextActive(&ID3Tag->textFrameList);
-    }
-    char zero = 0;
-    for (int i = 0; i < (int) ID3Tag->paddingSize; i++) {
-        fwrite(&zero, 1, 1, temp);
-    }
-    // content
-    fwrite(dataBuffer,1,fileSize,temp);
-    fclose(temp);
-
-    remove(file);
-    rename("temp.mp3",file);
-  }
-}
 void ID3v2_saveAPICImage(ID3TagType *ID3Tag){
   FramesV2_saveAPICImage(*ID3Tag->APIC);
 }
+
 void printTag(ID3TagType *ID3Tag){
   // header
   HeaderV2_printTagHeader(ID3Tag->header);
@@ -326,17 +315,26 @@ void printTag(ID3TagType *ID3Tag){
     ListTXTF_setNextActive(&ID3Tag->textFrameList);
   }
   
-  //  //COMMFrames
-   ID3v2COMMFrameType COMMFrame;
-   ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
-   while(ID3Tag->COMMFrameList.active != NULL){
-     COMMFrame = ListCOMM_getActive(ID3Tag->COMMFrameList);
-     FramesV2_printCOMM(COMMFrame);
-     ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
-   }
+  //COMMFrames
+  ID3v2COMMFrameType COMMFrame;
+  ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
+  while(ID3Tag->COMMFrameList.active != NULL){
+    COMMFrame = ListCOMM_getActive(ID3Tag->COMMFrameList);
+    FramesV2_printCOMM(COMMFrame);
+    ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
+  }
 
-   //APIC
-   if(ID3Tag->APIC != NULL){
-    FramesV2_printAPIC(*ID3Tag->APIC);
-   }
+  //PRIVFrames
+  ID3v2PRIVFrameType PRIVFrame;
+  ListPRIV_setFirstActive(&ID3Tag->PRIVFrameList);
+  while(ID3Tag->PRIVFrameList.active != NULL){
+    PRIVFrame = ListPRIV_getActive(ID3Tag->PRIVFrameList);
+    FramesV2_printPRIV(PRIVFrame);
+    ListPRIV_setNextActive(&ID3Tag->PRIVFrameList);
+  }
+
+  //APIC
+  if(ID3Tag->APIC != NULL){
+  FramesV2_printAPIC(*ID3Tag->APIC);
+  }
 }
