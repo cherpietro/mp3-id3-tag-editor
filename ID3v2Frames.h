@@ -56,14 +56,14 @@ typedef struct {
 } ID3v2POPMFrameType;
 
 void FramesV2_storeHeader(FILE*, ID3v2FrameHeaderType*);
+uint32_t FramesV2_getFrameSize(int ,ID3v2FrameHeaderType);
 
 void FramesV2_storeAPIC(uint8_t*, uint32_t, ID3v2APICFrameType**);
-void FramesV2_freeAPIC(ID3v2APICFrameType**);
 void FramesV2_saveAPICImage(ID3v2APICFrameType);
 void FramesV2_printAPIC(ID3v2APICFrameType);
+void FramesV2_freeAPIC(ID3v2APICFrameType**);
 
-//change name to getTXTF
-void FramesV2_storeTXTF(FILE*, uint32_t,ID3v2TXTFrameType *);
+void FramesV2_getTXTF(FILE*, uint32_t,ID3v2TXTFrameType *);
 void FramesV2_printTXTF(ID3v2TXTFrameType);
 void FramesV2_freeTXTF(ID3v2TXTFrameType**);
 
@@ -76,13 +76,12 @@ void FramesV2_printPRIV(ID3v2PRIVFrameType);
 void FramesV2_freePRIV(ID3v2PRIVFrameType**);
 
 void FramesV2_storeMDCI(FILE*, uint32_t, ID3v2MCDIFrameType**);
-void FramesV2_freeMCDI(ID3v2MCDIFrameType**);
 void FramesV2_printMDCI(ID3v2MCDIFrameType);
+void FramesV2_freeMCDI(ID3v2MCDIFrameType**);
 
 void FramesV2_storePOPM(FILE*, uint32_t, ID3v2POPMFrameType**);
-void FramesV2_freePOPM(ID3v2POPMFrameType**);
 void FramesV2_printPOPM(ID3v2POPMFrameType);
+void FramesV2_freePOPM(ID3v2POPMFrameType**);
 
-uint32_t FramesV2_getFrameSize(int ,ID3v2FrameHeaderType);
 
 #endif // ID3V2FRAMES_H

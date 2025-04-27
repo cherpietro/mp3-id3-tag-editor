@@ -51,7 +51,7 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     TXTF =  (ID3v2TXTFrameType *) malloc(sizeof(ID3v2TXTFrameType));
     TXTF->header = header;
 
-    FramesV2_storeTXTF(mp3FilePointer,frameSize, TXTF);
+    FramesV2_getTXTF(mp3FilePointer,frameSize, TXTF);
     ListTXTF_insertLast(&ID3Tag->TXTFrameList,*TXTF);
     FramesV2_freeTXTF(&TXTF);
   }
