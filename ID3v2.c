@@ -24,12 +24,10 @@ void ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
   FILE *mp3FilePointer = fopen(file,"r");
   if (mp3FilePointer) {
     int paddingReached = 0;
-    uint32_t tagSize;
     HeaderV2_storeHeader(mp3FilePointer,&ID3Tag->header);
     if(HeaderV2_isID3v2Tag(ID3Tag->header)){
       if(HeaderV2_getTagVersion(ID3Tag->header) == 3 || HeaderV2_getTagVersion(ID3Tag->header) == 4){
-        // HeaderV2_printTagHeader(ID3Tag->header);
-        tagSize = HeaderV2_getTagSize(ID3Tag->header);
+        uint32_t tagSize = HeaderV2_getTagSize(ID3Tag->header);
         while(paddingReached != 1 && ftell(mp3FilePointer) < tagSize + 10){
           paddingReached = ID3v2_storeNextFrameInStruct(mp3FilePointer,ID3Tag);
         }
