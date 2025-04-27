@@ -35,15 +35,12 @@ int main(){
 
 void testTimberHearth(){
   ID3TagType ID3Tag;
-  char *file = "./files/TimberHearth.mp3";
+  char *file = "./files/auxFiles/TimberHearth.mp3";
   ID3v2_init(&ID3Tag);
   ID3v2_storeTagInStruct(file,&ID3Tag);
-  ID3v2_removeTagFromFile(file);
-  
-  char *fileToWrite = "./tagRemoved.mp3";
-  FILE * fileToWritePtr = fopen(fileToWrite,"r");
-  TIMBERHEARTH_ID3v2_writteTagIntoFile(fileToWritePtr,&ID3Tag);
+  TIMBERHEARTH_ID3v2_writteTagIntoFile(file,&ID3Tag);
   ID3v2_free(&ID3Tag);
+  
   printf("Difference between files: \n");
-  system("cmp -l ./files/TimberHearth.mp3 ./temp.mp3 | wc -l");
+  system("cmp -l ./files/TimberHearth.mp3 ./files/auxFiles/TimberHearth.mp3 | wc -l");
 }
