@@ -6,14 +6,10 @@ void FramesV2_storeHeader(FILE *mp3FilePointer, ID3v2FrameHeaderType *header){
   fread(header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer);
 }
 
-uint32_t FramesV2_getSize_V2_4(ID3v2FrameHeaderType header){
-  return syncsafeToSize(header.size);
+uint32_t FramesV2_getFrameSize(int version, ID3v2FrameHeaderType header){
+  if(version == 4)  return syncsafeToSize(header.size);
+  else return sizeFromID3v23(header.size);
 }
-
-uint32_t FramesV2_getSize_V2_3(ID3v2FrameHeaderType header){
-  return sizeFromID3v23(header.size);
-}
-
 
 void FramesV2_getCOMM(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameType *frame){
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
@@ -181,7 +177,7 @@ void FramesV2_storeAPIC(uint8_t *frameContent, uint32_t frameSize,ID3v2APICFrame
 void FramesV2_freeAPIC(ID3v2APICFrame** APIC){
   TxtStr_freeTextString(&(*APIC)->mimeType);
   TxtStr_freeTextString(&(*APIC)->description);
-  free(&(*APIC)->imageData);
+  free((*APIC)->imageData);
   free(*APIC);
   *APIC = NULL;
 }
