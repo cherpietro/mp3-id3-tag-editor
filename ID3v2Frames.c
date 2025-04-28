@@ -266,3 +266,39 @@ void FramesV2_freeSYTC(ID3v2SYTCFrameType **SYTC){
   *SYTC = NULL;
 }
 
+void FramesV2_storeUSER(FILE* mp3FilePointer, uint32_t frameSize, ID3v2USERFrameType **USER){
+  *USER = (ID3v2USERFrameType *)malloc(sizeof(ID3v2USERFrameType));
+  uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+  fread(frameContent, frameSize, 1, mp3FilePointer);
+
+  size_t index = 0;
+  (*USER)->textEncoding = frameContent[index++];
+  (*USER)->language[0] = frameContent[index];
+  (*USER)->language[1] = frameContent[index+1];
+  (*USER)->language[2] = frameContent[index+2];
+  index+=3;
+
+  char *textPtr = (char *)frameContent + index ; 
+  size_t textSize = frameSize - index ; //Check this operation
+  TxtStr_storeTextString(&(*USER)->actualText,textPtr, textSize);
+  free(frameContent);
+}
+void FramesV2_printUSER(ID3v2USERFrameType USER){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",USER.header.frameId);
+  printf("Flags: %u %u\n",USER.header.flags[0],USER.header.flags[1]);
+  printf("Text Encoding: %d\n",USER.textEncoding);
+  printf("Language: %s\n",USER.language);
+  printf("Text: ");
+  for (int i = 0; i < (int)USER.actualText.size; i++) {
+    if(USER.actualText.string[i] == '\0') printf(" ");
+    else putchar(USER.actualText.string[i]);
+  }
+  printf("\n");
+}
+void FramesV2_freeUSER(ID3v2USERFrameType **USER){
+  TxtStr_freeTextString(&(*USER)->actualText);
+  free(*USER);
+  *USER = NULL;
+}
+

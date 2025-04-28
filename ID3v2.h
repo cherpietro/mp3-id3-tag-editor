@@ -22,6 +22,7 @@ typedef struct {
     /*Only stored*/
     ID3v2IPLSFrameType *IPLS;
     ID3v2SYTCFrameType *SYTC;
+    ID3v2USERFrameType *USER;
     /**/
     /*TO IMPLEMENT*/
     int ETCO;
@@ -39,7 +40,6 @@ typedef struct {
     int AENC;
     int LINK;
     int POSS;
-    int USER;
     int OWNE;
     int COMR;
     int ENCR;

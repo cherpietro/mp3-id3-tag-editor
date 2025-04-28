@@ -67,6 +67,13 @@ typedef struct {
   uint8_t* tempoData;
 } ID3v2SYTCFrameType;
 
+typedef struct {
+  ID3v2FrameHeaderType header;
+  uint8_t textEncoding;
+  char language[3];
+  TextStringType actualText;
+} ID3v2USERFrameType;
+
 void FramesV2_storeHeader(FILE*, ID3v2FrameHeaderType*);
 uint32_t FramesV2_getFrameSize(int ,ID3v2FrameHeaderType);
 
@@ -102,6 +109,10 @@ void FramesV2_freeIPLS(ID3v2IPLSFrameType**);
 void FramesV2_storeSYTC(FILE*, uint32_t, ID3v2SYTCFrameType**);
 void FramesV2_printSYTC(ID3v2SYTCFrameType);
 void FramesV2_freeSYTC(ID3v2SYTCFrameType**);
+
+void FramesV2_storeUSER(FILE*, uint32_t, ID3v2USERFrameType**);
+void FramesV2_printUSER(ID3v2USERFrameType);
+void FramesV2_freeUSER(ID3v2USERFrameType**);
 
 
 #endif // ID3V2FRAMES_H
