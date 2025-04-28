@@ -24,6 +24,7 @@ void ID3v2_free(ID3TagType *ID3Tag){
   if(ID3Tag->MCDI != NULL) FramesV2_freeMCDI(&ID3Tag->MCDI);
   if(ID3Tag->POPM != NULL) FramesV2_freePOPM(&ID3Tag->POPM);
   if(ID3Tag->IPLS != NULL) FramesV2_freeIPLS(&ID3Tag->IPLS);
+  if(ID3Tag->SYTC != NULL) FramesV2_freeSYTC(&ID3Tag->SYTC);
 }
 
 void ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
