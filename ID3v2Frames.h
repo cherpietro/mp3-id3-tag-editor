@@ -74,6 +74,14 @@ typedef struct {
   TextStringType actualText;
 } ID3v2USERFrameType;
 
+typedef struct {
+  ID3v2FrameHeaderType header;
+  uint8_t textEncoding;
+  TextStringType pricePayed;
+  char dateOfPurch[8];
+  TextStringType seller;
+} ID3v2OWNEFrameType;
+
 void FramesV2_storeHeader(FILE*, ID3v2FrameHeaderType*);
 uint32_t FramesV2_getFrameSize(int ,ID3v2FrameHeaderType);
 
@@ -113,6 +121,10 @@ void FramesV2_freeSYTC(ID3v2SYTCFrameType**);
 void FramesV2_storeUSER(FILE*, uint32_t, ID3v2USERFrameType**);
 void FramesV2_printUSER(ID3v2USERFrameType);
 void FramesV2_freeUSER(ID3v2USERFrameType**);
+
+void FramesV2_storeOWNE(FILE*, uint32_t, ID3v2OWNEFrameType**);
+void FramesV2_printOWNE(ID3v2OWNEFrameType);
+void FramesV2_freeOWNE(ID3v2OWNEFrameType**);
 
 
 #endif // ID3V2FRAMES_H

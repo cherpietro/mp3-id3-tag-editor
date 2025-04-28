@@ -15,6 +15,7 @@ void ID3v2_init(ID3TagType *ID3Tag){
   ID3Tag->IPLS = NULL;
   ID3Tag->SYTC = NULL;
   ID3Tag->USER = NULL;
+  ID3Tag->OWNE = NULL;
 }
 
 void ID3v2_free(ID3TagType *ID3Tag){
@@ -27,6 +28,7 @@ void ID3v2_free(ID3TagType *ID3Tag){
   if(ID3Tag->IPLS != NULL) FramesV2_freeIPLS(&ID3Tag->IPLS);
   if(ID3Tag->SYTC != NULL) FramesV2_freeSYTC(&ID3Tag->SYTC);
   if(ID3Tag->USER != NULL) FramesV2_freeUSER(&ID3Tag->USER);
+  if(ID3Tag->OWNE != NULL) FramesV2_freeOWNE(&ID3Tag->OWNE);
 }
 
 void ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
@@ -105,6 +107,10 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
   else if(strncmp(header.frameId,"USER",4)==0){
     FramesV2_storeUSER(mp3FilePointer,frameSize,&ID3Tag->USER);
     ID3Tag->USER->header = header;
+  }
+  else if(strncmp(header.frameId,"OWNE",4)==0){
+    FramesV2_storeOWNE(mp3FilePointer,frameSize,&ID3Tag->OWNE);
+    ID3Tag->OWNE->header = header;
   }
   else{
     printf("NOT SUPPORTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);

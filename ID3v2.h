@@ -23,6 +23,7 @@ typedef struct {
     ID3v2IPLSFrameType *IPLS;
     ID3v2SYTCFrameType *SYTC;
     ID3v2USERFrameType *USER;
+    ID3v2OWNEFrameType *OWNE;
     /**/
     /*TO IMPLEMENT*/
     int ETCO;
@@ -40,7 +41,6 @@ typedef struct {
     int AENC;
     int LINK;
     int POSS;
-    int OWNE;
     int COMR;
     int ENCR;
     int GRID;

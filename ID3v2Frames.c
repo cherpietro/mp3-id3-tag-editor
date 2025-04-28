@@ -302,3 +302,56 @@ void FramesV2_freeUSER(ID3v2USERFrameType **USER){
   *USER = NULL;
 }
 
+void FramesV2_storeOWNE(FILE *mp3FilePointer, uint32_t frameSize, ID3v2OWNEFrameType **OWNE){
+  *OWNE = (ID3v2OWNEFrameType *)malloc(sizeof(ID3v2OWNEFrameType));
+  uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+  fread(frameContent, frameSize, 1, mp3FilePointer);
+
+  size_t index = 0;
+  (*OWNE)->textEncoding = frameContent[index++];
+  char *prizePtr = (char *)frameContent + index;
+  size_t prizeSize = strlen(prizePtr)+1; //prize ALWAYS has to have \0
+  TxtStr_storeTextString(&(*OWNE)->pricePayed,prizePtr, prizeSize);
+  index += prizeSize;
+  
+  (*OWNE)->dateOfPurch[0] = frameContent[index];
+  (*OWNE)->dateOfPurch[1] = frameContent[index+1];
+  (*OWNE)->dateOfPurch[2] = frameContent[index+2];
+  (*OWNE)->dateOfPurch[3] = frameContent[index+3];
+  (*OWNE)->dateOfPurch[4] = frameContent[index+4];
+  (*OWNE)->dateOfPurch[5] = frameContent[index+5];
+  (*OWNE)->dateOfPurch[6] = frameContent[index+6];
+  (*OWNE)->dateOfPurch[7] = frameContent[index+7];
+  index += 8;
+  
+  char *sellerPtr = (char *)frameContent + index ; 
+  size_t sellerSize = frameSize - index ; //Check this operation
+  TxtStr_storeTextString(&(*OWNE)->seller,sellerPtr, sellerSize);
+  free(frameContent);
+}
+void FramesV2_printOWNE(ID3v2OWNEFrameType OWNE){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",OWNE.header.frameId);
+  printf("Flags: %u %u\n",OWNE.header.flags[0],OWNE.header.flags[1]);
+  printf("TextEncoding: %d\n",OWNE.textEncoding);
+  printf("Price payed:");
+  for (int i = 0; i < (int)OWNE.pricePayed.size; i++) {
+    if(OWNE.pricePayed.string[i] == '\0') printf(" ");
+    else putchar(OWNE.pricePayed.string[i]);
+  }
+  printf("\n");
+  printf("Date of pruchase: %s\n",OWNE.dateOfPurch);
+  printf("Seller: ");
+  for (int i = 0; i < (int)OWNE.seller.size; i++) {
+    if(OWNE.seller.string[i] == '\0') printf(" ");
+    else putchar(OWNE.seller.string[i]);
+  }
+  printf("\n");
+  
+}
+void FramesV2_freeOWNE(ID3v2OWNEFrameType** OWNE){
+  TxtStr_freeTextString(&(*OWNE)->pricePayed);
+  TxtStr_freeTextString(&(*OWNE)->seller);
+  free(*OWNE);
+  *OWNE = NULL;
+}
