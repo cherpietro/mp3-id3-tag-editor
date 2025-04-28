@@ -24,7 +24,7 @@ typedef struct {
 
 typedef struct {
   ID3v2FrameHeaderType header; 
-  TextStringType CDTOC;
+  TextStringType CDTOC; //change to uint8_t* CDTOC
 } ID3v2MCDIFrameType;
 
 typedef struct {
@@ -61,6 +61,12 @@ typedef struct {
   TextStringType peopeList;
 } ID3v2IPLSFrameType;
 
+typedef struct {
+  ID3v2FrameHeaderType header;
+  uint8_t timestampFormat;
+  uint8_t* tempoData;
+} ID3v2SYTCFrameType;
+
 void FramesV2_storeHeader(FILE*, ID3v2FrameHeaderType*);
 uint32_t FramesV2_getFrameSize(int ,ID3v2FrameHeaderType);
 
@@ -92,6 +98,10 @@ void FramesV2_freePOPM(ID3v2POPMFrameType**);
 void FramesV2_storeIPLS(FILE*, uint32_t, ID3v2IPLSFrameType**);
 void FramesV2_printIPLS(ID3v2IPLSFrameType);
 void FramesV2_freeIPLS(ID3v2IPLSFrameType**);
+
+void FramesV2_storeSYTC(FILE*, uint32_t, ID3v2SYTCFrameType**);
+void FramesV2_printSYTC(ID3v2SYTCFrameType);
+void FramesV2_freeSYTC(ID3v2SYTCFrameType**);
 
 
 #endif // ID3V2FRAMES_H

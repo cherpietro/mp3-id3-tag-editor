@@ -229,7 +229,7 @@ void FramesV2_printIPLS(ID3v2IPLSFrameType IPLS){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",IPLS.header.frameId);
   printf("Flags: %u %u\n",IPLS.header.flags[0],IPLS.header.flags[1]);
-  printf("TextEncoding: %s\n",IPLS.textEncoding);
+  printf("TextEncoding: %d\n",IPLS.textEncoding);
   printf("People List: ");
   for (int i = 0; i < (int)IPLS.peopeList.size; i++) {
     if(IPLS.peopeList.string[i] == '\0') printf("\n");
@@ -241,5 +241,28 @@ void FramesV2_freeIPLS(ID3v2IPLSFrameType **IPLS){
   TxtStr_freeTextString(&(*IPLS)->peopeList);
   free(*IPLS);
   *IPLS = NULL;
+}
+
+void FramesV2_storeSYTC(FILE* mp3FilePointer, uint32_t frameSize, ID3v2SYTCFrameType **SYTC){
+  *SYTC = (ID3v2SYTCFrameType *)malloc(sizeof(ID3v2SYTCFrameType));
+  uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+  fread(frameContent, frameSize, 1, mp3FilePointer);
+
+  (*SYTC)->timestampFormat = frameContent[0];
+  uint8_t *tempoDataPtr = (uint8_t *)frameContent + 1;
+  (*SYTC)->tempoData =  (uint8_t *)malloc(frameSize-1);
+  memcpy((*SYTC)->tempoData,tempoDataPtr,frameSize-1);
+  free(frameContent);
+}
+void FramesV2_printSYTC(ID3v2SYTCFrameType SYTC){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",SYTC.header.frameId);
+  printf("Flags: %u %u\n",SYTC.header.flags[0],SYTC.header.flags[1]);
+  printf("Timestamp format: %d\n",SYTC.timestampFormat);
+}
+void FramesV2_freeSYTC(ID3v2SYTCFrameType **SYTC){
+  free((*SYTC)->tempoData);
+  free(*SYTC);
+  *SYTC = NULL;
 }
 

@@ -21,13 +21,13 @@ typedef struct {
     ID3v2APICFrameType *APIC; //LIST
     /*Only stored*/
     ID3v2IPLSFrameType *IPLS;
+    ID3v2SYTCFrameType *SYTC;
     /**/
     /*TO IMPLEMENT*/
+    int ETCO;
     int UFID; //LIST
     int LISTWXXX; //LIST
-    int ETCO;
     int MLLT;
-    int SYTC;
     int USLT; //LIST
     int SYLT; //LIST
     int RVAD;

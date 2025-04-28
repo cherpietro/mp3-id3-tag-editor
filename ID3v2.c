@@ -13,6 +13,7 @@ void ID3v2_init(ID3TagType *ID3Tag){
   ID3Tag->MCDI = NULL;
   ID3Tag->POPM = NULL;
   ID3Tag->IPLS = NULL;
+  ID3Tag->SYTC = NULL;
 }
 
 void ID3v2_free(ID3TagType *ID3Tag){
@@ -91,11 +92,12 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     free(buffer);
   }
   else if(strncmp(header.frameId,"IPLS",4)==0){
-    uint8_t *buffer = (uint8_t *)malloc(frameSize);
-    fread(buffer, frameSize, 1, mp3FilePointer);
-    FramesV2_storeIPLS(buffer,frameSize,&ID3Tag->IPLS);
+    FramesV2_storeIPLS(mp3FilePointer,frameSize,&ID3Tag->IPLS);
     ID3Tag->IPLS->header = header;
-    free(buffer);
+  }
+  else if(strncmp(header.frameId,"SYTC",4)==0){
+    FramesV2_storeSYTC(mp3FilePointer,frameSize,&ID3Tag->SYTC);
+    ID3Tag->SYTC->header = header;
   }
   else{
     printf("NOT SUPPORTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
