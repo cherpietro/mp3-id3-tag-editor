@@ -19,29 +19,33 @@ typedef struct {
     ID3v2MCDIFrameType *MCDI;
     ID3v2POPMFrameType *POPM; //LIST
     ID3v2APICFrameType *APIC; //LIST
+    /*Only stored*/
+    ID3v2IPLSFrameType *IPLS;
+    ID3v2SYTCFrameType *SYTC;
+    ID3v2USERFrameType *USER;
+    ID3v2OWNEFrameType *OWNE;
+    ID3v2PCNTFrameType *PCNT;
+    /**/
     /*TO IMPLEMENT*/
     int UFID; //LIST
-    int LISTWXXX;
-    int IPLS;
-    int ETCO;
-    int MLLT;
-    int SYTC;
+    int LISTWXXX; //LIST
     int USLT; //LIST
     int SYLT; //LIST
-    int RVAD;
-    int EQUA;
-    int RVRB;
     int GEOB; //LIST
-    int PCNT;
-    int RBUF;
+    int LINK; //List
+    
+   
     int AENC;
-    int LINK;
     int POSS;
-    int USER;
-    int OWNE;
     int COMR;
     int ENCR;
     int GRID;
+
+    ID3v2DefaultFrameType *RVRB;
+    ID3v2DefaultFrameType *EQUA;
+    ID3v2DefaultFrameType *MLLT;
+    ID3v2DefaultFrameType *ETCO;
+    ID3v2DefaultFrameType *RVAD;
     /**/
     size_t paddingSize;
 } ID3TagType;

@@ -12,6 +12,16 @@ void ID3v2_init(ID3TagType *ID3Tag){
   ID3Tag->APIC = NULL;
   ID3Tag->MCDI = NULL;
   ID3Tag->POPM = NULL;
+  ID3Tag->IPLS = NULL;
+  ID3Tag->SYTC = NULL;
+  ID3Tag->USER = NULL;
+  ID3Tag->OWNE = NULL;
+  ID3Tag->PCNT = NULL;
+  ID3Tag->RVRB = NULL;
+  ID3Tag->EQUA = NULL;
+  ID3Tag->MLLT = NULL;
+  ID3Tag->ETCO = NULL;
+  ID3Tag->RVAD = NULL;
 }
 
 void ID3v2_free(ID3TagType *ID3Tag){
@@ -21,6 +31,16 @@ void ID3v2_free(ID3TagType *ID3Tag){
   if(ID3Tag->APIC != NULL) FramesV2_freeAPIC(&ID3Tag->APIC); 
   if(ID3Tag->MCDI != NULL) FramesV2_freeMCDI(&ID3Tag->MCDI);
   if(ID3Tag->POPM != NULL) FramesV2_freePOPM(&ID3Tag->POPM);
+  if(ID3Tag->IPLS != NULL) FramesV2_freeIPLS(&ID3Tag->IPLS);
+  if(ID3Tag->SYTC != NULL) FramesV2_freeSYTC(&ID3Tag->SYTC);
+  if(ID3Tag->USER != NULL) FramesV2_freeUSER(&ID3Tag->USER);
+  if(ID3Tag->OWNE != NULL) FramesV2_freeOWNE(&ID3Tag->OWNE);
+  if(ID3Tag->PCNT != NULL) FramesV2_freePCNT(&ID3Tag->PCNT);
+  if(ID3Tag->RVRB != NULL) FramesV2_freeDefaultFrame(&ID3Tag->RVRB);
+  if(ID3Tag->EQUA != NULL) FramesV2_freeDefaultFrame(&ID3Tag->EQUA);
+  if(ID3Tag->MLLT != NULL) FramesV2_freeDefaultFrame(&ID3Tag->MLLT);
+  if(ID3Tag->ETCO != NULL) FramesV2_freeDefaultFrame(&ID3Tag->ETCO);
+  if(ID3Tag->RVAD != NULL) FramesV2_freeDefaultFrame(&ID3Tag->RVAD);
 }
 
 void ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
@@ -87,6 +107,56 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     FramesV2_storeAPIC(buffer,frameSize,&ID3Tag->APIC);
     ID3Tag->APIC->header = header;
     free(buffer);
+  }
+  else if(strncmp(header.frameId,"IPLS",4)==0){
+    printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+    FramesV2_storeIPLS(mp3FilePointer,frameSize,&ID3Tag->IPLS);
+    ID3Tag->IPLS->header = header;
+  }
+  else if(strncmp(header.frameId,"SYTC",4)==0){
+    printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+    FramesV2_storeSYTC(mp3FilePointer,frameSize,&ID3Tag->SYTC);
+    ID3Tag->SYTC->header = header;
+  }
+  else if(strncmp(header.frameId,"USER",4)==0){
+    printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+    FramesV2_storeUSER(mp3FilePointer,frameSize,&ID3Tag->USER);
+    ID3Tag->USER->header = header;
+  }
+  else if(strncmp(header.frameId,"OWNE",4)==0){
+    printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+    FramesV2_storeOWNE(mp3FilePointer,frameSize,&ID3Tag->OWNE);
+    ID3Tag->OWNE->header = header;
+  }
+  else if(strncmp(header.frameId,"PCNT",4)==0){
+    printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+    FramesV2_storePCNT(mp3FilePointer,frameSize,&ID3Tag->PCNT);
+    ID3Tag->PCNT->header = header;
+  }
+  else if(strncmp(header.frameId,"RVRB",4)==0){
+    printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+    FramesV2_storeDefaultFrame(mp3FilePointer,frameSize,&ID3Tag->RVRB);
+    ID3Tag->RVRB->header = header;
+  }
+  else if(strncmp(header.frameId,"EQUA",4)==0){
+    printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+    FramesV2_storeDefaultFrame(mp3FilePointer,frameSize,&ID3Tag->EQUA);
+    ID3Tag->EQUA->header = header;
+  }
+  else if(strncmp(header.frameId,"MLLT",4)==0){
+    printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+    FramesV2_storeDefaultFrame(mp3FilePointer,frameSize,&ID3Tag->MLLT);
+    ID3Tag->MLLT->header = header;
+  }
+  else if(strncmp(header.frameId,"ETCO",4)==0){
+    printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+    FramesV2_storeDefaultFrame(mp3FilePointer,frameSize,&ID3Tag->ETCO);
+    ID3Tag->ETCO->header = header;
+  }
+  else if(strncmp(header.frameId,"RVAD",4)==0){
+    printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+    FramesV2_storeDefaultFrame(mp3FilePointer,frameSize,&ID3Tag->RVAD);
+    ID3Tag->RVAD->header = header;
   }
   else{
     printf("NOT SUPPORTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);

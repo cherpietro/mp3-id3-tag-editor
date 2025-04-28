@@ -24,7 +24,7 @@ typedef struct {
 
 typedef struct {
   ID3v2FrameHeaderType header; 
-  TextStringType CDTOC;
+  TextStringType CDTOC; //change to uint8_t* CDTOC
 } ID3v2MCDIFrameType;
 
 typedef struct {
@@ -52,8 +52,46 @@ typedef struct {
   ID3v2FrameHeaderType header;
   TextStringType userEmail;
   uint8_t rating;
-  char counter[4];
+  char counter[4]; //MAYBE COUNTER CAN INCREASE
 } ID3v2POPMFrameType;
+
+typedef struct {
+  ID3v2FrameHeaderType header;
+  uint8_t textEncoding;
+  TextStringType peopeList;
+} ID3v2IPLSFrameType;
+
+typedef struct {
+  ID3v2FrameHeaderType header;
+  uint8_t timestampFormat;
+  uint8_t* tempoData;
+} ID3v2SYTCFrameType;
+
+typedef struct {
+  ID3v2FrameHeaderType header;
+  uint8_t textEncoding;
+  char language[3];
+  TextStringType actualText;
+} ID3v2USERFrameType;
+
+typedef struct {
+  ID3v2FrameHeaderType header;
+  uint8_t textEncoding;
+  TextStringType pricePayed;
+  char dateOfPurch[8];
+  TextStringType seller;
+} ID3v2OWNEFrameType;
+
+typedef struct {
+  ID3v2FrameHeaderType header;
+  TextStringType counter;
+} ID3v2PCNTFrameType;
+
+typedef struct {
+  ID3v2FrameHeaderType header;
+  uint8_t *frameData;
+} ID3v2DefaultFrameType;
+
 
 void FramesV2_storeHeader(FILE*, ID3v2FrameHeaderType*);
 uint32_t FramesV2_getFrameSize(int ,ID3v2FrameHeaderType);
@@ -82,6 +120,30 @@ void FramesV2_freeMCDI(ID3v2MCDIFrameType**);
 void FramesV2_storePOPM(FILE*, uint32_t, ID3v2POPMFrameType**);
 void FramesV2_printPOPM(ID3v2POPMFrameType);
 void FramesV2_freePOPM(ID3v2POPMFrameType**);
+
+void FramesV2_storeIPLS(FILE*, uint32_t, ID3v2IPLSFrameType**);
+void FramesV2_printIPLS(ID3v2IPLSFrameType);
+void FramesV2_freeIPLS(ID3v2IPLSFrameType**);
+
+void FramesV2_storeSYTC(FILE*, uint32_t, ID3v2SYTCFrameType**);
+void FramesV2_printSYTC(ID3v2SYTCFrameType);
+void FramesV2_freeSYTC(ID3v2SYTCFrameType**);
+
+void FramesV2_storeUSER(FILE*, uint32_t, ID3v2USERFrameType**);
+void FramesV2_printUSER(ID3v2USERFrameType);
+void FramesV2_freeUSER(ID3v2USERFrameType**);
+
+void FramesV2_storeOWNE(FILE*, uint32_t, ID3v2OWNEFrameType**);
+void FramesV2_printOWNE(ID3v2OWNEFrameType);
+void FramesV2_freeOWNE(ID3v2OWNEFrameType**);
+
+void FramesV2_storePCNT(FILE*, uint32_t, ID3v2PCNTFrameType**);
+void FramesV2_printPCNT(ID3v2PCNTFrameType);
+void FramesV2_freePCNT(ID3v2PCNTFrameType**);
+
+void FramesV2_storeDefaultFrame(FILE*, uint32_t, ID3v2DefaultFrameType**);
+void FramesV2_printDefaultFrame(ID3v2DefaultFrameType);
+void FramesV2_freeDefaultFrame(ID3v2DefaultFrameType**);
 
 
 #endif // ID3V2FRAMES_H
