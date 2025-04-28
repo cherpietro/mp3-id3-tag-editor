@@ -17,6 +17,11 @@ void ID3v2_init(ID3TagType *ID3Tag){
   ID3Tag->USER = NULL;
   ID3Tag->OWNE = NULL;
   ID3Tag->PCNT = NULL;
+  ID3Tag->RVRB = NULL;
+  ID3Tag->EQUA = NULL;
+  ID3Tag->MLLT = NULL;
+  ID3Tag->ETCO = NULL;
+  ID3Tag->RVAD = NULL;
 }
 
 void ID3v2_free(ID3TagType *ID3Tag){
@@ -31,6 +36,11 @@ void ID3v2_free(ID3TagType *ID3Tag){
   if(ID3Tag->USER != NULL) FramesV2_freeUSER(&ID3Tag->USER);
   if(ID3Tag->OWNE != NULL) FramesV2_freeOWNE(&ID3Tag->OWNE);
   if(ID3Tag->PCNT != NULL) FramesV2_freePCNT(&ID3Tag->PCNT);
+  if(ID3Tag->RVRB != NULL) FramesV2_freeDefaultFrame(&ID3Tag->RVRB);
+  if(ID3Tag->EQUA != NULL) FramesV2_freeDefaultFrame(&ID3Tag->EQUA);
+  if(ID3Tag->MLLT != NULL) FramesV2_freeDefaultFrame(&ID3Tag->MLLT);
+  if(ID3Tag->ETCO != NULL) FramesV2_freeDefaultFrame(&ID3Tag->ETCO);
+  if(ID3Tag->RVAD != NULL) FramesV2_freeDefaultFrame(&ID3Tag->RVAD);
 }
 
 void ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
@@ -117,6 +127,26 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
   else if(strncmp(header.frameId,"PCNT",4)==0){
     FramesV2_storePCNT(mp3FilePointer,frameSize,&ID3Tag->PCNT);
     ID3Tag->PCNT->header = header;
+  }
+  else if(strncmp(header.frameId,"RVRB",4)==0){
+    FramesV2_storeDefaultFrame(mp3FilePointer,frameSize,&ID3Tag->RVRB);
+    ID3Tag->RVRB->header = header;
+  }
+  else if(strncmp(header.frameId,"EQUA",4)==0){
+    FramesV2_storeDefaultFrame(mp3FilePointer,frameSize,&ID3Tag->EQUA);
+    ID3Tag->EQUA->header = header;
+  }
+  else if(strncmp(header.frameId,"MLLT",4)==0){
+    FramesV2_storeDefaultFrame(mp3FilePointer,frameSize,&ID3Tag->MLLT);
+    ID3Tag->MLLT->header = header;
+  }
+  else if(strncmp(header.frameId,"ETCO",4)==0){
+    FramesV2_storeDefaultFrame(mp3FilePointer,frameSize,&ID3Tag->ETCO);
+    ID3Tag->ETCO->header = header;
+  }
+  else if(strncmp(header.frameId,"RVAD",4)==0){
+    FramesV2_storeDefaultFrame(mp3FilePointer,frameSize,&ID3Tag->RVAD);
+    ID3Tag->RVAD->header = header;
   }
   else{
     printf("NOT SUPPORTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);

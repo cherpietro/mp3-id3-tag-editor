@@ -376,3 +376,19 @@ void FramesV2_freePCNT(ID3v2PCNTFrameType **PCNT){
   free(*PCNT);
   *PCNT = NULL;
 }
+
+void FramesV2_storeDefaultFrame(FILE* mp3FilePointer, uint32_t frameSize, ID3v2DefaultFrameType **DefaultFrame){
+  *DefaultFrame = (ID3v2DefaultFrameType *)malloc(sizeof(ID3v2DefaultFrameType));
+  (*DefaultFrame)->frameData = (uint8_t *)malloc(frameSize);
+  fread((*DefaultFrame)->frameData, frameSize, 1, mp3FilePointer);
+}
+void FramesV2_printDefaultFrame(ID3v2DefaultFrameType DefaultFrame){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",DefaultFrame.header.frameId);
+  printf("Flags: %u %u\n",DefaultFrame.header.flags[0],DefaultFrame.header.flags[1]);
+}
+void FramesV2_freeDefaultFrame(ID3v2DefaultFrameType **DefaultFrame){
+  free((*DefaultFrame)->frameData);
+  free(*DefaultFrame);
+  *DefaultFrame = NULL;
+}

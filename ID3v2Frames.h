@@ -87,6 +87,11 @@ typedef struct {
   TextStringType counter;
 } ID3v2PCNTFrameType;
 
+typedef struct {
+  ID3v2FrameHeaderType header;
+  uint8_t *frameData;
+} ID3v2DefaultFrameType;
+
 
 void FramesV2_storeHeader(FILE*, ID3v2FrameHeaderType*);
 uint32_t FramesV2_getFrameSize(int ,ID3v2FrameHeaderType);
@@ -135,6 +140,10 @@ void FramesV2_freeOWNE(ID3v2OWNEFrameType**);
 void FramesV2_storePCNT(FILE*, uint32_t, ID3v2PCNTFrameType**);
 void FramesV2_printPCNT(ID3v2PCNTFrameType);
 void FramesV2_freePCNT(ID3v2PCNTFrameType**);
+
+void FramesV2_storeDefaultFrame(FILE*, uint32_t, ID3v2DefaultFrameType**);
+void FramesV2_printDefaultFrame(ID3v2DefaultFrameType);
+void FramesV2_freeDefaultFrame(ID3v2DefaultFrameType**);
 
 
 #endif // ID3V2FRAMES_H

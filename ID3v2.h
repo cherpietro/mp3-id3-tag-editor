@@ -31,20 +31,21 @@ typedef struct {
     int LISTWXXX; //LIST
     int USLT; //LIST
     int SYLT; //LIST
-    int EQUA;
-    int RVRB;
     int GEOB; //LIST
-    int RBUF;
-    int AENC;
     int LINK; //List
+    
+   
+    int AENC;
     int POSS;
     int COMR;
     int ENCR;
     int GRID;
 
-    int MLLT;
-    int ETCO;
-    int RVAD;
+    ID3v2DefaultFrameType *RVRB;
+    ID3v2DefaultFrameType *EQUA;
+    ID3v2DefaultFrameType *MLLT;
+    ID3v2DefaultFrameType *ETCO;
+    ID3v2DefaultFrameType *RVAD;
     /**/
     size_t paddingSize;
 } ID3TagType;
