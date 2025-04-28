@@ -12,6 +12,7 @@ void ID3v2_init(ID3TagType *ID3Tag){
   ID3Tag->APIC = NULL;
   ID3Tag->MCDI = NULL;
   ID3Tag->POPM = NULL;
+  ID3Tag->IPLS = NULL;
 }
 
 void ID3v2_free(ID3TagType *ID3Tag){
@@ -21,6 +22,7 @@ void ID3v2_free(ID3TagType *ID3Tag){
   if(ID3Tag->APIC != NULL) FramesV2_freeAPIC(&ID3Tag->APIC); 
   if(ID3Tag->MCDI != NULL) FramesV2_freeMCDI(&ID3Tag->MCDI);
   if(ID3Tag->POPM != NULL) FramesV2_freePOPM(&ID3Tag->POPM);
+  if(ID3Tag->IPLS != NULL) FramesV2_freeIPLS(&ID3Tag->IPLS);
 }
 
 void ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
@@ -86,6 +88,13 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     fread(buffer, frameSize, 1, mp3FilePointer);
     FramesV2_storeAPIC(buffer,frameSize,&ID3Tag->APIC);
     ID3Tag->APIC->header = header;
+    free(buffer);
+  }
+  else if(strncmp(header.frameId,"IPLS",4)==0){
+    uint8_t *buffer = (uint8_t *)malloc(frameSize);
+    fread(buffer, frameSize, 1, mp3FilePointer);
+    FramesV2_storeIPLS(buffer,frameSize,&ID3Tag->IPLS);
+    ID3Tag->IPLS->header = header;
     free(buffer);
   }
   else{

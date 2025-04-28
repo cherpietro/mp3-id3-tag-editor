@@ -132,6 +132,39 @@ void FramesV2_freeCOMM(ID3v2COMMFrameType** COMM){
   *COMM = NULL;
 }
 
+void FramesV2_printPRIV(ID3v2PRIVFrameType frame){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",frame.header.frameId);
+  printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
+  printf("Owner: ");
+  for (int i = 0; i < (int)frame.owner.size; i++) {
+    if(frame.owner.string[i] == '\0') printf(" ");
+    else putchar(frame.owner.string[i]);
+  }
+  printf("\n"); 
+}
+void FramesV2_getPRIV(FILE *mp3FilePointer, uint32_t frameSize, ID3v2PRIVFrameType *frame){
+  uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+  fread(frameContent, frameSize, 1, mp3FilePointer);
+
+  size_t index = 0;
+  char *ownerPtr = (char *)frameContent;
+  size_t descSize = strlen(ownerPtr)+1; //description ALWAYS has to have \0
+  TxtStr_storeTextString(&frame->owner,ownerPtr, descSize);
+  index += descSize;
+
+  char *privateDataPtr = (char *)frameContent + index ; 
+  size_t contentSize = frameSize - index ; //Check this operation
+  TxtStr_storeTextString(&frame->privateData,privateDataPtr, contentSize);
+  free(frameContent);
+}
+void FramesV2_freePRIV(ID3v2PRIVFrameType** PRIV){
+  TxtStr_freeTextString(&(*PRIV)->owner);
+  TxtStr_freeTextString(&(*PRIV)->privateData);
+  free(*PRIV);
+  *PRIV = NULL;
+}
+
 void FramesV2_storeMDCI(FILE *mp3FilePointer, uint32_t frameSize,ID3v2MCDIFrameType** MDCI){
   *MDCI = (ID3v2MCDIFrameType *)malloc(sizeof(ID3v2MCDIFrameType));
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
@@ -182,35 +215,31 @@ void FramesV2_freePOPM(ID3v2POPMFrameType **POPM){
   *POPM = NULL;
 }
 
-void FramesV2_printPRIV(ID3v2PRIVFrameType frame){
-  printf("\n----FRAME----\n");
-  printf("Frame ID: %s\n",frame.header.frameId);
-  printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
-  printf("Owner: ");
-  for (int i = 0; i < (int)frame.owner.size; i++) {
-    if(frame.owner.string[i] == '\0') printf(" ");
-    else putchar(frame.owner.string[i]);
-  }
-  printf("\n"); 
-}
-void FramesV2_getPRIV(FILE *mp3FilePointer, uint32_t frameSize, ID3v2PRIVFrameType *frame){
+void FramesV2_storeIPLS(FILE* mp3FilePointer, uint32_t frameSize, ID3v2IPLSFrameType **IPLS){
+  *IPLS = (ID3v2IPLSFrameType *)malloc(sizeof(ID3v2IPLSFrameType));
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
   fread(frameContent, frameSize, 1, mp3FilePointer);
 
-  size_t index = 0;
-  char *ownerPtr = (char *)frameContent;
-  size_t descSize = strlen(ownerPtr)+1; //description ALWAYS has to have \0
-  TxtStr_storeTextString(&frame->owner,ownerPtr, descSize);
-  index += descSize;
-
-  char *privateDataPtr = (char *)frameContent + index ; 
-  size_t contentSize = frameSize - index ; //Check this operation
-  TxtStr_storeTextString(&frame->privateData,privateDataPtr, contentSize);
+  (*IPLS)->textEncoding = frameContent[0];
+  char *peopleLstPtr = (char *)frameContent + 1;
+  TxtStr_storeTextString(&(*IPLS)->peopeList,peopleLstPtr,frameSize -1);
   free(frameContent);
 }
-void FramesV2_freePRIV(ID3v2PRIVFrameType** PRIV){
-  TxtStr_freeTextString(&(*PRIV)->owner);
-  TxtStr_freeTextString(&(*PRIV)->privateData);
-  free(*PRIV);
-  *PRIV = NULL;
+void FramesV2_printIPLS(ID3v2IPLSFrameType IPLS){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",IPLS.header.frameId);
+  printf("Flags: %u %u\n",IPLS.header.flags[0],IPLS.header.flags[1]);
+  printf("TextEncoding: %s\n",IPLS.textEncoding);
+  printf("People List: ");
+  for (int i = 0; i < (int)IPLS.peopeList.size; i++) {
+    if(IPLS.peopeList.string[i] == '\0') printf("\n");
+    else putchar(IPLS.peopeList.string[i]);
+  }
+  printf("\n");
 }
+void FramesV2_freeIPLS(ID3v2IPLSFrameType **IPLS){
+  TxtStr_freeTextString(&(*IPLS)->peopeList);
+  free(*IPLS);
+  *IPLS = NULL;
+}
+

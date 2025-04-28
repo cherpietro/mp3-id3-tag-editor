@@ -19,10 +19,12 @@ typedef struct {
     ID3v2MCDIFrameType *MCDI;
     ID3v2POPMFrameType *POPM; //LIST
     ID3v2APICFrameType *APIC; //LIST
+    /*Only stored*/
+    ID3v2IPLSFrameType *IPLS;
+    /**/
     /*TO IMPLEMENT*/
     int UFID; //LIST
-    int LISTWXXX;
-    int IPLS;
+    int LISTWXXX; //LIST
     int ETCO;
     int MLLT;
     int SYTC;
