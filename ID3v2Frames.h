@@ -52,7 +52,7 @@ typedef struct {
   ID3v2FrameHeaderType header;
   TextStringType userEmail;
   uint8_t rating;
-  char counter[4];
+  char counter[4]; //MAYBE COUNTER CAN INCREASE
 } ID3v2POPMFrameType;
 
 typedef struct {
@@ -81,6 +81,12 @@ typedef struct {
   char dateOfPurch[8];
   TextStringType seller;
 } ID3v2OWNEFrameType;
+
+typedef struct {
+  ID3v2FrameHeaderType header;
+  TextStringType counter;
+} ID3v2PCNTFrameType;
+
 
 void FramesV2_storeHeader(FILE*, ID3v2FrameHeaderType*);
 uint32_t FramesV2_getFrameSize(int ,ID3v2FrameHeaderType);
@@ -125,6 +131,10 @@ void FramesV2_freeUSER(ID3v2USERFrameType**);
 void FramesV2_storeOWNE(FILE*, uint32_t, ID3v2OWNEFrameType**);
 void FramesV2_printOWNE(ID3v2OWNEFrameType);
 void FramesV2_freeOWNE(ID3v2OWNEFrameType**);
+
+void FramesV2_storePCNT(FILE*, uint32_t, ID3v2PCNTFrameType**);
+void FramesV2_printPCNT(ID3v2PCNTFrameType);
+void FramesV2_freePCNT(ID3v2PCNTFrameType**);
 
 
 #endif // ID3V2FRAMES_H

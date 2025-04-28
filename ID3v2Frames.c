@@ -355,3 +355,24 @@ void FramesV2_freeOWNE(ID3v2OWNEFrameType** OWNE){
   free(*OWNE);
   *OWNE = NULL;
 }
+
+void FramesV2_storePCNT(FILE* mp3FilePointer, uint32_t frameSize, ID3v2PCNTFrameType **PCNT){
+  *PCNT = (ID3v2PCNTFrameType *)malloc(sizeof(ID3v2PCNTFrameType));
+  uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+  fread(frameContent, frameSize, 1, mp3FilePointer);
+
+  char *counterPtr = (char *)frameContent;
+  TxtStr_storeTextString(&(*PCNT)->counter,counterPtr,frameSize);
+  free(frameContent);
+}
+void FramesV2_printPCNT(ID3v2PCNTFrameType PCNT){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",PCNT.header.frameId);
+  printf("Flags: %u %u\n",PCNT.header.flags[0],PCNT.header.flags[1]);
+  printf("Counter: %s\n",PCNT.counter.string);
+}
+void FramesV2_freePCNT(ID3v2PCNTFrameType **PCNT){
+  TxtStr_freeTextString(&(*PCNT)->counter);
+  free(*PCNT);
+  *PCNT = NULL;
+}

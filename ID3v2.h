@@ -24,26 +24,27 @@ typedef struct {
     ID3v2SYTCFrameType *SYTC;
     ID3v2USERFrameType *USER;
     ID3v2OWNEFrameType *OWNE;
+    ID3v2PCNTFrameType *PCNT;
     /**/
     /*TO IMPLEMENT*/
-    int ETCO;
     int UFID; //LIST
     int LISTWXXX; //LIST
-    int MLLT;
     int USLT; //LIST
     int SYLT; //LIST
-    int RVAD;
     int EQUA;
     int RVRB;
     int GEOB; //LIST
-    int PCNT;
     int RBUF;
     int AENC;
-    int LINK;
+    int LINK; //List
     int POSS;
     int COMR;
     int ENCR;
     int GRID;
+
+    int MLLT;
+    int ETCO;
+    int RVAD;
     /**/
     size_t paddingSize;
 } ID3TagType;
