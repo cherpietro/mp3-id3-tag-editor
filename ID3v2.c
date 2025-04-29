@@ -277,6 +277,27 @@ void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
   }
 }
 
+void ID3v2_printFrame(ID3TagType *ID3Tag, char *frame){
+  int pipo = strncmp(frame,"APIC",4);
+  if(strncmp(frame,"APIC",4)==0){ if(ID3Tag->APIC != NULL) FramesV2_printAPIC(*ID3Tag->APIC);}
+  else if(strncmp(frame,"MCDI",4)==0);
+  else if(strncmp(frame,"POPM",4)==0);
+  else if(strncmp(frame,"IPLS",4)==0);
+  else if(strncmp(frame,"SYTC",4)==0);
+  else if(strncmp(frame,"USER",4)==0);
+  else if(strncmp(frame,"OWNE",4)==0);
+  else if(strncmp(frame,"PCNT",4)==0);
+  else if(strncmp(frame,"RVRB",4)==0);
+  else if(strncmp(frame,"EQUA",4)==0);
+  else if(strncmp(frame,"MLLT",4)==0);
+  else if(strncmp(frame,"ETCO",4)==0);
+  else if(strncmp(frame,"RVAD",4)==0);
+  else if(strncmp(frame,"T",1)==0) ;
+  else if(strncmp(frame,"PRIV",4)==0);
+  else if(strncmp(frame,"COMM",4)==0);
+}
+
+
 void ID3v2_saveAPICImage(ID3TagType *ID3Tag){
   FramesV2_saveAPICImage(*ID3Tag->APIC);
 }
@@ -289,4 +310,39 @@ void printTag(ID3TagType *ID3Tag){
   if(ID3Tag->APIC != NULL) FramesV2_printAPIC(*ID3Tag->APIC);
   if(ID3Tag->MCDI != NULL) FramesV2_printMDCI(*ID3Tag->MCDI);
   if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);
+}
+
+void ID3v2_listFrames(ID3TagType *ID3Tag){
+  if(ID3Tag->MCDI != NULL) printf("FramgeID: MCDI\n");
+  if(ID3Tag->POPM != NULL) printf("FramgeID: POPM\n");
+  if(ID3Tag->APIC != NULL) printf("FramgeID: APIC\n");
+  if(ID3Tag->IPLS != NULL) printf("FramgeID: IPLS\n");
+  if(ID3Tag->SYTC != NULL) printf("FramgeID: SYTC\n");
+  if(ID3Tag->USER != NULL) printf("FramgeID: USER\n");
+  if(ID3Tag->OWNE != NULL) printf("FramgeID: OWNE\n");
+  if(ID3Tag->PCNT != NULL) printf("FramgeID: PCNT\n");
+
+  ListCOMM_setFirstActive(&(*ID3Tag).COMMFrameList);
+  int COMMCount = 0;
+  while(ID3Tag->COMMFrameList.active != NULL){
+    COMMCount += 1;
+    ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
+  }
+  if(COMMCount != 0) printf("FramgeID: COMM (%d frames)\n",COMMCount);
+
+  ListTXTF_setFirstActive(&(*ID3Tag).TXTFrameList);
+  int TXTFCount = 0;
+  while(ID3Tag->TXTFrameList.active != NULL) {
+    TXTFCount += 1;
+    ListTXTF_setNextActive(&ID3Tag->TXTFrameList);
+  }
+  if(TXTFCount != 0) printf("FramgeID: TEXT (%d frames)\n",TXTFCount);
+  
+  int PRIVCount = 0;
+  ListPRIV_setFirstActive(&(*ID3Tag).PRIVFrameList);
+  while(ID3Tag->PRIVFrameList.active != NULL){
+    PRIVCount += 1;
+    ListPRIV_setNextActive(&ID3Tag->PRIVFrameList);
+  }
+  if(PRIVCount != 0) printf("FramgeID: PRIV (%d frames)\n",PRIVCount);
 }

@@ -62,10 +62,13 @@ void ID3v2_removeTagFromFile(char*);
 
 void ID3v2_writteTagIntoFile(char *, ID3TagType *);
 
-void printTag(ID3TagType *);
+void printTag(ID3TagType *); //delete
 
-void ID3v2_saveAPICImage(ID3TagType *);
+void ID3v2_printFrame(ID3TagType *, char *); 
+
+void ID3v2_saveAPICImage(ID3TagType *); //Move to file manager?
 
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *);
 
+void ID3v2_listFrames(ID3TagType *);
 #endif // ID3V2_H
