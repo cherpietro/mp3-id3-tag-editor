@@ -277,24 +277,43 @@ void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
   }
 }
 
-void ID3v2_printFrame(ID3TagType *ID3Tag, char *frame){
-  int pipo = strncmp(frame,"APIC",4);
-  if(strncmp(frame,"APIC",4)==0){ if(ID3Tag->APIC != NULL) FramesV2_printAPIC(*ID3Tag->APIC);}
-  else if(strncmp(frame,"MCDI",4)==0);
-  else if(strncmp(frame,"POPM",4)==0);
-  else if(strncmp(frame,"IPLS",4)==0);
-  else if(strncmp(frame,"SYTC",4)==0);
-  else if(strncmp(frame,"USER",4)==0);
-  else if(strncmp(frame,"OWNE",4)==0);
-  else if(strncmp(frame,"PCNT",4)==0);
-  else if(strncmp(frame,"RVRB",4)==0);
-  else if(strncmp(frame,"EQUA",4)==0);
-  else if(strncmp(frame,"MLLT",4)==0);
-  else if(strncmp(frame,"ETCO",4)==0);
-  else if(strncmp(frame,"RVAD",4)==0);
-  else if(strncmp(frame,"T",1)==0) ;
-  else if(strncmp(frame,"PRIV",4)==0);
-  else if(strncmp(frame,"COMM",4)==0);
+void ID3v2_printFrame(ID3TagType *ID3Tag, char *frameID){
+  if(strncmp(frameID,"MCDI",4)==0){ if(ID3Tag->MCDI != NULL) FramesV2_printMDCI(*ID3Tag->MCDI);}
+  else if(strncmp(frameID,"SYTC",4)==0){ if(ID3Tag->SYTC != NULL) FramesV2_printSYTC(*ID3Tag->SYTC);}
+  else if(strncmp(frameID,"IPLS",4)==0){ if(ID3Tag->IPLS != NULL) FramesV2_printIPLS(*ID3Tag->IPLS);}
+  else if(strncmp(frameID,"USER",4)==0){ if(ID3Tag->USER != NULL) FramesV2_printUSER(*ID3Tag->USER);}
+  else if(strncmp(frameID,"OWNE",4)==0){ if(ID3Tag->OWNE != NULL) FramesV2_printOWNE(*ID3Tag->OWNE);}
+  else if(strncmp(frameID,"PCNT",4)==0){ if(ID3Tag->PCNT != NULL) FramesV2_printPCNT(*ID3Tag->PCNT);}
+
+  else if(strncmp(frameID,"RVRB",4)==0);
+  else if(strncmp(frameID,"EQUA",4)==0);
+  else if(strncmp(frameID,"MLLT",4)==0);
+  else if(strncmp(frameID,"ETCO",4)==0);
+  else if(strncmp(frameID,"RVAD",4)==0);
+  //LISTS
+  else if(strncmp(frameID,"T",1)==0){ //USER PRINT FRAME MANAGER TO PRINT TXXX
+    TXTFrameListElement *FLEptr = ListTXTF_SearchFrame(&ID3Tag->TXTFrameList,true,frameID);
+    if(FLEptr != NULL) FramesV2_printTXTF(FLEptr->frame);
+  }
+  else if(strncmp(frameID,"PRIV",4)==0){
+    ListPRIV_setFirstActive(&ID3Tag->PRIVFrameList);
+    while(ID3Tag->PRIVFrameList.active != NULL){
+      ID3v2PRIVFrameType searchedFrame = ListPRIV_getActive(ID3Tag->PRIVFrameList);
+      FramesV2_printPRIV(searchedFrame);
+      ListPRIV_setNextActive(&ID3Tag->PRIVFrameList);
+    }
+  }
+  else if(strncmp(frameID,"COMM",4)==0){
+    ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
+    while(ID3Tag->COMMFrameList.active != NULL){
+      ID3v2COMMFrameType searchedFrame = ListCOMM_getActive(ID3Tag->COMMFrameList);
+      FramesV2_printCOMM(searchedFrame);
+      ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
+    }
+  }  
+  // THEY NEED TO BE LISTS
+  else if(strncmp(frameID,"POPM",4)==0){ if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);}
+  else if(strncmp(frameID,"APIC",4)==0){ if(ID3Tag->APIC != NULL) FramesV2_printAPIC(*ID3Tag->APIC);}
 }
 
 

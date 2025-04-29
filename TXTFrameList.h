@@ -30,4 +30,7 @@ ID3v2TXTFrameType ListTXTF_getActive(TXTFrameList);
 bool ListTXTF_isEmpty(TXTFrameList);
 
 void ListTXTF_freeList(TXTFrameList *);
+
+TXTFrameListElement *ListTXTF_SearchFrame(TXTFrameList *, bool , char *);
+
 #endif // TEXT_FRAME_LIST_H

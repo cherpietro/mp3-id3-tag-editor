@@ -46,8 +46,9 @@ int main(){
   // char *file = "./";
   // storeTag(file);
 
-  // char *file = "./files/auxFiles/TimberHearth.mp3"; 
-  char *file = "./files/auxFiles/overture.mp3"; 
+  // char *file = "./files/auxFiles/EliteFour.mp3"; 
+  char *file = "./files/auxFiles/TimberHearth.mp3"; 
+  // char *file = "./files/auxFiles/overture.mp3"; 
   storeTag(file);
 
   int option;
