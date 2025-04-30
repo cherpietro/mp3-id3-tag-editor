@@ -95,27 +95,24 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     TXTF =  (ID3v2TXTFrameType *) malloc(sizeof(ID3v2TXTFrameType));
     TXTF->header = header;
 
-    FramesV2_getTXTF(mp3FilePointer,frameSize, TXTF);
+    FramesV2_storeTXTF(mp3FilePointer,frameSize, TXTF);
     ListFramePtr_insertLast(&ID3Tag->TXTFrameList,TXTF);
-    // FramesV2_freeTXTF(&TXTF);
   }
   else if(strncmp(header.frameId,"COMM",4)==0){
     ID3v2COMMFrameType *COMM;
     COMM =  (ID3v2COMMFrameType *) malloc(sizeof(ID3v2COMMFrameType));
     COMM->header = header;
 
-    FramesV2_getCOMM(mp3FilePointer,frameSize, COMM);
+    FramesV2_storeCOMM(mp3FilePointer,frameSize, COMM);
     ListFramePtr_insertLast(&ID3Tag->COMMFrameList,COMM);
-    // FramesV2_freeCOMM(&COMM);
   }
   else if(strncmp(header.frameId,"PRIV",4)==0){
     ID3v2PRIVFrameType *PRIV;
     PRIV =  (ID3v2PRIVFrameType *) malloc(sizeof(ID3v2PRIVFrameType));
     PRIV->header = header;
 
-    FramesV2_getPRIV(mp3FilePointer,frameSize, PRIV);
+    FramesV2_storePRIV(mp3FilePointer,frameSize, PRIV);
     ListFramePtr_insertLast(&ID3Tag->PRIVFrameList,PRIV);
-    // FramesV2_freePRIV(&PRIV);
   }
   else if(strncmp(header.frameId,"APIC",4)==0){
     ID3v2APICFrameType *APIC;
@@ -124,7 +121,6 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
 
     FramesV2_storeAPIC(mp3FilePointer,frameSize, APIC);
     ListFramePtr_insertLast(&ID3Tag->APICFrameList,APIC);
-    // free(buffer);
   }
   else if(strncmp(header.frameId,"MCDI",4)==0){
     FramesV2_storeMDCI(mp3FilePointer,frameSize, &ID3Tag->MCDI);

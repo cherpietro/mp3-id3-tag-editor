@@ -60,7 +60,7 @@ void FramesV2_freeAPIC(ID3v2APICFrameType** APIC){
   *APIC = NULL;
 }
 
-void FramesV2_getTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TXTFrameType *frame){
+void FramesV2_storeTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TXTFrameType *frame){
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
   fread(frameContent, frameSize, 1, mp3FilePointer);
 
@@ -88,7 +88,7 @@ void FramesV2_freeTXTF(ID3v2TXTFrameType** TXTF){
   *TXTF = NULL;
 }
 
-void FramesV2_getCOMM(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameType *frame){
+void FramesV2_storeCOMM(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameType *frame){
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
   fread(frameContent, frameSize, 1, mp3FilePointer);
 
@@ -147,7 +147,7 @@ void FramesV2_printPRIV(ID3v2PRIVFrameType frame){
   }
   printf("\n"); 
 }
-void FramesV2_getPRIV(FILE *mp3FilePointer, uint32_t frameSize, ID3v2PRIVFrameType *frame){
+void FramesV2_storePRIV(FILE *mp3FilePointer, uint32_t frameSize, ID3v2PRIVFrameType *frame){
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
   fread(frameContent, frameSize, 1, mp3FilePointer);
 
