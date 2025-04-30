@@ -1,14 +1,14 @@
 #include "FileFrameManager.h"
 
-void FileManager_writteTXTFramesInFile(FILE *destFilePtr, TXTFrameList *TXTFrameList){
-  ID3v2TXTFrameType TXTFrame;
-  ListTXTF_setFirstActive(TXTFrameList);
+void FileManager_writteTXTFramesInFile(FILE *destFilePtr, ListFramePtr *TXTFrameList){
+  ID3v2TXTFrameType *TXTFrame;
+  ListFramePtr_setFirstActive(TXTFrameList);
   while(TXTFrameList->active != NULL){
-    TXTFrame = ListTXTF_getActive(*TXTFrameList);
-    fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),destFilePtr);
-    fwrite(&TXTFrame.textEncoding,1, 1,destFilePtr);
-    fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),destFilePtr);
-    ListTXTF_setNextActive(TXTFrameList);
+    TXTFrame = (ID3v2TXTFrameType *)ListFramePtr_getActiveFramePtr(*TXTFrameList);
+    fwrite(&TXTFrame->header,1, sizeof(TXTFrame->header),destFilePtr);
+    fwrite(&TXTFrame->textEncoding,1, 1,destFilePtr);
+    fwrite(TXTFrame->content.string,1, TxtStr_getStringLen(TXTFrame->content),destFilePtr);
+    ListFramePtr_setNextActive(TXTFrameList);
   }
 }
 

@@ -18,7 +18,7 @@ int main(){
   
   // char *file = "./files/auxFiles/jokin1.mp3"; //there are frames that aren't readed yet
   
-  // char *file = "./files/EliteFour.mp3";
+  char *file = "./files/EliteFour.mp3";
   // char *file = "./files/gameFreak.mp3";
   // char *file = "./files/jokin1.mp3";
   // char *file = "./files/jokin2.mp3"; //TEST TAG
@@ -33,7 +33,7 @@ int main(){
 
   // char *file = "./files/ingenium/_NSYNC/No Strings Attached/NSYNC - Bye Bye Bye.mp3"; // ONE WOAS TAG
   // char *file = "./files/ingenium/(G)I-DLE/I feel/(G)I-DLE - Queencard.mp3"; // ONE WOAS TAG and USLT
-  char *file = "./files/ingenium/Alice Phoebe Lou/Glow/Alice Phoebe Lou - Only When I.mp3";
+  // char *file = "./files/ingenium/Alice Phoebe Lou/Glow/Alice Phoebe Lou - Only When I.mp3";
   // char *file = "./";
   storeTag(file);
   
@@ -41,7 +41,7 @@ int main(){
   // char *file = "./files/auxFiles/overture.mp3";
   // char *file = "./files/auxFiles/EliteFour.mp3";
   // storeAndSaveAPIC(file);
-  // storeAndPrint(file);
+  storeAndPrint(file);
   // storeAndWritte(file);
   return 0;
 }

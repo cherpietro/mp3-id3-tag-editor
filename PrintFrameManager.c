@@ -1,12 +1,12 @@
 #include "PrintFrameManager.h"
 
-void PrintFrame_PrintTXTFrames(TXTFrameList *TXTFrameList){
-  ID3v2TXTFrameType TXTFrame;
-  ListTXTF_setFirstActive(TXTFrameList);
+void PrintFrame_PrintTXTFrames(ListFramePtr *TXTFrameList){
+  ID3v2TXTFrameType *TXTFrame;
+  ListFramePtr_setFirstActive(TXTFrameList);
   while(TXTFrameList->active != NULL){
-    TXTFrame = ListTXTF_getActive(*TXTFrameList);
-    FramesV2_printTXTF(TXTFrame);
-    ListTXTF_setNextActive(TXTFrameList);
+    TXTFrame = ListFramePtr_getActiveFramePtr(*TXTFrameList);
+    FramesV2_printTXTF(*TXTFrame);
+    ListFramePtr_setNextActive(TXTFrameList);
   }
 }
 

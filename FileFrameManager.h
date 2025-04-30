@@ -3,11 +3,12 @@
 
 #include <stdio.h>
 #include "ID3v2Frames.h"
-#include "TXTFrameList.h"
+#include "ListFramePtr.h"
+// // #include "TXTFrameList.h"
 #include "COMMFrameList.h"
 #include "PRIVFrameList.h"
 
-void FileManager_writteTXTFramesInFile(FILE *, TXTFrameList *);
+void FileManager_writteTXTFramesInFile(FILE *, ListFramePtr *);
 
 void FileManager_writteCOMMFramesInFile(FILE *, COMMFrameList *);
 

@@ -6,7 +6,7 @@
 #include <string.h>
 
 void ID3v2_init(ID3TagType *ID3Tag){
-  ListTXTF_init(&ID3Tag->TXTFrameList);
+  ListFramePtr_init(&ID3Tag->TXTFrameList);
   ListCOMM_init(&ID3Tag->COMMFrameList);
   ListPRIV_init(&ID3Tag->PRIVFrameList);
   ID3Tag->APIC = NULL;
@@ -25,7 +25,13 @@ void ID3v2_init(ID3TagType *ID3Tag){
 }
 
 void ID3v2_free(ID3TagType *ID3Tag){
-  ListTXTF_freeList(&ID3Tag->TXTFrameList);
+  // ListTXTF_freeList(&ID3Tag->TXTFrameList);
+  ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
+  while (!ListFramePtr_isEmpty(ID3Tag->TXTFrameList)) {
+      ID3v2TXTFrameType* ptrTXT = (ID3v2TXTFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+      FramesV2_freeTXTF(&ptrTXT);
+      ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
+  }
   ListCOMM_freeList(&ID3Tag->COMMFrameList);
   ListPRIV_freeList(&ID3Tag->PRIVFrameList);
   if(ID3Tag->APIC != NULL) FramesV2_freeAPIC(&ID3Tag->APIC); 
@@ -72,8 +78,8 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     TXTF->header = header;
 
     FramesV2_getTXTF(mp3FilePointer,frameSize, TXTF);
-    ListTXTF_insertLast(&ID3Tag->TXTFrameList,*TXTF);
-    FramesV2_freeTXTF(&TXTF);
+    ListFramePtr_insertLast(&ID3Tag->TXTFrameList,TXTF);
+    // FramesV2_freeTXTF(&TXTF);
   }
   else if(strncmp(header.frameId,"COMM",4)==0){
     ID3v2COMMFrameType *COMM;
@@ -247,14 +253,14 @@ void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
   printf("\nsize in ID3Tag: %d bytes\n",HeaderV2_getTagSize(ID3Tag->header));
   size_t tagSizeOfStruct = 10; //header
-  ID3v2TXTFrameType textFrame;
+  ID3v2TXTFrameType *TXTPtr;
   ID3v2COMMFrameType COMMFrame;
 
-  ListTXTF_setFirstActive(&ID3Tag->TXTFrameList);
+  ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
   while(ID3Tag->TXTFrameList.active != NULL){
-    textFrame = ListTXTF_getActive(ID3Tag->TXTFrameList);
-    tagSizeOfStruct += FramesV2_getFrameSize(ID3Tag->header.version[0],textFrame.header) + 10;
-    ListTXTF_setNextActive(&ID3Tag->TXTFrameList);
+    TXTPtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+    tagSizeOfStruct += FramesV2_getFrameSize(ID3Tag->header.version[0],TXTPtr->header) + 10;
+    ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
   }
 
   ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
