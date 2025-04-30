@@ -4,19 +4,19 @@ void PrintFrame_PrintTXTFrames(ListFramePtr *TXTFrameList){
   ID3v2TXTFrameType *TXTFrame;
   ListFramePtr_setFirstActive(TXTFrameList);
   while(TXTFrameList->active != NULL){
-    TXTFrame = ListFramePtr_getActiveFramePtr(*TXTFrameList);
+    TXTFrame = (ID3v2TXTFrameType *)ListFramePtr_getActiveFramePtr(*TXTFrameList);
     FramesV2_printTXTF(*TXTFrame);
     ListFramePtr_setNextActive(TXTFrameList);
   }
 }
 
-void PrintFrame_PrintCOMMFrames(COMMFrameList *COMMFrameList){
-  ID3v2COMMFrameType COMMFrame;
-  ListCOMM_setFirstActive(COMMFrameList);
+void PrintFrame_PrintCOMMFrames(ListFramePtr *COMMFrameList){
+  ID3v2COMMFrameType *COMMFrame;
+  ListFramePtr_setFirstActive(COMMFrameList);
   while(COMMFrameList->active != NULL){
-    COMMFrame = ListCOMM_getActive(*COMMFrameList);
-    FramesV2_printCOMM(COMMFrame);
-    ListCOMM_setNextActive(COMMFrameList);
+    COMMFrame = (ID3v2COMMFrameType *)ListFramePtr_getActiveFramePtr(*COMMFrameList);
+    FramesV2_printCOMM(*COMMFrame);
+    ListFramePtr_setNextActive(COMMFrameList);
   }
 }
 

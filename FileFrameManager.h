@@ -5,12 +5,12 @@
 #include "ID3v2Frames.h"
 #include "ListFramePtr.h"
 // // #include "TXTFrameList.h"
-#include "COMMFrameList.h"
+// #include "COMMFrameList.h"
 #include "PRIVFrameList.h"
 
 void FileManager_writteTXTFramesInFile(FILE *, ListFramePtr *);
 
-void FileManager_writteCOMMFramesInFile(FILE *, COMMFrameList *);
+void FileManager_writteCOMMFramesInFile(FILE *, ListFramePtr *);
 
 void FileManager_writtePRIVFramesInFile(FILE *, PRIVFrameList *);
 

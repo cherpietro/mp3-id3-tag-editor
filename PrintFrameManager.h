@@ -3,12 +3,12 @@
 #include "ID3v2Frames.h"
 #include "ListFramePtr.h"
 // // #include "TXTFrameList.h"
-#include "COMMFrameList.h"
+// #include "COMMFrameList.h"
 #include "PRIVFrameList.h"
 
 void PrintFrame_PrintTXTFrames(ListFramePtr *);
 
-void PrintFrame_PrintCOMMFrames(COMMFrameList *);
+void PrintFrame_PrintCOMMFrames(ListFramePtr *);
 
 void PrintFrame_PrintPRIVFrames(PRIVFrameList *);
 #endif // PRINTFRAMEMANAGER_H

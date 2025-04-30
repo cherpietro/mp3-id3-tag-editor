@@ -12,17 +12,17 @@ void FileManager_writteTXTFramesInFile(FILE *destFilePtr, ListFramePtr *TXTFrame
   }
 }
 
-void FileManager_writteCOMMFramesInFile(FILE *destFilePtr, COMMFrameList *COMMFrameList){
-  ID3v2COMMFrameType COMMFrame;
-  ListCOMM_setFirstActive(COMMFrameList);
+void FileManager_writteCOMMFramesInFile(FILE *destFilePtr, ListFramePtr *COMMFrameList){
+  ID3v2COMMFrameType *COMMFrame;
+  ListFramePtr_setFirstActive(COMMFrameList);
   while(COMMFrameList->active != NULL){
-    COMMFrame = ListCOMM_getActive(*COMMFrameList);
-    fwrite(&COMMFrame.header,1, sizeof(COMMFrame.header),destFilePtr);
-    fwrite(&COMMFrame.textEncoding,1, 1,destFilePtr);
-    fwrite(&COMMFrame.language,1, 3,destFilePtr);
-    fwrite(COMMFrame.contentDescript.string,1, TxtStr_getStringLen(COMMFrame.contentDescript),destFilePtr);
-    fwrite(COMMFrame.actualText.string,1, TxtStr_getStringLen(COMMFrame.actualText),destFilePtr);
-    ListCOMM_setNextActive(COMMFrameList);
+    COMMFrame = (ID3v2COMMFrameType *) ListFramePtr_getActiveFramePtr(*COMMFrameList);
+    fwrite(&COMMFrame->header,1, sizeof(COMMFrame->header),destFilePtr);
+    fwrite(&COMMFrame->textEncoding,1, 1,destFilePtr);
+    fwrite(&COMMFrame->language,1, 3,destFilePtr);
+    fwrite(COMMFrame->contentDescript.string,1, TxtStr_getStringLen(COMMFrame->contentDescript),destFilePtr);
+    fwrite(COMMFrame->actualText.string,1, TxtStr_getStringLen(COMMFrame->actualText),destFilePtr);
+    ListFramePtr_setNextActive(COMMFrameList);
   }  
 }
 

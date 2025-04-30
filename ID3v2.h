@@ -7,7 +7,7 @@
 #include "ID3v2Header.h" 
 #include "ID3v2Frames.h"
 // // #include "TXTFrameList.h"
-#include "COMMFrameList.h"
+// // #include "COMMFrameList.h"
 #include "PRIVFrameList.h"
 #include "ListFramePtr.h"
 #include "stdbool.h"
@@ -16,7 +16,8 @@ typedef struct {
     ID3v2HeaderType header;
     ListFramePtr TXTFrameList;
     // TXTFrameList TXTFrameList;
-    COMMFrameList COMMFrameList;
+    ListFramePtr COMMFrameList;
+    // COMMFrameList COMMFrameList;
     PRIVFrameList PRIVFrameList;
     ID3v2MCDIFrameType *MCDI;
     ID3v2POPMFrameType *POPM; //LIST

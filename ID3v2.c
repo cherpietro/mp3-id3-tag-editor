@@ -7,7 +7,7 @@
 
 void ID3v2_init(ID3TagType *ID3Tag){
   ListFramePtr_init(&ID3Tag->TXTFrameList);
-  ListCOMM_init(&ID3Tag->COMMFrameList);
+  ListFramePtr_init(&ID3Tag->COMMFrameList);
   ListPRIV_init(&ID3Tag->PRIVFrameList);
   ID3Tag->APIC = NULL;
   ID3Tag->MCDI = NULL;
@@ -32,7 +32,13 @@ void ID3v2_free(ID3TagType *ID3Tag){
       FramesV2_freeTXTF(&ptrTXT);
       ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
   }
-  ListCOMM_freeList(&ID3Tag->COMMFrameList);
+  // ListCOMM_freeList(&ID3Tag->COMMFrameList);
+  ListFramePtr_setFirstActive(&ID3Tag->COMMFrameList);
+  while (!ListFramePtr_isEmpty(ID3Tag->COMMFrameList)) {
+    ID3v2COMMFrameType* ptrCOMM = (ID3v2COMMFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
+      FramesV2_freeCOMM(&ptrCOMM);
+      ListFramePtr_deleteActive(&ID3Tag->COMMFrameList);
+  }
   ListPRIV_freeList(&ID3Tag->PRIVFrameList);
   if(ID3Tag->APIC != NULL) FramesV2_freeAPIC(&ID3Tag->APIC); 
   if(ID3Tag->MCDI != NULL) FramesV2_freeMCDI(&ID3Tag->MCDI);
@@ -87,8 +93,8 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     COMM->header = header;
 
     FramesV2_getCOMM(mp3FilePointer,frameSize, COMM);
-    ListCOMM_insertLast(&ID3Tag->COMMFrameList,*COMM);
-    FramesV2_freeCOMM(&COMM);
+    ListFramePtr_insertLast(&ID3Tag->COMMFrameList,COMM);
+    // FramesV2_freeCOMM(&COMM);
   }
   else if(strncmp(header.frameId,"MCDI",4)==0){
     FramesV2_storeMDCI(mp3FilePointer,frameSize, &ID3Tag->MCDI);
@@ -254,7 +260,7 @@ void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
   printf("\nsize in ID3Tag: %d bytes\n",HeaderV2_getTagSize(ID3Tag->header));
   size_t tagSizeOfStruct = 10; //header
   ID3v2TXTFrameType *TXTPtr;
-  ID3v2COMMFrameType COMMFrame;
+  ID3v2COMMFrameType *COMMFrame;
 
   ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
   while(ID3Tag->TXTFrameList.active != NULL){
@@ -263,11 +269,11 @@ void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
     ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
   }
 
-  ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
+  ListFramePtr_setFirstActive(&ID3Tag->COMMFrameList);
   while(ID3Tag->COMMFrameList.active != NULL){
-    COMMFrame = ListCOMM_getActive(ID3Tag->COMMFrameList);
-    tagSizeOfStruct += FramesV2_getFrameSize(ID3Tag->header.version[0],COMMFrame.header) + 10;
-    ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
+    COMMFrame = ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
+    tagSizeOfStruct += FramesV2_getFrameSize(ID3Tag->header.version[0],COMMFrame->header) + 10;
+    ListFramePtr_setNextActive(&ID3Tag->COMMFrameList);
   }
   if(ID3Tag->APIC != NULL) {
     size_t headerAPICsize;
