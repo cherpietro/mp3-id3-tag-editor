@@ -97,3 +97,13 @@ void ListTXTF_freeList(TXTFrameList *list) {
 ID3v2TXTFrameType ListTXTF_getActive(TXTFrameList list) {
     return list.active->frame;
 }
+
+TXTFrameListElement * ListTXTF_SearchFrame(TXTFrameList *list, bool firstIteration, char *frameID){
+    if(firstIteration) ListTXTF_setFirstActive(list);
+    else ListTXTF_setNextActive(list);
+    ID3v2TXTFrameType searchedFrame = ListTXTF_getActive(*list);
+    while(list->active != NULL && strncmp(frameID,searchedFrame.header.frameId,4) != 0){
+        ListTXTF_setNextActive(list);
+    }
+    return list->active;
+}
