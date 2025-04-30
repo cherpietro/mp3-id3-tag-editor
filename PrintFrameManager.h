@@ -4,11 +4,11 @@
 #include "ListFramePtr.h"
 // // #include "TXTFrameList.h"
 // #include "COMMFrameList.h"
-#include "PRIVFrameList.h"
+// #include "PRIVFrameList.h"
 
 void PrintFrame_PrintTXTFrames(ListFramePtr *);
 
 void PrintFrame_PrintCOMMFrames(ListFramePtr *);
 
-void PrintFrame_PrintPRIVFrames(PRIVFrameList *);
+void PrintFrame_PrintPRIVFrames(ListFramePtr *);
 #endif // PRINTFRAMEMANAGER_H

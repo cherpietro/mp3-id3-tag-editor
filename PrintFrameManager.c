@@ -20,12 +20,12 @@ void PrintFrame_PrintCOMMFrames(ListFramePtr *COMMFrameList){
   }
 }
 
-void PrintFrame_PrintPRIVFrames(PRIVFrameList *PRIVFrameList){
-  ID3v2PRIVFrameType PRIVFrame;
-  ListPRIV_setFirstActive(PRIVFrameList);
+void PrintFrame_PrintPRIVFrames(ListFramePtr *PRIVFrameList){
+  ID3v2PRIVFrameType *PRIVFrame;
+  ListFramePtr_setFirstActive(PRIVFrameList);
   while(PRIVFrameList->active != NULL){
-    PRIVFrame = ListPRIV_getActive(*PRIVFrameList);
-    FramesV2_printPRIV(PRIVFrame);
-    ListPRIV_setNextActive(PRIVFrameList);
+    PRIVFrame = (ID3v2PRIVFrameType *) ListFramePtr_getActiveFramePtr(*PRIVFrameList);
+    FramesV2_printPRIV(*PRIVFrame);
+    ListFramePtr_setNextActive(PRIVFrameList);
   }
 }

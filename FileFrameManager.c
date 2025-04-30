@@ -26,15 +26,15 @@ void FileManager_writteCOMMFramesInFile(FILE *destFilePtr, ListFramePtr *COMMFra
   }  
 }
 
-void FileManager_writtePRIVFramesInFile(FILE *destFilePtr, PRIVFrameList *PRIVFrameList){
-  ID3v2PRIVFrameType PRIVFrame;
-  ListPRIV_setFirstActive(PRIVFrameList);
+void FileManager_writtePRIVFramesInFile(FILE *destFilePtr, ListFramePtr *PRIVFrameList){
+  ID3v2PRIVFrameType *PRIVFrame;
+  ListFramePtr_setFirstActive(PRIVFrameList);
   while(PRIVFrameList->active != NULL){
-    PRIVFrame = ListPRIV_getActive(*PRIVFrameList);
-    fwrite(&PRIVFrame.header,1, sizeof(PRIVFrame.header),destFilePtr);
-    fwrite(PRIVFrame.owner.string,1, TxtStr_getStringLen(PRIVFrame.owner),destFilePtr);
-    fwrite(PRIVFrame.privateData.string,1, TxtStr_getStringLen(PRIVFrame.privateData),destFilePtr);
-    ListPRIV_setNextActive(PRIVFrameList);
+    PRIVFrame = (ID3v2PRIVFrameType *) ListFramePtr_getActiveFramePtr(*PRIVFrameList);
+    fwrite(&PRIVFrame->header,1, sizeof(PRIVFrame->header),destFilePtr);
+    fwrite(PRIVFrame->owner.string,1, TxtStr_getStringLen(PRIVFrame->owner),destFilePtr);
+    fwrite(PRIVFrame->privateData.string,1, TxtStr_getStringLen(PRIVFrame->privateData),destFilePtr);
+    ListFramePtr_setNextActive(PRIVFrameList);
   }  
 }
 

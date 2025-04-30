@@ -8,7 +8,7 @@
 void ID3v2_init(ID3TagType *ID3Tag){
   ListFramePtr_init(&ID3Tag->TXTFrameList);
   ListFramePtr_init(&ID3Tag->COMMFrameList);
-  ListPRIV_init(&ID3Tag->PRIVFrameList);
+  ListFramePtr_init(&ID3Tag->PRIVFrameList);
   ID3Tag->APIC = NULL;
   ID3Tag->MCDI = NULL;
   ID3Tag->POPM = NULL;
@@ -39,7 +39,13 @@ void ID3v2_free(ID3TagType *ID3Tag){
       FramesV2_freeCOMM(&ptrCOMM);
       ListFramePtr_deleteActive(&ID3Tag->COMMFrameList);
   }
-  ListPRIV_freeList(&ID3Tag->PRIVFrameList);
+  // ListPRIV_freeList(&ID3Tag->PRIVFrameList);
+  ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
+  while (!ListFramePtr_isEmpty(ID3Tag->COMMFrameList)) {
+    ID3v2PRIVFrameType* ptrPRIV = (ID3v2PRIVFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
+      FramesV2_freePRIV(&ptrPRIV);
+      ListFramePtr_deleteActive(&ID3Tag->PRIVFrameList);
+  }
   if(ID3Tag->APIC != NULL) FramesV2_freeAPIC(&ID3Tag->APIC); 
   if(ID3Tag->MCDI != NULL) FramesV2_freeMCDI(&ID3Tag->MCDI);
   if(ID3Tag->POPM != NULL) FramesV2_freePOPM(&ID3Tag->POPM);
@@ -96,6 +102,15 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     ListFramePtr_insertLast(&ID3Tag->COMMFrameList,COMM);
     // FramesV2_freeCOMM(&COMM);
   }
+  else if(strncmp(header.frameId,"PRIV",4)==0){
+    ID3v2PRIVFrameType *PRIV;
+    PRIV =  (ID3v2PRIVFrameType *) malloc(sizeof(ID3v2PRIVFrameType));
+    PRIV->header = header;
+
+    FramesV2_getPRIV(mp3FilePointer,frameSize, PRIV);
+    ListFramePtr_insertLast(&ID3Tag->PRIVFrameList,PRIV);
+    // FramesV2_freePRIV(&PRIV);
+  }
   else if(strncmp(header.frameId,"MCDI",4)==0){
     FramesV2_storeMDCI(mp3FilePointer,frameSize, &ID3Tag->MCDI);
     ID3Tag->MCDI->header = header;
@@ -103,15 +118,6 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
   else if(strncmp(header.frameId,"POPM",4)==0){
     FramesV2_storePOPM(mp3FilePointer,frameSize, &ID3Tag->POPM);
     ID3Tag->POPM->header = header;
-  }
-  else if(strncmp(header.frameId,"PRIV",4)==0){
-    ID3v2PRIVFrameType *PRIV;
-    PRIV =  (ID3v2PRIVFrameType *) malloc(sizeof(ID3v2PRIVFrameType));
-    PRIV->header = header;
-
-    FramesV2_getPRIV(mp3FilePointer,frameSize, PRIV);
-    ListPRIV_insertLast(&ID3Tag->PRIVFrameList,*PRIV);
-    FramesV2_freePRIV(&PRIV);
   }
   else if(strncmp(header.frameId,"APIC",4)==0){
     uint8_t *buffer = (uint8_t *)malloc(frameSize);

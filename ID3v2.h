@@ -8,7 +8,7 @@
 #include "ID3v2Frames.h"
 // // #include "TXTFrameList.h"
 // // #include "COMMFrameList.h"
-#include "PRIVFrameList.h"
+// #include "PRIVFrameList.h"
 #include "ListFramePtr.h"
 #include "stdbool.h"
 
@@ -18,7 +18,8 @@ typedef struct {
     // TXTFrameList TXTFrameList;
     ListFramePtr COMMFrameList;
     // COMMFrameList COMMFrameList;
-    PRIVFrameList PRIVFrameList;
+    ListFramePtr PRIVFrameList;
+    // PRIVFrameList PRIVFrameList;
     ID3v2MCDIFrameType *MCDI;
     ID3v2POPMFrameType *POPM; //LIST
     ID3v2APICFrameType *APIC; //LIST

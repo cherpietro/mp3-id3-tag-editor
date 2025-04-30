@@ -6,13 +6,13 @@
 #include "ListFramePtr.h"
 // // #include "TXTFrameList.h"
 // #include "COMMFrameList.h"
-#include "PRIVFrameList.h"
+// #include "PRIVFrameList.h"
 
 void FileManager_writteTXTFramesInFile(FILE *, ListFramePtr *);
 
 void FileManager_writteCOMMFramesInFile(FILE *, ListFramePtr *);
 
-void FileManager_writtePRIVFramesInFile(FILE *, PRIVFrameList *);
+void FileManager_writtePRIVFramesInFile(FILE *, ListFramePtr *);
 
 void FileManager_writteMCDIFrameInFile(FILE *, ID3v2MCDIFrameType );
 
