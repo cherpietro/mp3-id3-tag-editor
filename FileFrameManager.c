@@ -58,6 +58,20 @@ void FileManager_writteAPICFrameInFile(FILE *destFilePtr, ID3v2APICFrameType API
   fwrite(APIC.description.string,1, TxtStr_getStringLen(APIC.description),destFilePtr);
   fwrite(APIC.imageData,1,APIC.imageDataSize ,destFilePtr);
 }
+void FileManager_writteAPICFramesInFile(FILE *destFilePtr, ListFramePtr *APICFrameList){
+  ID3v2APICFrameType *APICFrame;
+  ListFramePtr_setFirstActive(APICFrameList);
+  while(APICFrameList->active != NULL){
+    APICFrame = (ID3v2APICFrameType *)ListFramePtr_getActiveFramePtr(*APICFrameList);
+    fwrite(&APICFrame->header,1, sizeof(APICFrame->header),destFilePtr);
+    fwrite(&APICFrame->textEncoding,1, 1,destFilePtr);
+    fwrite(APICFrame->mimeType.string,1, TxtStr_getStringLen(APICFrame->mimeType),destFilePtr);
+    fwrite(&APICFrame->pictureType,1, 1,destFilePtr);
+    fwrite(APICFrame->description.string,1, TxtStr_getStringLen(APICFrame->description),destFilePtr);
+    fwrite(APICFrame->imageData,1,APICFrame->imageDataSize ,destFilePtr);
+    ListFramePtr_setNextActive(APICFrameList);
+  }
+}
 
 void FileManager_writtePadding(FILE *destFilePtr, int paddingSize){
   char zero = 0;

@@ -96,7 +96,7 @@ typedef struct {
 void FramesV2_storeHeader(FILE*, ID3v2FrameHeaderType*);
 uint32_t FramesV2_getFrameSize(int ,ID3v2FrameHeaderType);
 
-void FramesV2_storeAPIC(uint8_t*, uint32_t, ID3v2APICFrameType**);
+void FramesV2_storeAPIC(FILE*, uint32_t, ID3v2APICFrameType*);
 void FramesV2_saveAPICImage(ID3v2APICFrameType);
 void FramesV2_printAPIC(ID3v2APICFrameType);
 void FramesV2_freeAPIC(ID3v2APICFrameType**);

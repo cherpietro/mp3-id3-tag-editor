@@ -10,27 +10,31 @@ uint32_t FramesV2_getFrameSize(int version, ID3v2FrameHeaderType header){
   else return sizeFromID3v23(header.size);
 }
 
-void FramesV2_storeAPIC(uint8_t *frameContent, uint32_t frameSize,ID3v2APICFrameType** apic){
-  *apic = (ID3v2APICFrameType *)malloc(sizeof(ID3v2APICFrameType));
+void FramesV2_storeAPIC(FILE *mp3FilePointer, uint32_t frameSize,ID3v2APICFrameType* apic){
+  uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+  fread(frameContent, frameSize, 1, mp3FilePointer);
+
+  // *apic = (ID3v2APICFrameType *)malloc(sizeof(ID3v2APICFrameType));
   
   size_t index = 0;
-  (*apic)->textEncoding = frameContent[index++];
+  (apic)->textEncoding = frameContent[index++];
 
   char *mimeType = (char*) frameContent + index;
   size_t mimeTypeLen = strlen(mimeType)+1;
-  TxtStr_storeTextString(&(*apic)->mimeType,mimeType,mimeTypeLen);
+  TxtStr_storeTextString(&(apic)->mimeType,mimeType,mimeTypeLen);
   index+=mimeTypeLen;
   
-  (*apic)->pictureType = frameContent[index++];
+  (apic)->pictureType = frameContent[index++];
 
   char *description = (char*) frameContent + index;
   size_t descriptionLen = strlen(description)+1;
-  TxtStr_storeTextString(&(*apic)->description,description,descriptionLen);
+  TxtStr_storeTextString(&(apic)->description,description,descriptionLen);
   index += descriptionLen;;
 
-  (*apic)->imageDataSize = frameSize - index;
-  (*apic)->imageData = (uint8_t *)malloc((*apic)->imageDataSize);
-  memcpy((*apic)->imageData, frameContent + index, (*apic)->imageDataSize);
+  (apic)->imageDataSize = frameSize - index;
+  (apic)->imageData = (uint8_t *)malloc((apic)->imageDataSize);
+  memcpy((apic)->imageData, frameContent + index, (apic)->imageDataSize);
+  free(frameContent);
 }
 void FramesV2_saveAPICImage(ID3v2APICFrameType frame){
   FILE *imageFile = fopen("cover.jpg", "wb");

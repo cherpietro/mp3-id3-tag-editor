@@ -29,3 +29,14 @@ void PrintFrame_PrintPRIVFrames(ListFramePtr *PRIVFrameList){
     ListFramePtr_setNextActive(PRIVFrameList);
   }
 }
+
+void PrintFrame_PrintAPICFrames(ListFramePtr *APICFrameList){
+  ID3v2APICFrameType *APICFrame;
+  ListFramePtr_setFirstActive(APICFrameList);
+  while(APICFrameList->active != NULL){
+    APICFrame = (ID3v2APICFrameType *) ListFramePtr_getActiveFramePtr(*APICFrameList);
+    FramesV2_printAPIC(*APICFrame);
+    FramesV2_saveAPICImage(*APICFrame);
+    ListFramePtr_setNextActive(APICFrameList);
+  }
+}

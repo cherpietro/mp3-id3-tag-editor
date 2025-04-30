@@ -9,7 +9,7 @@ void ID3v2_init(ID3TagType *ID3Tag){
   ListFramePtr_init(&ID3Tag->TXTFrameList);
   ListFramePtr_init(&ID3Tag->COMMFrameList);
   ListFramePtr_init(&ID3Tag->PRIVFrameList);
-  ID3Tag->APIC = NULL;
+  ListFramePtr_init(&ID3Tag->APICFrameList);
   ID3Tag->MCDI = NULL;
   ID3Tag->POPM = NULL;
   ID3Tag->IPLS = NULL;
@@ -46,7 +46,13 @@ void ID3v2_free(ID3TagType *ID3Tag){
       FramesV2_freePRIV(&ptrPRIV);
       ListFramePtr_deleteActive(&ID3Tag->PRIVFrameList);
   }
-  if(ID3Tag->APIC != NULL) FramesV2_freeAPIC(&ID3Tag->APIC); 
+  // if(ID3Tag->APIC != NULL) FramesV2_freeAPIC(&ID3Tag->APIC); 
+  ListFramePtr_setFirstActive(&ID3Tag->APICFrameList);
+  while (!ListFramePtr_isEmpty(ID3Tag->APICFrameList)) {
+    ID3v2APICFrameType* ptrAPIC = (ID3v2APICFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
+      FramesV2_freeAPIC(&ptrAPIC);
+      ListFramePtr_deleteActive(&ID3Tag->APICFrameList);
+  }
   if(ID3Tag->MCDI != NULL) FramesV2_freeMCDI(&ID3Tag->MCDI);
   if(ID3Tag->POPM != NULL) FramesV2_freePOPM(&ID3Tag->POPM);
   if(ID3Tag->IPLS != NULL) FramesV2_freeIPLS(&ID3Tag->IPLS);
@@ -111,6 +117,15 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     ListFramePtr_insertLast(&ID3Tag->PRIVFrameList,PRIV);
     // FramesV2_freePRIV(&PRIV);
   }
+  else if(strncmp(header.frameId,"APIC",4)==0){
+    ID3v2APICFrameType *APIC;
+    APIC = (ID3v2APICFrameType *)malloc(sizeof(ID3v2APICFrameType));;
+    APIC->header = header;
+
+    FramesV2_storeAPIC(mp3FilePointer,frameSize, APIC);
+    ListFramePtr_insertLast(&ID3Tag->APICFrameList,APIC);
+    // free(buffer);
+  }
   else if(strncmp(header.frameId,"MCDI",4)==0){
     FramesV2_storeMDCI(mp3FilePointer,frameSize, &ID3Tag->MCDI);
     ID3Tag->MCDI->header = header;
@@ -118,13 +133,6 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
   else if(strncmp(header.frameId,"POPM",4)==0){
     FramesV2_storePOPM(mp3FilePointer,frameSize, &ID3Tag->POPM);
     ID3Tag->POPM->header = header;
-  }
-  else if(strncmp(header.frameId,"APIC",4)==0){
-    uint8_t *buffer = (uint8_t *)malloc(frameSize);
-    fread(buffer, frameSize, 1, mp3FilePointer);
-    FramesV2_storeAPIC(buffer,frameSize,&ID3Tag->APIC);
-    ID3Tag->APIC->header = header;
-    free(buffer);
   }
   else if(strncmp(header.frameId,"IPLS",4)==0){
     printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
@@ -247,8 +255,9 @@ void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     FileManager_writteCOMMFramesInFile(temp,&ID3Tag->COMMFrameList);
     FileManager_writteTXTFramesInFile(temp,&ID3Tag->TXTFrameList);
     FileManager_writtePRIVFramesInFile(temp,&ID3Tag->PRIVFrameList);
+    FileManager_writteAPICFramesInFile(temp,&ID3Tag->APICFrameList);
+    // if(ID3Tag->APIC != NULL) FileManager_writteAPICFrameInFile(temp,*ID3Tag->APIC);
     if(ID3Tag->MCDI != NULL) FileManager_writteMCDIFrameInFile(temp,*ID3Tag->MCDI);
-    if(ID3Tag->APIC != NULL) FileManager_writteAPICFrameInFile(temp,*ID3Tag->APIC);
     if(ID3Tag->POPM != NULL) FileManager_writtePOPMFrameInFile(temp,*ID3Tag->POPM);
     FileManager_writtePadding(temp,ID3Tag->paddingSize);
     
@@ -267,6 +276,7 @@ void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
   size_t tagSizeOfStruct = 10; //header
   ID3v2TXTFrameType *TXTPtr;
   ID3v2COMMFrameType *COMMFrame;
+  ID3v2APICFrameType *APICFrame;
 
   ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
   while(ID3Tag->TXTFrameList.active != NULL){
@@ -281,11 +291,19 @@ void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
     tagSizeOfStruct += FramesV2_getFrameSize(ID3Tag->header.version[0],COMMFrame->header) + 10;
     ListFramePtr_setNextActive(&ID3Tag->COMMFrameList);
   }
-  if(ID3Tag->APIC != NULL) {
-    size_t headerAPICsize;
-    headerAPICsize = FramesV2_getFrameSize(ID3Tag->header.version[0],ID3Tag->APIC->header) + 10;
+  ListFramePtr_setFirstActive(&ID3Tag->APICFrameList);
+  size_t headerAPICsize;
+  while(ID3Tag->APICFrameList.active != NULL){
+    APICFrame = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
+    headerAPICsize = FramesV2_getFrameSize(ID3Tag->header.version[0],APICFrame->header) + 10;
     tagSizeOfStruct = tagSizeOfStruct + headerAPICsize ;
+    ListFramePtr_setNextActive(&ID3Tag->APICFrameList);
   }
+  // if(ID3Tag->APIC != NULL) {
+  //   size_t headerAPICsize;
+  //   headerAPICsize = FramesV2_getFrameSize(ID3Tag->header.version[0],ID3Tag->APIC->header) + 10;
+  //   tagSizeOfStruct = tagSizeOfStruct + headerAPICsize ;
+  // }
 
   if((HeaderV2_getTagSize(ID3Tag->header) +10 - ID3Tag->paddingSize )== tagSizeOfStruct ){
     printf("size is okay\n");
@@ -295,16 +313,13 @@ void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
   }
 }
 
-void ID3v2_saveAPICImage(ID3TagType *ID3Tag){
-  FramesV2_saveAPICImage(*ID3Tag->APIC);
-}
-
 void printTag(ID3TagType *ID3Tag){
   HeaderV2_printTagHeader(ID3Tag->header);
   PrintFrame_PrintTXTFrames(&ID3Tag->TXTFrameList);  
   PrintFrame_PrintCOMMFrames(&ID3Tag->COMMFrameList);
   PrintFrame_PrintPRIVFrames(&ID3Tag->PRIVFrameList);
-  if(ID3Tag->APIC != NULL) FramesV2_printAPIC(*ID3Tag->APIC);
+  PrintFrame_PrintAPICFrames(&ID3Tag->APICFrameList);
+  // if(ID3Tag->APIC != NULL) FramesV2_printAPIC(*ID3Tag->APIC);
   if(ID3Tag->MCDI != NULL) FramesV2_printMDCI(*ID3Tag->MCDI);
   if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);
 }

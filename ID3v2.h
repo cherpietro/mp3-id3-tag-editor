@@ -6,9 +6,6 @@
 #include <stdio.h>
 #include "ID3v2Header.h" 
 #include "ID3v2Frames.h"
-// // #include "TXTFrameList.h"
-// // #include "COMMFrameList.h"
-// #include "PRIVFrameList.h"
 #include "ListFramePtr.h"
 #include "stdbool.h"
 
@@ -20,9 +17,10 @@ typedef struct {
     // COMMFrameList COMMFrameList;
     ListFramePtr PRIVFrameList;
     // PRIVFrameList PRIVFrameList;
+    ListFramePtr APICFrameList; 
+    // ID3v2APICFrameType *APIC; //LIST
     ID3v2MCDIFrameType *MCDI;
     ID3v2POPMFrameType *POPM; //LIST
-    ID3v2APICFrameType *APIC; //LIST
     /*Only stored*/
     ID3v2IPLSFrameType *IPLS;
     ID3v2SYTCFrameType *SYTC;
@@ -67,8 +65,6 @@ void ID3v2_removeTagFromFile(char*);
 void ID3v2_writteTagIntoFile(char *, ID3TagType *);
 
 void printTag(ID3TagType *);
-
-void ID3v2_saveAPICImage(ID3TagType *);
 
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *);
 
