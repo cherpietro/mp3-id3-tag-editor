@@ -3,6 +3,7 @@
 #include <string.h>
 #include "ID3v2.h"
 #include "PrintFrameManager.h"
+#include "FileFrameManager.h"
 
 static void cleanInputBuffer(){
   int ch;
@@ -29,11 +30,11 @@ int main(){
   // char *file = "./files/EliteFour.mp3";
   // char *file = "./files/gameFreak.mp3";
   // char *file = "./files/jokin1.mp3";
-  char *file = "./files/jokin2.mp3"; //TEST TAG
+  // char *file = "./files/jokin2.mp3"; //TEST TAG
   // char *file = "./files/jokin3.mp3";
   // char *file = "./files/nlp6.mp3";
   // char *file = "./files/opening.mp3";
-  // char *file = "./files/overture.mp3";
+  char *file = "./files/overture.mp3";
   // char *saveFile = "./files/auxFiles/overture.mp3";
   // char *file = "./files/theme.mp3";
   // char *file = "./files/TimberHearth.mp3"; 
@@ -126,7 +127,7 @@ int main(){
 }
 
 void saveChangesInFile(char *file, ID3TagType ID3Tag){
-  ID3v2_writteTagIntoFile(file,&ID3Tag);
+  FileManager_writteTagIntoFile(file,&ID3Tag);
   printf("difference between files: \n");
   system("cmp -l ./files/overture.mp3 ./savedFiles/modified.mp3 | wc -l");
   printf("\n");
@@ -189,6 +190,6 @@ void saveChangesInFile(char *file, ID3TagType ID3Tag){
 //   ID3TagType ID3Tag;
 //   ID3v2_init(&ID3Tag);
 //   ID3v2_storeTagInStruct(file,&ID3Tag);
-//   ID3v2_writteTagIntoFile(file,&ID3Tag);
+//   FileManager_writteTagIntoFile(file,&ID3Tag);
 //   ID3v2_free(&ID3Tag);
 // }

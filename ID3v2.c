@@ -2,13 +2,9 @@
 #include "SizeReader.h"
 #include "FileFrameManager.h"
 #include "PrintFrameManager.h"
+#include "DeleteFrameManager.h"
 
 #include <string.h>
-
-static void cleanInputBuffer(){
-  int ch;
-  while ((ch = getchar()) != '\n' && ch != EOF);
-}
 
 void ID3v2_init(ID3TagType *ID3Tag){
   ListFramePtr_init(&ID3Tag->TXTFrameList);
@@ -201,83 +197,6 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
   return 0;
 }
 
-void ID3v2_removeTagFromFile(char*file){
-  FILE *mp3FilePointer = fopen(file,"r");
-  if (mp3FilePointer) {
-    fseek(mp3FilePointer, 0, SEEK_SET);
-    uint32_t fileSize = ftell(mp3FilePointer);
-    ID3v2HeaderType header;
-    HeaderV2_storeHeader(mp3FilePointer,&header);
-    if(HeaderV2_isID3v2Tag(header)){
-        uint32_t tagSize = HeaderV2_getTagSize(header);
-        fseek(mp3FilePointer, tagSize+10, SEEK_SET);
-        uint32_t remainingSize = fileSize - tagSize;
-        unsigned char *dataBuffer = (unsigned char *)malloc(remainingSize);
-        if (!dataBuffer) {
-            printf("error\n");
-            return;
-        }
-        size_t bytesRead = fread(dataBuffer, 1, remainingSize, mp3FilePointer);
-        FILE *temp = fopen("savedFiles/tagRemoved.mp3", "wb");
-        if (!temp) {
-          printf("error\n");
-          free(dataBuffer);
-          return;
-        }
-        fwrite(dataBuffer, 1, bytesRead, temp);
-        fclose(temp);
-        free(dataBuffer);
-
-        // remove(file);
-        // rename("tagRe6moved.mp3",file);
-      }
-    else printf("Not ID3v2 Tag detected or not yet supported version\n");
-    fclose(mp3FilePointer);
-  }
-  else printf("The file DOESN'T exist!\n");
-}
-
-void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
-  ID3v2_removeTagFromFile(file);
-  FILE *mp3FilePointer = fopen("./savedFiles/tagRemoved.mp3","r");
-  if(mp3FilePointer){
-    fseek(mp3FilePointer,0,SEEK_END);
-    uint32_t fileSize = ftell(mp3FilePointer);
-    fseek(mp3FilePointer,0,SEEK_SET);
-    unsigned char *dataBuffer = (unsigned char *)malloc(fileSize);
-    if(!dataBuffer){
-      printf("error");
-      fclose(mp3FilePointer);
-      return;
-    }
-    fread(dataBuffer,1,fileSize,mp3FilePointer);
-    FILE *temp = fopen("./savedFiles/modified.mp3","w");
-    if(!temp){
-      printf("error");
-      fclose(temp);
-      return;
-    }
-    // header
-    fwrite(&ID3Tag->header,1,sizeof(ID3Tag->header),temp);
-
-    FileManager_writteTXTFramesInFile(temp,&ID3Tag->TXTFrameList);
-    FileManager_writteCOMMFramesInFile(temp,&ID3Tag->COMMFrameList);
-    FileManager_writtePRIVFramesInFile(temp,&ID3Tag->PRIVFrameList);
-    FileManager_writteAPICFramesInFile(temp,&ID3Tag->APICFrameList);
-    if(ID3Tag->MCDI != NULL) FileManager_writteMCDIFrameInFile(temp,*ID3Tag->MCDI);
-    FileManager_writtePOPMFramesInFile(temp,&ID3Tag->POPMFrameList);
-    // if(ID3Tag->POPM != NULL) FileManager_writtePOPMFrameInFile(temp,*ID3Tag->POPM);
-    FileManager_writtePadding(temp,ID3Tag->paddingSize);
-    
-    // content
-    fwrite(dataBuffer,1,fileSize,temp);
-    fclose(temp);
-    // remove(file);
-    // rename("temp.mp3",file);
-  }
-  remove("./savedFiles/tagRemoved.mp3");
-}
-
 //IMPLEMENT REMAINING TAGS
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
   printf("\nsize in ID3Tag: %d bytes\n",HeaderV2_getTagSize(ID3Tag->header));
@@ -316,113 +235,16 @@ void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
 }
 
 void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
-  char option;
   if(strncasecmp(frameID,"TXXX",4)==0){ 
-    ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
-    ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
-    do{
-      if(strncasecmp(TXTFramePtr->header.frameId,"TXXX",4)==0){
-        fflush(stdout);
-        system("clear");
-        FramesV2_printTXTF(*TXTFramePtr);
-        printf("\n\nWant to delete this frame? (y/n): ");
-        option = getchar();
-        cleanInputBuffer();
-        if(option == 'y')  ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
-        else ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
-      }
-      else ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
-      TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
-    }while (TXTFramePtr != NULL);
+    DeleteFrame_deleteTXXX(&ID3Tag->TXTFrameList);
   }
   //LISTS
-  else if(strncasecmp(frameID,"T",1)==0){
-    ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
-    ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
-    while (TXTFramePtr != NULL && strncasecmp(frameID,TXTFramePtr->header.frameId,4) != 0){
-      ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
-      TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
-    }
-    if(TXTFramePtr != NULL){
-      fflush(stdout);
-      system("clear");
-      FramesV2_printTXTF(*TXTFramePtr);
-      printf("\n\nWant to delete this frame? (y/n): ");
-      option = getchar();
-      cleanInputBuffer();
-      if(option == 'y') ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
-    } 
-  }
-  else if(strncasecmp(frameID,"PRIV",4)==0){
-    ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
-    ID3v2PRIVFrameType * PRIVFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
-    do{
-      fflush(stdout);
-      system("clear");
-      FramesV2_printPRIV(*PRIVFramePtr);
-      printf("\n\nWant to delete this frame? (y/n): ");
-      option = getchar();
-      cleanInputBuffer();
-      if(option == 'y') ListFramePtr_deleteActive(&ID3Tag->PRIVFrameList);
-      else ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
-      PRIVFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
-    }while (PRIVFramePtr != NULL);
-  }
-  else if(strncasecmp(frameID,"COMM",4)==0){
-    ListFramePtr_setFirstActive(&ID3Tag->COMMFrameList);
-    ID3v2COMMFrameType * COMMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
-    do{
-      fflush(stdout);
-      system("clear");
-      FramesV2_printCOMM(*COMMFramePtr);
-      printf("\n\nWant to delete this frame? (y/n): ");
-      option = getchar();
-      cleanInputBuffer();
-      if(option == 'y') ListFramePtr_deleteActive(&ID3Tag->COMMFrameList);
-      else ListFramePtr_setNextActive(&ID3Tag->COMMFrameList);
-      COMMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
-    }while (COMMFramePtr != NULL);
-  }
-  else if(strncasecmp(frameID,"APIC",4)==0){
-    ListFramePtr_setFirstActive(&ID3Tag->APICFrameList);
-    ID3v2APICFrameType * APICFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
-    do{
-      fflush(stdout);
-      system("clear");
-      FramesV2_printAPIC(*APICFramePtr);
-      printf("\n\nWant to delete this frame? (y/n): ");
-      option = getchar();
-      cleanInputBuffer();
-      if(option == 'y') {
-        ListFramePtr_deleteActive(&ID3Tag->APICFrameList);
-      }
-      else{
-        ListFramePtr_setNextActive(&ID3Tag->APICFrameList);
-      }
-      APICFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
-    }while (APICFramePtr != NULL);
-  }
-  else if(strncasecmp(frameID,"POPM",4)==0){ 
-    ListFramePtr_setFirstActive(&ID3Tag->POPMFrameList);
-    ID3v2POPMFrameType * POPMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->POPMFrameList);
-    do{
-      fflush(stdout);
-      system("clear");
-      FramesV2_printPOPM(*POPMFramePtr);
-      printf("\n\nWant to delete this frame? (y/n): ");
-      option = getchar();
-      cleanInputBuffer();
-      if(option == 'y') {
-        ListFramePtr_deleteActive(&ID3Tag->POPMFrameList);
-      }
-      else{
-        ListFramePtr_setNextActive(&ID3Tag->POPMFrameList);
-      }
-      POPMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->POPMFrameList);
-    }while (POPMFramePtr != NULL);
-    // if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);
-  }
-  else printf("No frame in tag"); //Because of if anidation doesn't work in all tags FIX
+  else if(strncasecmp(frameID,"T",1)==0) DeleteFrame_deleteTXTF(&ID3Tag->TXTFrameList,frameID);
+  else if(strncasecmp(frameID,"PRIV",4)==0) DeleteFrame_deletePRIV(&ID3Tag->PRIVFrameList);
+  else if(strncasecmp(frameID,"COMM",4)==0) DeleteFrame_deleteCOMM(&ID3Tag->COMMFrameList);
+  else if(strncasecmp(frameID,"APIC",4)==0) DeleteFrame_deleteAPIC(&ID3Tag->APICFrameList);
+  else if(strncasecmp(frameID,"POPM",4)==0) DeleteFrame_deletePOPM(&ID3Tag->POPMFrameList);
+  else printf("No frame in tag"); //NOT SUPPORTED TAG
 
 }
 
