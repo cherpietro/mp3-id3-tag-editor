@@ -56,6 +56,7 @@ int main(){
     printf("2. Print specific frame\n");
     printf("3. Modify Tag Frame\n");
     printf("6. Save changes in file\n");
+    printf("0. Exit\n");
  
     if (scanf("%d", &option) != 1) {
       system("clear");

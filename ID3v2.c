@@ -488,6 +488,19 @@ void ID3v2_modifyFrame(ID3TagType *ID3Tag, char *frameID){
     printf("Not supportedFrame to modify\nYET\n");
   }
   else if(strncasecmp(frameID,"APIC",4)==0){
+    ListFramePtr_setFirstActive(&ID3Tag->APICFrameList);
+    ID3v2APICFrameType * APICFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
+    while (APICFramePtr != NULL && strncasecmp(frameID,APICFramePtr->header.frameId,4) != 0){
+      ListFramePtr_setNextActive(&ID3Tag->APICFrameList);
+      APICFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
+    }
+    if(APICFramePtr != NULL){
+      int oldSize = FramesV2_getFrameSize(ID3Tag->header.version[0],APICFramePtr->header);
+      FramesV2_ModifyAPIC(ID3Tag->header.version[0],APICFramePtr);
+      int newSize = FramesV2_getFrameSize(ID3Tag->header.version[0],APICFramePtr->header);
+      uint32_t tagSize = HeaderV2_getTagSize(ID3Tag->header);
+      HeaderV2_updateTagSize(&ID3Tag->header,tagSize + (newSize-oldSize));
+    }
     // ListFramePtr_setFirstActive(&ID3Tag->APICFrameList);
     // ID3v2APICFrameType * APICFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
     // while (APICFramePtr != NULL){
@@ -495,7 +508,7 @@ void ID3v2_modifyFrame(ID3TagType *ID3Tag, char *frameID){
     //   ListFramePtr_setNextActive(&ID3Tag->APICFrameList);
     //   APICFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
     // }
-    printf("Not supportedFrame to modify\nYET\n");
+    // printf("Not supportedFrame to modify\nYET\n");
   }
   // THEY NEED TO BE LISTS
   else if(strncasecmp(frameID,"POPM",4)==0){ if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);}

@@ -64,6 +64,29 @@ void FramesV2_freeAPIC(ID3v2APICFrameType** APIC){
   free(*APIC);
   *APIC = NULL;
 }
+void FramesV2_ModifyAPIC(uint8_t version,ID3v2APICFrameType *APIC){
+  // FILE *newCover = fopen("overtureCover.jpg", "rb");
+  FILE *newCover = fopen("pipoCover.jpg", "rb");
+  if (newCover) {
+    free(APIC->imageData);
+    
+    fseek(newCover, 0, SEEK_END);
+    APIC->imageDataSize = ftell(newCover); 
+    fseek(newCover, 0, SEEK_SET);
+    
+    APIC->imageData = (uint8_t *)malloc(APIC->imageDataSize);
+    
+    size_t bytesRead = fread(APIC->imageData, 1, APIC->imageDataSize, newCover);
+    if (bytesRead != APIC->imageDataSize) {
+      free(APIC->imageData);
+    }  
+    fclose(newCover);
+    // uint32_t newSize = APIC->content.size + 1;
+    // printf("OLD SIZE: %d\n",FramesV2_getFrameSize(version,TXTF->header));
+    // FramesV2_updateFrameSize(version,&TXTF->header,newSize);
+    // printf("NEW SIZE: %d\n",FramesV2_getFrameSize(version,TXTF->header));
+  }
+}
 
 void FramesV2_storeTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TXTFrameType *frame){
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
@@ -100,7 +123,7 @@ void FramesV2_ModifyTXTF(uint8_t version,ID3v2TXTFrameType *TXTF){
   
   printf("%s\n",content);
   TxtStr_storeTextString(&TXTF->content,content,strlen(content)+1);
-  
+
   uint32_t newSize = TXTF->content.size + 1;
   printf("OLD SIZE: %d\n",FramesV2_getFrameSize(version,TXTF->header));
   FramesV2_updateFrameSize(version,&TXTF->header,newSize);
