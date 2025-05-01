@@ -21,4 +21,6 @@ int HeaderV2_getTagVersion(ID3v2HeaderType );
 
 int HeaderV2_getTagSize(ID3v2HeaderType header);
 
+void HeaderV2_updateTagSize(ID3v2HeaderType *,uint32_t );
+
 #endif // ID3V2HEADER_H

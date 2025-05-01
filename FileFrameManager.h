@@ -20,4 +20,5 @@ void FileManager_writteAPICFrameInFile(FILE *, ID3v2APICFrameType );
 void FileManager_writteAPICFramesInFile(FILE *, ListFramePtr * );
 
 void FileManager_writtePadding(FILE *, int );
+
 #endif // FILEFRAMEMANAGER_H
