@@ -25,28 +25,24 @@ void ID3v2_init(ID3TagType *ID3Tag){
 }
 
 void ID3v2_free(ID3TagType *ID3Tag){
-  // ListTXTF_freeList(&ID3Tag->TXTFrameList);
   ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
   while (!ListFramePtr_isEmpty(ID3Tag->TXTFrameList)) {
       ID3v2TXTFrameType* ptrTXT = (ID3v2TXTFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
       FramesV2_freeTXTF(&ptrTXT);
       ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
   }
-  // ListCOMM_freeList(&ID3Tag->COMMFrameList);
   ListFramePtr_setFirstActive(&ID3Tag->COMMFrameList);
   while (!ListFramePtr_isEmpty(ID3Tag->COMMFrameList)) {
     ID3v2COMMFrameType* ptrCOMM = (ID3v2COMMFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
       FramesV2_freeCOMM(&ptrCOMM);
       ListFramePtr_deleteActive(&ID3Tag->COMMFrameList);
   }
-  // ListPRIV_freeList(&ID3Tag->PRIVFrameList);
   ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
   while (!ListFramePtr_isEmpty(ID3Tag->COMMFrameList)) {
     ID3v2PRIVFrameType* ptrPRIV = (ID3v2PRIVFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
       FramesV2_freePRIV(&ptrPRIV);
       ListFramePtr_deleteActive(&ID3Tag->PRIVFrameList);
   }
-  // if(ID3Tag->APIC != NULL) FramesV2_freeAPIC(&ID3Tag->APIC); 
   ListFramePtr_setFirstActive(&ID3Tag->APICFrameList);
   while (!ListFramePtr_isEmpty(ID3Tag->APICFrameList)) {
     ID3v2APICFrameType* ptrAPIC = (ID3v2APICFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
@@ -295,12 +291,6 @@ void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
     tagSizeOfStruct = tagSizeOfStruct + headerAPICsize ;
     ListFramePtr_setNextActive(&ID3Tag->APICFrameList);
   }
-  // if(ID3Tag->APIC != NULL) {
-  //   size_t headerAPICsize;
-  //   headerAPICsize = FramesV2_getFrameSize(ID3Tag->header.version[0],ID3Tag->APIC->header) + 10;
-  //   tagSizeOfStruct = tagSizeOfStruct + headerAPICsize ;
-  // }
-
   if((HeaderV2_getTagSize(ID3Tag->header) +10 - ID3Tag->paddingSize )== tagSizeOfStruct ){
     printf("size is okay\n");
   }
@@ -315,7 +305,6 @@ void printTag(ID3TagType *ID3Tag){
   PrintFrame_PrintCOMMFrames(&ID3Tag->COMMFrameList);
   PrintFrame_PrintPRIVFrames(&ID3Tag->PRIVFrameList);
   PrintFrame_PrintAPICFrames(&ID3Tag->APICFrameList);
-  // if(ID3Tag->APIC != NULL) FramesV2_printAPIC(*ID3Tag->APIC);
   if(ID3Tag->MCDI != NULL) FramesV2_printMDCI(*ID3Tag->MCDI);
   if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);
 }

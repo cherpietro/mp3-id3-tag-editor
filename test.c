@@ -110,32 +110,32 @@ void TIMBERHEARTH_ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     // header
     fwrite(&ID3Tag->header,1,sizeof(ID3Tag->header),temp);
     /*AUX*/
-    ID3v2TXTFrameType TXTFrame;
-    ListTXTF_setFirstActive(&ID3Tag->TXTFrameList);
-    TXTFrame = ListTXTF_getActive(ID3Tag->TXTFrameList);
-    fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
-    fwrite(&TXTFrame.textEncoding,1, 1,temp);
-    fwrite(TXTFrame.content.string,1, TXTFrame.content.size,temp);
-    ListTXTF_setNextActive(&ID3Tag->TXTFrameList);
+    ID3v2TXTFrameType *TXTFrame;
+    ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
+    TXTFrame = (ID3v2TXTFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+    fwrite(&TXTFrame->header,1, sizeof(TXTFrame->header),temp);
+    fwrite(&TXTFrame->textEncoding,1, 1,temp);
+    fwrite(TXTFrame->content.string,1, TXTFrame->content.size,temp);
+    ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
     /**/
     //COMMFrames
-    ID3v2COMMFrameType COMMFrame;
-    ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
+    ID3v2COMMFrameType *COMMFrame;
+    ListFramePtr_setFirstActive(&ID3Tag->COMMFrameList);
     while(ID3Tag->COMMFrameList.active != NULL){
-      COMMFrame = ListCOMM_getActive(ID3Tag->COMMFrameList);
-      fwrite(&COMMFrame.header,1, sizeof(COMMFrame.header),temp);
-      fwrite(&COMMFrame.textEncoding,1, 1,temp);
-      fwrite(&COMMFrame.language,1, 3,temp);
-      fwrite(COMMFrame.contentDescript.string,1, TxtStr_getStringLen(COMMFrame.contentDescript),temp);
-      fwrite(COMMFrame.actualText.string,1, TxtStr_getStringLen(COMMFrame.actualText),temp);
-      ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
+      COMMFrame = (ID3v2COMMFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
+      fwrite(&COMMFrame->header,1, sizeof(COMMFrame->header),temp);
+      fwrite(&COMMFrame->textEncoding,1, 1,temp);
+      fwrite(&COMMFrame->language,1, 3,temp);
+      fwrite(COMMFrame->contentDescript.string,1, TxtStr_getStringLen(COMMFrame->contentDescript),temp);
+      fwrite(COMMFrame->actualText.string,1, TxtStr_getStringLen(COMMFrame->actualText),temp);
+      ListFramePtr_setNextActive(&ID3Tag->COMMFrameList);
     }
     while(ID3Tag->TXTFrameList.active != NULL){
-      TXTFrame = ListTXTF_getActive(ID3Tag->TXTFrameList);
-      fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
-      fwrite(&TXTFrame.textEncoding,1, 1,temp);
-      fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),temp);
-      ListTXTF_setNextActive(&ID3Tag->TXTFrameList);
+      TXTFrame = (ID3v2TXTFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+      fwrite(&TXTFrame->header,1, sizeof(TXTFrame->header),temp);
+      fwrite(&TXTFrame->textEncoding,1, 1,temp);
+      fwrite(TXTFrame->content.string,1, TxtStr_getStringLen(TXTFrame->content),temp);
+      ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
     }
     char zero = 0;
     for (int i = 0; i < (int) ID3Tag->paddingSize; i++) {
@@ -173,37 +173,41 @@ void JOKIN3_ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     // header
     fwrite(&ID3Tag->header,1,sizeof(ID3Tag->header),temp);
      //TXTFrames
-     ID3v2TXTFrameType TXTFrame;
-     ListTXTF_setFirstActive(&ID3Tag->TXTFrameList);
+     ID3v2TXTFrameType *TXTFrame;
+     ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
      while(ID3Tag->TXTFrameList.active != NULL){
-       TXTFrame = ListTXTF_getActive(ID3Tag->TXTFrameList);
-       fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
-       fwrite(&TXTFrame.textEncoding,1, 1,temp);
-       fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),temp);
-       ListTXTF_setNextActive(&ID3Tag->TXTFrameList);
+       TXTFrame = (ID3v2TXTFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+       fwrite(&TXTFrame->header,1, sizeof(TXTFrame->header),temp);
+       fwrite(&TXTFrame->textEncoding,1, 1,temp);
+       fwrite(TXTFrame->content.string,1, TxtStr_getStringLen(TXTFrame->content),temp);
+       ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
      }
      
     //APIC
-    if(ID3Tag->APIC != NULL){
-      fwrite(&ID3Tag->APIC->header,1, sizeof(ID3Tag->APIC->header),temp);
-      fwrite(&ID3Tag->APIC->textEncoding,1, 1,temp);
-      fwrite(ID3Tag->APIC->mimeType.string,1, TxtStr_getStringLen(ID3Tag->APIC->mimeType),temp);
-      fwrite(&ID3Tag->APIC->pictureType,1, 1,temp);
-      fwrite(ID3Tag->APIC->description.string,1, TxtStr_getStringLen(ID3Tag->APIC->description),temp);
-      fwrite(ID3Tag->APIC->imageData,1,ID3Tag->APIC->imageDataSize ,temp);
+    ID3v2APICFrameType *APICFrame;
+    ListFramePtr_setFirstActive(&ID3Tag->APICFrameList);
+    while(ID3Tag->APICFrameList.active != NULL){
+      APICFrame = (ID3v2APICFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
+      fwrite(&APICFrame->header,1, sizeof(APICFrame->header),temp);
+      fwrite(&APICFrame->textEncoding,1, 1,temp);
+      fwrite(APICFrame->mimeType.string,1, TxtStr_getStringLen(APICFrame->mimeType),temp);
+      fwrite(&APICFrame->pictureType,1, 1,temp);
+      fwrite(APICFrame->description.string,1, TxtStr_getStringLen(APICFrame->description),temp);
+      fwrite(APICFrame->imageData,1,APICFrame->imageDataSize ,temp);
+      ListFramePtr_setNextActive(&ID3Tag->APICFrameList);
     }
 
     //COMMFrames
-    ID3v2COMMFrameType COMMFrame;
-    ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
+    ID3v2COMMFrameType *COMMFrame;
+    ListFramePtr_setFirstActive(&ID3Tag->COMMFrameList);
     while(ID3Tag->COMMFrameList.active != NULL){
-      COMMFrame = ListCOMM_getActive(ID3Tag->COMMFrameList);
-      fwrite(&COMMFrame.header,1, sizeof(COMMFrame.header),temp);
-      fwrite(&COMMFrame.textEncoding,1, 1,temp);
-      fwrite(&COMMFrame.language,1, 3,temp);
-      fwrite(COMMFrame.contentDescript.string,1, TxtStr_getStringLen(COMMFrame.contentDescript),temp);
-      fwrite(COMMFrame.actualText.string,1, TxtStr_getStringLen(COMMFrame.actualText),temp);
-      ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
+      COMMFrame = (ID3v2COMMFrameType *) ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
+      fwrite(&COMMFrame->header,1, sizeof(COMMFrame->header),temp);
+      fwrite(&COMMFrame->textEncoding,1, 1,temp);
+      fwrite(&COMMFrame->language,1, 3,temp);
+      fwrite(COMMFrame->contentDescript.string,1, TxtStr_getStringLen(COMMFrame->contentDescript),temp);
+      fwrite(COMMFrame->actualText.string,1, TxtStr_getStringLen(COMMFrame->actualText),temp);
+      ListFramePtr_setNextActive(&ID3Tag->COMMFrameList);
     }
     
     //Padding
@@ -244,73 +248,77 @@ void testJokin1_ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     fwrite(&ID3Tag->header,1,sizeof(ID3Tag->header),temp);
 
     //TXTFrames
-    ID3v2TXTFrameType TXTFrame;
-    ListTXTF_setFirstActive(&ID3Tag->TXTFrameList);
+    ID3v2TXTFrameType *TXTFrame;
+    ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
     for(int i = 0; i<5; i++){
-      TXTFrame = ListTXTF_getActive(ID3Tag->TXTFrameList);
-      fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
-      fwrite(&TXTFrame.textEncoding,1, 1,temp);
-      fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),temp);
-      ListTXTF_setNextActive(&ID3Tag->TXTFrameList);
+      TXTFrame = (ID3v2TXTFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+      fwrite(&TXTFrame->header,1, sizeof(TXTFrame->header),temp);
+      fwrite(&TXTFrame->textEncoding,1, 1,temp);
+      fwrite(TXTFrame->content.string,1, TxtStr_getStringLen(TXTFrame->content),temp);
+      ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
     }
 
     //PRIVFrames
-    ID3v2PRIVFrameType PRIVFrame;
-    ListPRIV_setFirstActive(&ID3Tag->PRIVFrameList);
+    ID3v2PRIVFrameType *PRIVFrame;
+    ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
     while(ID3Tag->PRIVFrameList.active != NULL){
-      PRIVFrame = ListPRIV_getActive(ID3Tag->PRIVFrameList);
-      fwrite(&PRIVFrame.header,1, sizeof(PRIVFrame.header),temp);
-      fwrite(PRIVFrame.owner.string,1, TxtStr_getStringLen(PRIVFrame.owner),temp);
-      fwrite(PRIVFrame.privateData.string,1, TxtStr_getStringLen(PRIVFrame.privateData),temp);
-      ListPRIV_setNextActive(&ID3Tag->PRIVFrameList);
+      PRIVFrame = (ID3v2PRIVFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
+      fwrite(&PRIVFrame->header,1, sizeof(PRIVFrame->header),temp);
+      fwrite(PRIVFrame->owner.string,1, TxtStr_getStringLen(PRIVFrame->owner),temp);
+      fwrite(PRIVFrame->privateData.string,1, TxtStr_getStringLen(PRIVFrame->privateData),temp);
+      ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
     }
 
     for(int i = 0; i<2; i++){
-      TXTFrame = ListTXTF_getActive(ID3Tag->TXTFrameList);
-      fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
-      fwrite(&TXTFrame.textEncoding,1, 1,temp);
-      fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),temp);
-      ListTXTF_setNextActive(&ID3Tag->TXTFrameList);
+      TXTFrame = (ID3v2TXTFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+      fwrite(&TXTFrame->header,1, sizeof(TXTFrame->header),temp);
+      fwrite(&TXTFrame->textEncoding,1, 1,temp);
+      fwrite(TXTFrame->content.string,1, TxtStr_getStringLen(TXTFrame->content),temp);
+      ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
     }
     
     //COMMFrames
-    ID3v2COMMFrameType COMMFrame;
-    ListCOMM_setFirstActive(&ID3Tag->COMMFrameList);
+    ID3v2COMMFrameType *COMMFrame;
+    ListFramePtr_setFirstActive(&ID3Tag->COMMFrameList);
     while(ID3Tag->COMMFrameList.active != NULL){
-      COMMFrame = ListCOMM_getActive(ID3Tag->COMMFrameList);
-      fwrite(&COMMFrame.header,1, sizeof(COMMFrame.header),temp);
-      fwrite(&COMMFrame.textEncoding,1, 1,temp);
-      fwrite(&COMMFrame.language,1, 3,temp);
-      fwrite(COMMFrame.contentDescript.string,1, TxtStr_getStringLen(COMMFrame.contentDescript),temp);
-      fwrite(COMMFrame.actualText.string,1, TxtStr_getStringLen(COMMFrame.actualText),temp);
-      ListCOMM_setNextActive(&ID3Tag->COMMFrameList);
+      COMMFrame = (ID3v2COMMFrameType *) ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
+      fwrite(&COMMFrame->header,1, sizeof(COMMFrame->header),temp);
+      fwrite(&COMMFrame->textEncoding,1, 1,temp);
+      fwrite(&COMMFrame->language,1, 3,temp);
+      fwrite(COMMFrame->contentDescript.string,1, TxtStr_getStringLen(COMMFrame->contentDescript),temp);
+      fwrite(COMMFrame->actualText.string,1, TxtStr_getStringLen(COMMFrame->actualText),temp);
+      ListFramePtr_setNextActive(&ID3Tag->COMMFrameList);
     }
     //TXTFrames
-    // ID3v2TXTFrameType TXTFrame;
-    // ListTXTF_setFirstActive(&ID3Tag->TXTFrameList);
+    // ID3v2TXTFrameType *TXTFrame;
+    // ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
     while(ID3Tag->TXTFrameList.active != NULL){
-      TXTFrame = ListTXTF_getActive(ID3Tag->TXTFrameList);
-      fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
-      fwrite(&TXTFrame.textEncoding,1, 1,temp);
-      fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),temp);
-      ListTXTF_setNextActive(&ID3Tag->TXTFrameList);
+      TXTFrame = (ID3v2TXTFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+      fwrite(&TXTFrame->header,1, sizeof(TXTFrame->header),temp);
+      fwrite(&TXTFrame->textEncoding,1, 1,temp);
+      fwrite(TXTFrame->content.string,1, TxtStr_getStringLen(TXTFrame->content),temp);
+      ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
     }
     
     //POPM
     if(ID3Tag->POPM != NULL){
-      fwrite(&ID3Tag->POPM->header,1, sizeof(ID3Tag->APIC->header),temp);
+      fwrite(&ID3Tag->POPM->header,1, sizeof(ID3Tag->POPM->header),temp);
       fwrite(ID3Tag->POPM->userEmail.string,1, TxtStr_getStringLen(ID3Tag->POPM->userEmail),temp);
       fwrite(&ID3Tag->POPM->rating,1, 1,temp);
       fwrite(&ID3Tag->POPM->counter,1, 4,temp);
     }
     //APIC
-    if(ID3Tag->APIC != NULL){
-      fwrite(&ID3Tag->APIC->header,1, sizeof(ID3Tag->APIC->header),temp);
-      fwrite(&ID3Tag->APIC->textEncoding,1, 1,temp);
-      fwrite(ID3Tag->APIC->mimeType.string,1, TxtStr_getStringLen(ID3Tag->APIC->mimeType),temp);
-      fwrite(&ID3Tag->APIC->pictureType,1, 1,temp);
-      fwrite(ID3Tag->APIC->description.string,1, TxtStr_getStringLen(ID3Tag->APIC->description),temp);
-      fwrite(ID3Tag->APIC->imageData,1,ID3Tag->APIC->imageDataSize ,temp);
+    ID3v2APICFrameType *APICFrame;
+    ListFramePtr_setFirstActive(&ID3Tag->APICFrameList);
+    while(ID3Tag->APICFrameList.active != NULL){
+      APICFrame = (ID3v2APICFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
+      fwrite(&APICFrame->header,1, sizeof(APICFrame->header),temp);
+      fwrite(&APICFrame->textEncoding,1, 1,temp);
+      fwrite(APICFrame->mimeType.string,1, TxtStr_getStringLen(APICFrame->mimeType),temp);
+      fwrite(&APICFrame->pictureType,1, 1,temp);
+      fwrite(APICFrame->description.string,1, TxtStr_getStringLen(APICFrame->description),temp);
+      fwrite(APICFrame->imageData,1,APICFrame->imageDataSize ,temp);
+      ListFramePtr_setNextActive(&ID3Tag->APICFrameList);
     }
     //Padding
     char zero = 0;
@@ -351,44 +359,49 @@ void ELITEFOUR_ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     fwrite(&ID3Tag->header,1,sizeof(ID3Tag->header),temp);
 
     //APIC
-    if(ID3Tag->APIC != NULL){
-      fwrite(&ID3Tag->APIC->header,1, sizeof(ID3Tag->APIC->header),temp);
-      fwrite(&ID3Tag->APIC->textEncoding,1, 1,temp);
-      fwrite(ID3Tag->APIC->mimeType.string,1, TxtStr_getStringLen(ID3Tag->APIC->mimeType),temp);
-      fwrite(&ID3Tag->APIC->pictureType,1, 1,temp);
-      fwrite(ID3Tag->APIC->description.string,1, TxtStr_getStringLen(ID3Tag->APIC->description),temp);
-      fwrite(ID3Tag->APIC->imageData,1,ID3Tag->APIC->imageDataSize ,temp);
+    ID3v2APICFrameType *APICFrame;
+    ListFramePtr_setFirstActive(&ID3Tag->APICFrameList);
+    while(ID3Tag->APICFrameList.active != NULL){
+      APICFrame = (ID3v2APICFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
+      fwrite(&APICFrame->header,1, sizeof(APICFrame->header),temp);
+      fwrite(&APICFrame->textEncoding,1, 1,temp);
+      fwrite(APICFrame->mimeType.string,1, TxtStr_getStringLen(APICFrame->mimeType),temp);
+      fwrite(&APICFrame->pictureType,1, 1,temp);
+      fwrite(APICFrame->description.string,1, TxtStr_getStringLen(APICFrame->description),temp);
+      fwrite(APICFrame->imageData,1,APICFrame->imageDataSize ,temp);
+      ListFramePtr_setNextActive(&ID3Tag->APICFrameList);
     }
-
+    
     //TXTFrames
-    ID3v2TXTFrameType TXTFrame;
-    ListTXTF_setFirstActive(&ID3Tag->TXTFrameList);
+    ID3v2TXTFrameType *TXTFrame;
+    ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
     for(int i = 0; i<3; i++){
-      TXTFrame = ListTXTF_getActive(ID3Tag->TXTFrameList);
-      fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
-      fwrite(&TXTFrame.textEncoding,1, 1,temp);
-      fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),temp);
-      ListTXTF_setNextActive(&ID3Tag->TXTFrameList);
+      TXTFrame = (ID3v2TXTFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+      fwrite(&TXTFrame->header,1, sizeof(TXTFrame->header),temp);
+      fwrite(&TXTFrame->textEncoding,1, 1,temp);
+      fwrite(TXTFrame->content.string,1, TxtStr_getStringLen(TXTFrame->content),temp);
+      ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
     }
      
     //PRIVFrames
-    ID3v2PRIVFrameType PRIVFrame;
-    ListPRIV_setFirstActive(&ID3Tag->PRIVFrameList);
+    ID3v2PRIVFrameType *PRIVFrame;
+    ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
     for(int i = 0; i<3; i++){
-      PRIVFrame = ListPRIV_getActive(ID3Tag->PRIVFrameList);
-      fwrite(&PRIVFrame.header,1, sizeof(PRIVFrame.header),temp);
-      fwrite(PRIVFrame.owner.string,1, TxtStr_getStringLen(PRIVFrame.owner),temp);
-      fwrite(PRIVFrame.privateData.string,1, TxtStr_getStringLen(PRIVFrame.privateData),temp);
-      ListPRIV_setNextActive(&ID3Tag->PRIVFrameList);
+      PRIVFrame = (ID3v2PRIVFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
+      fwrite(&PRIVFrame->header,1, sizeof(PRIVFrame->header),temp);
+      fwrite(PRIVFrame->owner.string,1, TxtStr_getStringLen(PRIVFrame->owner),temp);
+      fwrite(PRIVFrame->privateData.string,1, TxtStr_getStringLen(PRIVFrame->privateData),temp);
+      ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
+      
     }
 
     //TXTFrames
     for(int i = 0; i<3; i++){
-      TXTFrame = ListTXTF_getActive(ID3Tag->TXTFrameList);
-      fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
-      fwrite(&TXTFrame.textEncoding,1, 1,temp);
-      fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),temp);
-      ListTXTF_setNextActive(&ID3Tag->TXTFrameList);
+      TXTFrame = (ID3v2TXTFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+      fwrite(&TXTFrame->header,1, sizeof(TXTFrame->header),temp);
+      fwrite(&TXTFrame->textEncoding,1, 1,temp);
+      fwrite(TXTFrame->content.string,1, TxtStr_getStringLen(TXTFrame->content),temp);
+      ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
     }
 
     //MCDI
@@ -397,35 +410,35 @@ void ELITEFOUR_ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
 
     //PRIVFrames
     for(int i = 0; i<3; i++){
-      PRIVFrame = ListPRIV_getActive(ID3Tag->PRIVFrameList);
-      fwrite(&PRIVFrame.header,1, sizeof(PRIVFrame.header),temp);
-      fwrite(PRIVFrame.owner.string,1, TxtStr_getStringLen(PRIVFrame.owner),temp);
-      fwrite(PRIVFrame.privateData.string,1, TxtStr_getStringLen(PRIVFrame.privateData),temp);
-      ListPRIV_setNextActive(&ID3Tag->PRIVFrameList);
+      PRIVFrame = (ID3v2PRIVFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
+      fwrite(&PRIVFrame->header,1, sizeof(PRIVFrame->header),temp);
+      fwrite(PRIVFrame->owner.string,1, TxtStr_getStringLen(PRIVFrame->owner),temp);
+      fwrite(PRIVFrame->privateData.string,1, TxtStr_getStringLen(PRIVFrame->privateData),temp);
+      ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
     }
 
-    TXTFrame = ListTXTF_getActive(ID3Tag->TXTFrameList);
-    fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
-    fwrite(&TXTFrame.textEncoding,1, 1,temp);
-    fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),temp);
-    ListTXTF_setNextActive(&ID3Tag->TXTFrameList);
+    TXTFrame = (ID3v2TXTFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+    fwrite(&TXTFrame->header,1, sizeof(TXTFrame->header),temp);
+    fwrite(&TXTFrame->textEncoding,1, 1,temp);
+    fwrite(TXTFrame->content.string,1, TxtStr_getStringLen(TXTFrame->content),temp);
+    ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
 
     for(int i = 0; i<4; i++){
-      PRIVFrame = ListPRIV_getActive(ID3Tag->PRIVFrameList);
-      fwrite(&PRIVFrame.header,1, sizeof(PRIVFrame.header),temp);
-      fwrite(PRIVFrame.owner.string,1, TxtStr_getStringLen(PRIVFrame.owner),temp);
-      fwrite(PRIVFrame.privateData.string,1, TxtStr_getStringLen(PRIVFrame.privateData),temp);
-      ListPRIV_setNextActive(&ID3Tag->PRIVFrameList);
+      PRIVFrame = (ID3v2PRIVFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
+      fwrite(&PRIVFrame->header,1, sizeof(PRIVFrame->header),temp);
+      fwrite(PRIVFrame->owner.string,1, TxtStr_getStringLen(PRIVFrame->owner),temp);
+      fwrite(PRIVFrame->privateData.string,1, TxtStr_getStringLen(PRIVFrame->privateData),temp);
+      ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
     }
-    TXTFrame = ListTXTF_getActive(ID3Tag->TXTFrameList);
-    fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
-    fwrite(&TXTFrame.textEncoding,1, 1,temp);
-    fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),temp);
-    ListTXTF_setNextActive(&ID3Tag->TXTFrameList);
-    TXTFrame = ListTXTF_getActive(ID3Tag->TXTFrameList);
-    fwrite(&TXTFrame.header,1, sizeof(TXTFrame.header),temp);
-    fwrite(&TXTFrame.textEncoding,1, 1,temp);
-    fwrite(TXTFrame.content.string,1, TxtStr_getStringLen(TXTFrame.content),temp);
+    TXTFrame = (ID3v2TXTFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+    fwrite(&TXTFrame->header,1, sizeof(TXTFrame->header),temp);
+    fwrite(&TXTFrame->textEncoding,1, 1,temp);
+    fwrite(TXTFrame->content.string,1, TxtStr_getStringLen(TXTFrame->content),temp);
+    ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
+    TXTFrame = (ID3v2TXTFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+    fwrite(&TXTFrame->header,1, sizeof(TXTFrame->header),temp);
+    fwrite(&TXTFrame->textEncoding,1, 1,temp);
+    fwrite(TXTFrame->content.string,1, TxtStr_getStringLen(TXTFrame->content),temp);
 
     //Padding
     char zero = 0;
