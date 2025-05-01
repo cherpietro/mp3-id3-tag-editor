@@ -322,7 +322,6 @@ void ID3v2_listFrames(ID3TagType *ID3Tag){
   if(ID3Tag->USER != NULL) printf("FramgeID: USER\n");
   if(ID3Tag->OWNE != NULL) printf("FramgeID: OWNE\n");
   if(ID3Tag->PCNT != NULL) printf("FramgeID: PCNT\n");
-  // if(ID3Tag->APIC != NULL) printf("FramgeID: APIC\n");
   ListFramePtr_setFirstActive(&(*ID3Tag).APICFrameList);
   int APICCount = 0;
   while(ID3Tag->APICFrameList.active != NULL){
@@ -349,14 +348,7 @@ void ID3v2_listFrames(ID3TagType *ID3Tag){
     TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
   }
   if(TXTFCount != 0) printf("FramgeID: TXXX (%d frames)\n",TXTFCount);
-  // ListFramePtr_setFirstActive(&(*ID3Tag).TXTFrameList);
-  // int TXTFCount = 0;
-  // while(ID3Tag->TXTFrameList.active != NULL) {
-  //   TXTFCount += 1;
-  //   ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
-  // }
-  // if(TXTFCount != 0) printf("FramgeID: TEXT (%d frames)\n",TXTFCount);
-
+  
   int PRIVCount = 0;
   ListFramePtr_setFirstActive(&(*ID3Tag).PRIVFrameList);
   while(ID3Tag->PRIVFrameList.active != NULL){
@@ -452,14 +444,22 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
     }while (TXTFramePtr != NULL);
   }
   //LISTS
-  else if(strncasecmp(frameID,"T",1)==0){ //USER PRINT FRAME MANAGER TO PRINT TXXX
+  else if(strncasecmp(frameID,"T",1)==0){
     ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
     ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
     while (TXTFramePtr != NULL && strncasecmp(frameID,TXTFramePtr->header.frameId,4) != 0){
       ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
       TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
     }
-    if(TXTFramePtr != NULL) ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
+    if(TXTFramePtr != NULL){
+      fflush(stdout);
+      system("clear");
+      FramesV2_printTXTF(*TXTFramePtr);
+      printf("\n\nWant to delete this frame? (y/n): ");
+      option = getchar();
+      cleanInputBuffer();
+      if(option == 'y') ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
+    } 
   }
   else if(strncasecmp(frameID,"PRIV",4)==0){
     ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
@@ -471,12 +471,8 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
       printf("\n\nWant to delete this frame? (y/n): ");
       option = getchar();
       cleanInputBuffer();
-      if(option == 'y') {
-        ListFramePtr_deleteActive(&ID3Tag->PRIVFrameList);
-      }
-      else{
-        ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
-      }
+      if(option == 'y') ListFramePtr_deleteActive(&ID3Tag->PRIVFrameList);
+      else ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
       PRIVFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
     }while (PRIVFramePtr != NULL);
   }
@@ -490,12 +486,8 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
       printf("\n\nWant to delete this frame? (y/n): ");
       option = getchar();
       cleanInputBuffer();
-      if(option == 'y') {
-        ListFramePtr_deleteActive(&ID3Tag->COMMFrameList);
-      }
-      else{
-        ListFramePtr_setNextActive(&ID3Tag->COMMFrameList);
-      }
+      if(option == 'y') ListFramePtr_deleteActive(&ID3Tag->COMMFrameList);
+      else ListFramePtr_setNextActive(&ID3Tag->COMMFrameList);
       COMMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
     }while (COMMFramePtr != NULL);
   }
