@@ -11,6 +11,8 @@ void listFrames(char *);
 
 void printFrame(char *);
 
+void modifyFrame(char *);
+
 void storeAndWritte(char *);
 
 void storeAndPrint(char *);
@@ -23,12 +25,12 @@ int main(){
   
   // char *file = "./files/EliteFour.mp3";
   // char *file = "./files/gameFreak.mp3";
-  char *file = "./files/jokin1.mp3";
+  // char *file = "./files/jokin1.mp3";
   // char *file = "./files/jokin2.mp3"; //TEST TAG
   // char *file = "./files/jokin3.mp3";
   // char *file = "./files/nlp6.mp3";
   // char *file = "./files/opening.mp3";
-  // char *file = "./files/overture.mp3";
+  char *file = "./files/overture.mp3";
   // char *file = "./files/theme.mp3";
   // char *file = "./files/TimberHearth.mp3"; 
   // char *file = "./files/zelda.mp3";
@@ -46,6 +48,7 @@ int main(){
     printf("1. List Frames in TAG\n");
     printf("2. Print specific frame\n");
     printf("3. Modify Tag Frame\n");
+    printf("6. Save changes in file\n");
  
     if (scanf("%d", &option) != 1) {
       system("clear");
@@ -73,13 +76,21 @@ int main(){
             system("clear");
             break;
         case 3:
-            printf("Option 3.\n");
+            system("clear");
+            modifyFrame(file);
+            printf("\nPress enter to continue...\n");
+            getchar();
+            while ((c = getchar()) != '\n' && c != EOF);
+            system("clear");
             break;
         case 4:
             printf("Option 4.\n");
             break;
         case 5:
             printf("Option 5.\n");
+            break;
+        case 6:
+            // printf("\n");
             break;
         case 0:
             printf("Option 0.\n");
@@ -109,6 +120,21 @@ void printFrame(char *file){
   // int c;
   // while ((c = getchar()) != '\n' && c != EOF);
   ID3v2_printFrame(&ID3Tag, frameID);
+  ID3v2_free(&ID3Tag);  
+}
+
+void modifyFrame(char *file){
+  ID3TagType ID3Tag;
+  ID3v2_init(&ID3Tag);
+  ID3v2_storeTagInStruct(file,&ID3Tag);
+
+  char frameID[5];
+  printf("Introduce the Frame id to modify: ");
+  scanf("%4s", frameID);
+  printf("%s\n", frameID);
+  int c;
+  while ((c = getchar()) != '\n' && c != EOF);
+  ID3v2_modifyFrame(&ID3Tag, frameID);
   ID3v2_free(&ID3Tag);  
 }
 

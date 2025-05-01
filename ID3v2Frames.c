@@ -9,6 +9,10 @@ uint32_t FramesV2_getFrameSize(int version, ID3v2FrameHeaderType header){
   if(version == 4)  return syncsafeToSize(header.size);
   else return sizeFromID3v23(header.size);
 }
+void FramesV2_updateFrameSize(int version, ID3v2FrameHeaderType *header,uint32_t newSize){
+  if(version == 4)  saveSizeToSyncsafe(newSize,header->size);
+  else saveSizeToID3v23(newSize,header->size);
+}
 
 void FramesV2_storeAPIC(FILE *mp3FilePointer, uint32_t frameSize,ID3v2APICFrameType* apic){
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
@@ -87,6 +91,20 @@ void FramesV2_freeTXTF(ID3v2TXTFrameType** TXTF){
   TxtStr_freeTextString(&(*TXTF)->content);
   free(*TXTF);
   *TXTF = NULL;
+}
+void FramesV2_ModifyTXTF(uint8_t version,ID3v2TXTFrameType *TXTF){
+  char content[256];
+  printf("Introduce the new text modify: ");
+  fgets(content, sizeof(content), stdin);
+  content[strcspn(content, "\n")] = 0;
+  
+  printf("%s\n",content);
+  TxtStr_storeTextString(&TXTF->content,content,strlen(content)+1);
+  
+  uint32_t newSize = TXTF->content.size + 1;
+  printf("OLD SIZE: %d\n",FramesV2_getFrameSize(version,TXTF->header));
+  FramesV2_updateFrameSize(version,&TXTF->header,newSize);
+  printf("NEW SIZE: %d\n",FramesV2_getFrameSize(version,TXTF->header));
 }
 
 void FramesV2_storeCOMM(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameType *frame){

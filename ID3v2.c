@@ -422,5 +422,75 @@ void ID3v2_printFrame(ID3TagType *ID3Tag, char *frameID){
   }
   // THEY NEED TO BE LISTS
   else if(strncasecmp(frameID,"POPM",4)==0){ if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);}
-  else printf("No frame in tag");
+  else printf("No frame in tag"); //Because of if anidation doesn't work in all tags
+}
+
+void ID3v2_modifyFrame(ID3TagType *ID3Tag, char *frameID){
+  if(strncasecmp(frameID,"MCDI",4)==0){ if(ID3Tag->MCDI != NULL)   printf("Not supportedFrame to modify\n");}
+  else if(strncasecmp(frameID,"SYTC",4)==0){ if(ID3Tag->SYTC != NULL)   printf("Not supportedFrame to modify\n");}
+  else if(strncasecmp(frameID,"IPLS",4)==0){ if(ID3Tag->IPLS != NULL)   printf("Not supportedFrame to modify\n");}
+  else if(strncasecmp(frameID,"USER",4)==0){ if(ID3Tag->USER != NULL)   printf("Not supportedFrame to modify\n");}
+  else if(strncasecmp(frameID,"OWNE",4)==0){ if(ID3Tag->OWNE != NULL)   printf("Not supportedFrame to modify\n");}
+  else if(strncasecmp(frameID,"PCNT",4)==0){ if(ID3Tag->PCNT != NULL)   printf("Not supportedFrame to modify\n");}
+
+  else if(strncasecmp(frameID,"RVRB",4)==0)  printf("Not supportedFrame to modify\n");
+  else if(strncasecmp(frameID,"EQUA",4)==0)  printf("Not supportedFrame to modify\n");
+  else if(strncasecmp(frameID,"MLLT",4)==0)  printf("Not supportedFrame to modify\n");
+  else if(strncasecmp(frameID,"ETCO",4)==0)  printf("Not supportedFrame to modify\n");
+  else if(strncasecmp(frameID,"RVAD",4)==0)  printf("Not supportedFrame to modify\n");
+
+  //LISTS
+  else if(strncasecmp(frameID,"TXXX",4)==0){ printf("Not supportedFrame to modify\nYET\n");}
+  else if(strncasecmp(frameID,"T",1)==0){ //USER PRINT FRAME MANAGER TO PRINT TXXX
+    ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
+    ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+    while (TXTFramePtr != NULL && strncasecmp(frameID,TXTFramePtr->header.frameId,4) != 0){
+      ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
+      TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+    }
+    if(TXTFramePtr != NULL) FramesV2_ModifyTXTF(ID3Tag->header.version[0],TXTFramePtr);
+  }
+  else if(strncasecmp(frameID,"PRIV",4)==0){
+    // ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
+    // ID3v2PRIVFrameType * PRIVFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
+    // while (PRIVFramePtr != NULL){
+    //   FramesV2_printPRIV(*PRIVFramePtr);
+    //   ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
+    //   PRIVFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
+    // }
+    printf("Not supportedFrame to modify\nYET\n");
+  }
+  else if(strncasecmp(frameID,"PRIV",4)==0){
+    // ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
+    // ID3v2PRIVFrameType * PRIVFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
+    // while (PRIVFramePtr != NULL){
+    //   FramesV2_printPRIV(*PRIVFramePtr);
+    //   ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
+    //   PRIVFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
+    // }
+    printf("Not supportedFrame to modify\nYET\n");
+  }
+  else if(strncasecmp(frameID,"COMM",4)==0){
+    // ListFramePtr_setFirstActive(&ID3Tag->COMMFrameList);
+    // ID3v2COMMFrameType * COMMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
+    // while (COMMFramePtr != NULL){
+    //   FramesV2_printCOMM(*COMMFramePtr);
+    //   ListFramePtr_setNextActive(&ID3Tag->COMMFrameList);
+    //   COMMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
+    // }
+    printf("Not supportedFrame to modify\nYET\n");
+  }
+  else if(strncasecmp(frameID,"APIC",4)==0){
+    // ListFramePtr_setFirstActive(&ID3Tag->APICFrameList);
+    // ID3v2APICFrameType * APICFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
+    // while (APICFramePtr != NULL){
+    //   FramesV2_printAPIC(*APICFramePtr);
+    //   ListFramePtr_setNextActive(&ID3Tag->APICFrameList);
+    //   APICFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
+    // }
+    printf("Not supportedFrame to modify\nYET\n");
+  }
+  // THEY NEED TO BE LISTS
+  else if(strncasecmp(frameID,"POPM",4)==0){ if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);}
+  else printf("No frame in tag"); //Because of if anidation doesn't work in all tags
 }

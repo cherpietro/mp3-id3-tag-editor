@@ -72,4 +72,6 @@ void ID3v2_listFrames(ID3TagType *);
 
 void ID3v2_printFrame(ID3TagType *, char *);
 
+void ID3v2_modifyFrame(ID3TagType *, char *);
+
 #endif // ID3V2_H
