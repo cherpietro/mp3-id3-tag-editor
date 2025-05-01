@@ -40,3 +40,13 @@ void PrintFrame_PrintAPICFrames(ListFramePtr *APICFrameList){
     ListFramePtr_setNextActive(APICFrameList);
   }
 }
+
+void PrintFrame_PrintPOPMFrames(ListFramePtr *POPMFrameList){
+  ID3v2POPMFrameType *POPMFrame;
+  ListFramePtr_setFirstActive(POPMFrameList);
+  while(POPMFrameList->active != NULL){
+    POPMFrame = (ID3v2POPMFrameType *) ListFramePtr_getActiveFramePtr(*POPMFrameList);
+    FramesV2_printPOPM(*POPMFrame);
+    ListFramePtr_setNextActive(POPMFrameList);
+  }
+}

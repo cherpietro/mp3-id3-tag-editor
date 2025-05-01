@@ -13,7 +13,9 @@ void FileManager_writtePRIVFramesInFile(FILE *, ListFramePtr *);
 
 void FileManager_writteMCDIFrameInFile(FILE *, ID3v2MCDIFrameType );
 
-void FileManager_writtePOPMFrameInFile(FILE *, ID3v2POPMFrameType );
+void FileManager_writtePOPMFrameInFile(FILE *, ID3v2POPMFrameType ); //REMOVE
+
+void FileManager_writtePOPMFramesInFile(FILE *,ListFramePtr *);
 
 void FileManager_writteAPICFrameInFile(FILE *, ID3v2APICFrameType );
 

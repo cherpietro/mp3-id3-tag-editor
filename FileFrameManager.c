@@ -72,6 +72,18 @@ void FileManager_writteAPICFramesInFile(FILE *destFilePtr, ListFramePtr *APICFra
     ListFramePtr_setNextActive(APICFrameList);
   }
 }
+void FileManager_writtePOPMFramesInFile(FILE *destFilePtr, ListFramePtr *POPMFrameList){
+  ID3v2POPMFrameType *POPMFrame;
+  ListFramePtr_setFirstActive(POPMFrameList);
+  while(POPMFrameList->active != NULL){
+    POPMFrame = (ID3v2POPMFrameType *)ListFramePtr_getActiveFramePtr(*POPMFrameList);
+    fwrite(&POPMFrame->header,1, sizeof(POPMFrame->header),destFilePtr);
+    fwrite(POPMFrame->userEmail.string,1, TxtStr_getStringLen(POPMFrame->userEmail),destFilePtr);
+    fwrite(&POPMFrame->rating,1, 1,destFilePtr);
+    fwrite(&POPMFrame->counter,1, 4,destFilePtr);
+    ListFramePtr_setNextActive(POPMFrameList);
+  }
+}
 
 void FileManager_writtePadding(FILE *destFilePtr, int paddingSize){
   char zero = 0;

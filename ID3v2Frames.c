@@ -283,22 +283,22 @@ void FramesV2_freeMCDI(ID3v2MCDIFrameType **MCDI){
   *MCDI = NULL;
 }
 
-void FramesV2_storePOPM(FILE *mp3FilePointer, uint32_t frameSize,ID3v2POPMFrameType** POPM){
-  *POPM = (ID3v2POPMFrameType *)malloc(sizeof(ID3v2POPMFrameType));
-  size_t index = 0;
+void FramesV2_storePOPM(FILE *mp3FilePointer, uint32_t frameSize,ID3v2POPMFrameType* POPM){
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
   fread(frameContent, frameSize, 1, mp3FilePointer);
+
+  size_t index = 0;
   char *emailPtr = (char *)frameContent;
   size_t emailSize = strlen(emailPtr) + 1;
-  TxtStr_storeTextString(&(*POPM)->userEmail,emailPtr,emailSize);
+  TxtStr_storeTextString(&(POPM)->userEmail,emailPtr,emailSize);
   index += emailSize;
   char *ratingPtr = (char *)frameContent + index ; 
-  (*POPM)->rating = ratingPtr[0];
+  (POPM)->rating = ratingPtr[0];
   char *counterPtr = (char *)frameContent + index +1; 
-  (*POPM)->counter[0] = counterPtr[0];
-  (*POPM)->counter[1] = counterPtr[1];
-  (*POPM)->counter[2] = counterPtr[2];
-  (*POPM)->counter[3] = counterPtr[3];
+  (POPM)->counter[0] = counterPtr[0];
+  (POPM)->counter[1] = counterPtr[1];
+  (POPM)->counter[2] = counterPtr[2];
+  (POPM)->counter[3] = counterPtr[3];
   free(frameContent);
 }
 void FramesV2_printPOPM(ID3v2POPMFrameType POPM){

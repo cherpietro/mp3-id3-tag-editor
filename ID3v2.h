@@ -16,16 +16,16 @@ typedef struct {
     ListFramePtr PRIVFrameList;
     ListFramePtr APICFrameList; 
 
-    /*Only stored*/
+    /*NotTested*/
     ID3v2MCDIFrameType *MCDI;
-    ID3v2POPMFrameType *POPM; //LIST
+    ListFramePtr POPMFrameList; //LIST
     ID3v2IPLSFrameType *IPLS;
     ID3v2SYTCFrameType *SYTC;
     ID3v2USERFrameType *USER;
     ID3v2OWNEFrameType *OWNE;
     ID3v2PCNTFrameType *PCNT;
     /**/
-    
+
     /*TO IMPLEMENT*/
     int UFID; //LIST
     int LISTWXXX; //LIST
@@ -35,11 +35,11 @@ typedef struct {
     int LINK; //List
     
    
-    int AENC;
+    int AENC; //LIST
     int POSS;
-    int COMR;
-    int ENCR;
-    int GRID;
+    int COMR; //???
+    int ENCR; //LIST
+    int GRID; //LIST
 
     ID3v2DefaultFrameType *RVRB;
     ID3v2DefaultFrameType *EQUA;

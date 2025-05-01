@@ -11,4 +11,6 @@ void PrintFrame_PrintPRIVFrames(ListFramePtr *);
 
 void PrintFrame_PrintAPICFrames(ListFramePtr *);
 
+void PrintFrame_PrintPOPMFrames(ListFramePtr *);
+
 #endif // PRINTFRAMEMANAGER_H

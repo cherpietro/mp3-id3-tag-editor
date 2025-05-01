@@ -15,8 +15,9 @@ void ID3v2_init(ID3TagType *ID3Tag){
   ListFramePtr_init(&ID3Tag->COMMFrameList);
   ListFramePtr_init(&ID3Tag->PRIVFrameList);
   ListFramePtr_init(&ID3Tag->APICFrameList);
+
+  ListFramePtr_init(&ID3Tag->POPMFrameList);
   ID3Tag->MCDI = NULL;
-  ID3Tag->POPM = NULL;
   ID3Tag->IPLS = NULL;
   ID3Tag->SYTC = NULL;
   ID3Tag->USER = NULL;
@@ -54,8 +55,14 @@ void ID3v2_free(ID3TagType *ID3Tag){
       FramesV2_freeAPIC(&ptrAPIC);
       ListFramePtr_deleteActive(&ID3Tag->APICFrameList);
   }
+  // if(ID3Tag->POPM != NULL) FramesV2_freePOPM(&ID3Tag->POPM);
+  ListFramePtr_setFirstActive(&ID3Tag->POPMFrameList);
+  while (!ListFramePtr_isEmpty(ID3Tag->POPMFrameList)) {
+    ID3v2POPMFrameType* ptrPOPM = (ID3v2POPMFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->POPMFrameList);
+      FramesV2_freePOPM(&ptrPOPM);
+      ListFramePtr_deleteActive(&ID3Tag->POPMFrameList);
+  }
   if(ID3Tag->MCDI != NULL) FramesV2_freeMCDI(&ID3Tag->MCDI);
-  if(ID3Tag->POPM != NULL) FramesV2_freePOPM(&ID3Tag->POPM);
   if(ID3Tag->IPLS != NULL) FramesV2_freeIPLS(&ID3Tag->IPLS);
   if(ID3Tag->SYTC != NULL) FramesV2_freeSYTC(&ID3Tag->SYTC);
   if(ID3Tag->USER != NULL) FramesV2_freeUSER(&ID3Tag->USER);
@@ -129,8 +136,11 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     ID3Tag->MCDI->header = header;
   }
   else if(strncasecmp(header.frameId,"POPM",4)==0){
-    FramesV2_storePOPM(mp3FilePointer,frameSize, &ID3Tag->POPM);
-    ID3Tag->POPM->header = header;
+    ID3v2POPMFrameType *POPM;
+    POPM =  (ID3v2POPMFrameType *) malloc(sizeof(ID3v2POPMFrameType));
+    POPM->header = header;
+    FramesV2_storePOPM(mp3FilePointer,frameSize, POPM);
+    ListFramePtr_insertLast(&ID3Tag->POPMFrameList,POPM);
   }
   else if(strncasecmp(header.frameId,"IPLS",4)==0){
     printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
@@ -255,7 +265,8 @@ void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     FileManager_writtePRIVFramesInFile(temp,&ID3Tag->PRIVFrameList);
     FileManager_writteAPICFramesInFile(temp,&ID3Tag->APICFrameList);
     if(ID3Tag->MCDI != NULL) FileManager_writteMCDIFrameInFile(temp,*ID3Tag->MCDI);
-    if(ID3Tag->POPM != NULL) FileManager_writtePOPMFrameInFile(temp,*ID3Tag->POPM);
+    FileManager_writtePOPMFramesInFile(temp,&ID3Tag->POPMFrameList);
+    // if(ID3Tag->POPM != NULL) FileManager_writtePOPMFrameInFile(temp,*ID3Tag->POPM);
     FileManager_writtePadding(temp,ID3Tag->paddingSize);
     
     // content
@@ -310,18 +321,29 @@ void printTag(ID3TagType *ID3Tag){
   PrintFrame_PrintCOMMFrames(&ID3Tag->COMMFrameList);
   PrintFrame_PrintPRIVFrames(&ID3Tag->PRIVFrameList);
   PrintFrame_PrintAPICFrames(&ID3Tag->APICFrameList);
+  // if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);
+  PrintFrame_PrintPOPMFrames(&ID3Tag->POPMFrameList);
   if(ID3Tag->MCDI != NULL) FramesV2_printMDCI(*ID3Tag->MCDI);
-  if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);
 }
 
 void ID3v2_listFrames(ID3TagType *ID3Tag){
   if(ID3Tag->MCDI != NULL) printf("FramgeID: MCDI\n");
-  if(ID3Tag->POPM != NULL) printf("FramgeID: POPM\n");
   if(ID3Tag->IPLS != NULL) printf("FramgeID: IPLS\n");
   if(ID3Tag->SYTC != NULL) printf("FramgeID: SYTC\n");
   if(ID3Tag->USER != NULL) printf("FramgeID: USER\n");
   if(ID3Tag->OWNE != NULL) printf("FramgeID: OWNE\n");
   if(ID3Tag->PCNT != NULL) printf("FramgeID: PCNT\n");
+
+  // if(ID3Tag->POPM != NULL) printf("FramgeID: POPM\n");
+  ListFramePtr_setFirstActive(&(*ID3Tag).POPMFrameList);
+  int POPMCount = 0;
+  while(ID3Tag->APICFrameList.active != NULL){
+    POPMCount += 1;
+    ListFramePtr_setNextActive(&ID3Tag->POPMFrameList);
+  }
+  if(POPMCount != 0) printf("FramgeID: POPM (%d frames)\n",POPMCount);
+
+
   ListFramePtr_setFirstActive(&(*ID3Tag).APICFrameList);
   int APICCount = 0;
   while(ID3Tag->APICFrameList.active != NULL){
@@ -418,8 +440,16 @@ void ID3v2_printFrame(ID3TagType *ID3Tag, char *frameID){
       APICFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
     }
   }
-  // THEY NEED TO BE LISTS
-  else if(strncasecmp(frameID,"POPM",4)==0){ if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);}
+  else if(strncasecmp(frameID,"POPM",4)==0){ 
+    ListFramePtr_setFirstActive(&ID3Tag->POPMFrameList);
+    ID3v2POPMFrameType * POPMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->POPMFrameList);
+    while (POPMFramePtr != NULL){
+      FramesV2_printPOPM(*POPMFramePtr);
+      ListFramePtr_setNextActive(&ID3Tag->POPMFrameList);
+      POPMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->POPMFrameList);
+    }
+    // if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);
+  }
   else printf("No frame in tag"); //Because of if anidation doesn't work in all tags
 }
 
@@ -510,9 +540,27 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
       APICFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
     }while (APICFramePtr != NULL);
   }
-  // THEY NEED TO BE LISTS
-  else if(strncasecmp(frameID,"POPM",4)==0){ if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);}
-  else printf("No frame in tag"); //Because of if anidation doesn't work in all tags
+  else if(strncasecmp(frameID,"POPM",4)==0){ 
+    ListFramePtr_setFirstActive(&ID3Tag->POPMFrameList);
+    ID3v2POPMFrameType * POPMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->POPMFrameList);
+    do{
+      fflush(stdout);
+      system("clear");
+      FramesV2_printPOPM(*POPMFramePtr);
+      printf("\n\nWant to delete this frame? (y/n): ");
+      option = getchar();
+      cleanInputBuffer();
+      if(option == 'y') {
+        ListFramePtr_deleteActive(&ID3Tag->POPMFrameList);
+      }
+      else{
+        ListFramePtr_setNextActive(&ID3Tag->POPMFrameList);
+      }
+      POPMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->POPMFrameList);
+    }while (POPMFramePtr != NULL);
+    // if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);
+  }
+  else printf("No frame in tag"); //Because of if anidation doesn't work in all tags FIX
 
 }
 
@@ -522,18 +570,5 @@ void ID3v2_addFrame(ID3TagType *ID3Tag, char *frameID){
     ID3v2TXTFrameType *TXTFramePtr = FramesV2_getTXXX();
     ListFramePtr_insertLast(&ID3Tag->TXTFrameList,TXTFramePtr);
     FramesV2_updateFrameSize(ID3Tag->header.version[0],&TXTFramePtr->header,TXTFramePtr->content.size);
-  }
-  //LISTS
-  // else if(strncasecmp(frameID,"T",1)==0){ //USER PRINT FRAME MANAGER TO PRINT TXXX
-  //   ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
-  //   ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
-  //   while (TXTFramePtr != NULL && strncasecmp(frameID,TXTFramePtr->header.frameId,4) != 0){
-  //     ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
-  //     TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
-  //   }
-  //   if(TXTFramePtr != NULL) {
-  //     ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
-  //   }
-  // }
-  
+  }  
 }
