@@ -17,7 +17,7 @@ void storeAndWritte(char *);
 
 void storeAndPrint(char *);
 
-
+void saveChangesInFile(char *, ID3TagType);
 
 int main(){
   
@@ -31,6 +31,7 @@ int main(){
   // char *file = "./files/nlp6.mp3";
   // char *file = "./files/opening.mp3";
   char *file = "./files/overture.mp3";
+  // char *saveFile = "./files/auxFiles/overture.mp3";
   // char *file = "./files/theme.mp3";
   // char *file = "./files/TimberHearth.mp3"; 
   // char *file = "./files/zelda.mp3";
@@ -40,10 +41,16 @@ int main(){
   // char *file = "./files/ingenium/(G)I-DLE/I feel/(G)I-DLE - Queencard.mp3"; // ONE WOAS TAG and USLT
   // char *file = "./files/ingenium/Alice Phoebe Lou/Glow/Alice Phoebe Lou - Only When I.mp3";
   // char *file = "./";
-  storeTag(file);
+  // storeTag(file);
+
+  system("clear");
+  ID3TagType ID3Tag;
+  ID3v2_init(&ID3Tag);
+  ID3v2_storeTagInStruct(file,&ID3Tag);
+  char frameID[5];
+
   int option;
   int c;
-  system("clear");
   do {
     printf("1. List Frames in TAG\n");
     printf("2. Print specific frame\n");
@@ -61,7 +68,8 @@ int main(){
     switch(option) {
         case 1:
             system("clear");
-            listFrames(file);
+            // listFrames(file);
+            ID3v2_listFrames(&ID3Tag);
             printf("\nPress enter to continue...\n");
             getchar();
             while ((c = getchar()) != '\n' && c != EOF);
@@ -69,7 +77,12 @@ int main(){
             break;
         case 2:
             system("clear");
-            printFrame(file);
+            // printFrame(file)
+            
+            printf("Introduce the Frame id to print: ");
+            scanf("%4s", frameID);
+            ID3v2_printFrame(&ID3Tag, frameID);
+
             printf("\nPress enter to continue...\n");
             getchar();
             while ((c = getchar()) != '\n' && c != EOF);
@@ -77,9 +90,14 @@ int main(){
             break;
         case 3:
             system("clear");
-            modifyFrame(file);
+            // modifyFrame(file);
+            printf("Introduce the Frame id to modify: ");
+            scanf("%4s", frameID);
+            printf("%s\n", frameID);
+            while ((c = getchar()) != '\n' && c != EOF);
+            ID3v2_modifyFrame(&ID3Tag, frameID);
+
             printf("\nPress enter to continue...\n");
-            getchar();
             while ((c = getchar()) != '\n' && c != EOF);
             system("clear");
             break;
@@ -90,6 +108,8 @@ int main(){
             printf("Option 5.\n");
             break;
         case 6:
+            saveChangesInFile(file,ID3Tag);
+
             // printf("\n");
             break;
         case 0:
@@ -99,13 +119,20 @@ int main(){
             printf("Not avaliable option\n\n");
       }
   } while (option != 0);
-  
+  ID3v2_free(&ID3Tag);
   // char *file = "./files/auxFiles/overture.mp3";
   // char *file = "./files/auxFiles/EliteFour.mp3";
   // storeAndSaveAPIC(file);
   // storeAndPrint(file);
   // storeAndWritte(file);
   return 0;
+}
+
+void saveChangesInFile(char *file, ID3TagType ID3Tag){
+  ID3v2_writteTagIntoFile(file,&ID3Tag);
+  printf("difference between files: \n");
+  system("cmp -l ./files/overture.mp3 ./savedFiles/modified.mp3 | wc -l");
+  printf("\n");
 }
 
 void printFrame(char *file){

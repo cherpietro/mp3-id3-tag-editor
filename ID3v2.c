@@ -85,6 +85,7 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
   ID3v2FrameHeaderType header;
   FramesV2_storeHeader(mp3FilePointer,&header);
   uint32_t frameSize = FramesV2_getFrameSize(ID3Tag->header.version[0],header); 
+  // printf("FrameID: %s\n",header.frameId);
   if (memcmp(header.frameId, "\0\0\0\0", 4) == 0) return true;
   else if(strncasecmp(header.frameId,"T",1)==0){
     ID3v2TXTFrameType *TXTF;
@@ -202,7 +203,7 @@ void ID3v2_removeTagFromFile(char*file){
             return;
         }
         size_t bytesRead = fread(dataBuffer, 1, remainingSize, mp3FilePointer);
-        FILE *temp = fopen("tagRemoved.mp3", "wb");
+        FILE *temp = fopen("savedFiles/tagRemoved.mp3", "wb");
         if (!temp) {
           printf("error\n");
           free(dataBuffer);
@@ -212,8 +213,8 @@ void ID3v2_removeTagFromFile(char*file){
         fclose(temp);
         free(dataBuffer);
 
-        remove(file);
-        rename("tagRemoved.mp3",file);
+        // remove(file);
+        // rename("tagRe6moved.mp3",file);
       }
     else printf("Not ID3v2 Tag detected or not yet supported version\n");
     fclose(mp3FilePointer);
@@ -223,7 +224,7 @@ void ID3v2_removeTagFromFile(char*file){
 
 void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
   ID3v2_removeTagFromFile(file);
-  FILE *mp3FilePointer = fopen(file,"r");
+  FILE *mp3FilePointer = fopen("./savedFiles/tagRemoved.mp3","r");
   if(mp3FilePointer){
     fseek(mp3FilePointer,0,SEEK_END);
     uint32_t fileSize = ftell(mp3FilePointer);
@@ -235,7 +236,7 @@ void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
       return;
     }
     fread(dataBuffer,1,fileSize,mp3FilePointer);
-    FILE *temp = fopen("temp.mp3","w");
+    FILE *temp = fopen("./savedFiles/modified.mp3","w");
     if(!temp){
       printf("error");
       fclose(temp);
@@ -244,8 +245,8 @@ void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     // header
     fwrite(&ID3Tag->header,1,sizeof(ID3Tag->header),temp);
 
-    FileManager_writteCOMMFramesInFile(temp,&ID3Tag->COMMFrameList);
     FileManager_writteTXTFramesInFile(temp,&ID3Tag->TXTFrameList);
+    FileManager_writteCOMMFramesInFile(temp,&ID3Tag->COMMFrameList);
     FileManager_writtePRIVFramesInFile(temp,&ID3Tag->PRIVFrameList);
     FileManager_writteAPICFramesInFile(temp,&ID3Tag->APICFrameList);
     if(ID3Tag->MCDI != NULL) FileManager_writteMCDIFrameInFile(temp,*ID3Tag->MCDI);
@@ -255,10 +256,10 @@ void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     // content
     fwrite(dataBuffer,1,fileSize,temp);
     fclose(temp);
-
-    remove(file);
-    rename("temp.mp3",file);
+    // remove(file);
+    // rename("temp.mp3",file);
   }
+  remove("./savedFiles/tagRemoved.mp3");
 }
 
 //IMPLEMENT REMAINING TAGS
@@ -448,7 +449,13 @@ void ID3v2_modifyFrame(ID3TagType *ID3Tag, char *frameID){
       ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
       TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
     }
-    if(TXTFramePtr != NULL) FramesV2_ModifyTXTF(ID3Tag->header.version[0],TXTFramePtr);
+    if(TXTFramePtr != NULL){
+      int oldSize = FramesV2_getFrameSize(ID3Tag->header.version[0],TXTFramePtr->header);
+      FramesV2_ModifyTXTF(ID3Tag->header.version[0],TXTFramePtr);
+      int newSize = FramesV2_getFrameSize(ID3Tag->header.version[0],TXTFramePtr->header);
+      uint32_t tagSize = HeaderV2_getTagSize(ID3Tag->header);
+      HeaderV2_updateTagSize(&ID3Tag->header,tagSize + (newSize-oldSize));
+    }
   }
   else if(strncasecmp(frameID,"PRIV",4)==0){
     // ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);

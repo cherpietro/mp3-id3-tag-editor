@@ -24,3 +24,7 @@ int HeaderV2_getTagVersion(ID3v2HeaderType header){
 int HeaderV2_getTagSize(ID3v2HeaderType header){
     return syncsafeToSize(header.size);
 }
+
+void HeaderV2_updateTagSize(ID3v2HeaderType *header,uint32_t newSize){
+    saveSizeToSyncsafe(newSize,header->size);
+}
