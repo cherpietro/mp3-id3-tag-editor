@@ -3,7 +3,10 @@
 #include <string.h>
 #include "ID3v2.h"
 
-
+static void cleanInputBuffer(){
+  int ch;
+  while ((ch = getchar()) != '\n' && ch != EOF);
+}
 void storeTag(char *);
 
 // void storeAndSaveAPIC(char *);
@@ -26,11 +29,11 @@ int main(){
   // char *file = "./files/EliteFour.mp3";
   // char *file = "./files/gameFreak.mp3";
   // char *file = "./files/jokin1.mp3";
-  // char *file = "./files/jokin2.mp3"; //TEST TAG
+  char *file = "./files/jokin2.mp3"; //TEST TAG
   // char *file = "./files/jokin3.mp3";
   // char *file = "./files/nlp6.mp3";
   // char *file = "./files/opening.mp3";
-  char *file = "./files/overture.mp3";
+  // char *file = "./files/overture.mp3";
   // char *saveFile = "./files/auxFiles/overture.mp3";
   // char *file = "./files/theme.mp3";
   // char *file = "./files/TimberHearth.mp3"; 
@@ -50,17 +53,18 @@ int main(){
   char frameID[5];
 
   int option;
-  int c;
   do {
     printf("1. List Frames in TAG\n");
     printf("2. Print specific frame\n");
     printf("3. Modify Tag Frame\n");
+    printf("4. Remove Tag Frame\n");
+    printf("5. Add Tag Frame\n");
     printf("6. Save changes in file\n");
     printf("0. Exit\n");
  
     if (scanf("%d", &option) != 1) {
       system("clear");
-      while ((c = getchar()) != '\n' && c != EOF);
+      cleanInputBuffer();
       option = -1;
     }
 
@@ -73,7 +77,7 @@ int main(){
             ID3v2_listFrames(&ID3Tag);
             printf("\nPress enter to continue...\n");
             getchar();
-            while ((c = getchar()) != '\n' && c != EOF);
+            cleanInputBuffer();
             system("clear");
             break;
         case 2:
@@ -86,7 +90,7 @@ int main(){
 
             printf("\nPress enter to continue...\n");
             getchar();
-            while ((c = getchar()) != '\n' && c != EOF);
+            cleanInputBuffer();
             system("clear");
             break;
         case 3:
@@ -95,18 +99,38 @@ int main(){
             printf("Introduce the Frame id to modify: ");
             scanf("%4s", frameID);
             printf("%s\n", frameID);
-            while ((c = getchar()) != '\n' && c != EOF);
-            ID3v2_modifyFrame(&ID3Tag, frameID);
+            cleanInputBuffer();
+            // ID3v2_modifyFrame(&ID3Tag, frameID);
 
             printf("\nPress enter to continue...\n");
-            while ((c = getchar()) != '\n' && c != EOF);
+            cleanInputBuffer();
             system("clear");
             break;
         case 4:
-            printf("Option 4.\n");
+            system("clear");
+            // modifyFrame(file);
+            printf("Introduce the Frame id to delete: ");
+            scanf("%4s", frameID);
+            printf("%s\n", frameID);
+            cleanInputBuffer();
+            ID3v2_deleteFrame(&ID3Tag, frameID);
+
+            printf("\nPress enter to continue...\n");
+            cleanInputBuffer();
+            system("clear");
             break;
         case 5:
-            printf("Option 5.\n");
+            system("clear");
+            // modifyFrame(file);
+            printf("Introduce the Frame id to implement: ");
+            scanf("%4s", frameID);
+            printf("%s\n", frameID);
+            cleanInputBuffer();
+            ID3v2_addFrame(&ID3Tag, frameID);
+
+            printf("\nPress enter to continue...\n");
+            cleanInputBuffer();
+            system("clear");
             break;
         case 6:
             saveChangesInFile(file,ID3Tag);
@@ -162,7 +186,7 @@ void modifyFrame(char *file){
   printf("%s\n", frameID);
   int c;
   while ((c = getchar()) != '\n' && c != EOF);
-  ID3v2_modifyFrame(&ID3Tag, frameID);
+  // ID3v2_modifyFrame(&ID3Tag, frameID);
   ID3v2_free(&ID3Tag);  
 }
 

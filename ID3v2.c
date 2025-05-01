@@ -5,6 +5,10 @@
 
 #include <string.h>
 
+static void cleanInputBuffer(){
+  int ch;
+  while ((ch = getchar()) != '\n' && ch != EOF);
+}
 void ID3v2_init(ID3TagType *ID3Tag){
   ListFramePtr_init(&ID3Tag->TXTFrameList);
   ListFramePtr_init(&ID3Tag->COMMFrameList);
@@ -376,6 +380,15 @@ void ID3v2_printFrame(ID3TagType *ID3Tag, char *frameID){
   else if(strncasecmp(frameID,"RVAD",4)==0);
 
   //LISTS
+  else if(strncasecmp(frameID,"T",1)==0){
+    ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
+    ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+    while (TXTFramePtr != NULL){
+      if(strncasecmp(frameID,TXTFramePtr->header.frameId,4) == 0) FramesV2_printTXTF(*TXTFramePtr);
+      ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
+      TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+    }
+  }
   else if(strncasecmp(frameID,"T",1)==0){ //USER PRINT FRAME MANAGER TO PRINT TXXX
     ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
     ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
@@ -384,15 +397,6 @@ void ID3v2_printFrame(ID3TagType *ID3Tag, char *frameID){
       TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
     }
     if(TXTFramePtr != NULL) FramesV2_printTXTF(*TXTFramePtr);
-  }
-  else if(strncasecmp(frameID,"PRIV",4)==0){
-    ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
-    ID3v2PRIVFrameType * PRIVFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
-    while (PRIVFramePtr != NULL){
-      FramesV2_printPRIV(*PRIVFramePtr);
-      ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
-      PRIVFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
-    }
   }
   else if(strncasecmp(frameID,"PRIV",4)==0){
     ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
@@ -426,22 +430,33 @@ void ID3v2_printFrame(ID3TagType *ID3Tag, char *frameID){
   else printf("No frame in tag"); //Because of if anidation doesn't work in all tags
 }
 
-void ID3v2_modifyFrame(ID3TagType *ID3Tag, char *frameID){
-  if(strncasecmp(frameID,"MCDI",4)==0){ if(ID3Tag->MCDI != NULL)   printf("Not supportedFrame to modify\n");}
-  else if(strncasecmp(frameID,"SYTC",4)==0){ if(ID3Tag->SYTC != NULL)   printf("Not supportedFrame to modify\n");}
-  else if(strncasecmp(frameID,"IPLS",4)==0){ if(ID3Tag->IPLS != NULL)   printf("Not supportedFrame to modify\n");}
-  else if(strncasecmp(frameID,"USER",4)==0){ if(ID3Tag->USER != NULL)   printf("Not supportedFrame to modify\n");}
-  else if(strncasecmp(frameID,"OWNE",4)==0){ if(ID3Tag->OWNE != NULL)   printf("Not supportedFrame to modify\n");}
-  else if(strncasecmp(frameID,"PCNT",4)==0){ if(ID3Tag->PCNT != NULL)   printf("Not supportedFrame to modify\n");}
-
-  else if(strncasecmp(frameID,"RVRB",4)==0)  printf("Not supportedFrame to modify\n");
-  else if(strncasecmp(frameID,"EQUA",4)==0)  printf("Not supportedFrame to modify\n");
-  else if(strncasecmp(frameID,"MLLT",4)==0)  printf("Not supportedFrame to modify\n");
-  else if(strncasecmp(frameID,"ETCO",4)==0)  printf("Not supportedFrame to modify\n");
-  else if(strncasecmp(frameID,"RVAD",4)==0)  printf("Not supportedFrame to modify\n");
-
+void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
+  char option;
+  if(strncasecmp(frameID,"TXXX",4)==0){ 
+    ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
+    ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+    do{
+      if(strncasecmp(TXTFramePtr->header.frameId,"TXXX",4)==0){
+        fflush(stdout);
+        system("clear");
+        FramesV2_printTXTF(*TXTFramePtr);
+        printf("\n\nWant to delete this frame? (y/n): ");
+        option = getchar();
+        cleanInputBuffer();
+        if(option == 'y') {
+          ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
+        }
+        else{
+          ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
+        }
+      }
+      else{
+        ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
+      }
+      TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+    }while (TXTFramePtr != NULL);
+  }
   //LISTS
-  else if(strncasecmp(frameID,"TXXX",4)==0){ printf("Not supportedFrame to modify\nYET\n");}
   else if(strncasecmp(frameID,"T",1)==0){ //USER PRINT FRAME MANAGER TO PRINT TXXX
     ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
     ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
@@ -449,68 +464,131 @@ void ID3v2_modifyFrame(ID3TagType *ID3Tag, char *frameID){
       ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
       TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
     }
-    if(TXTFramePtr != NULL){
-      int oldSize = FramesV2_getFrameSize(ID3Tag->header.version[0],TXTFramePtr->header);
-      FramesV2_ModifyTXTF(ID3Tag->header.version[0],TXTFramePtr);
-      int newSize = FramesV2_getFrameSize(ID3Tag->header.version[0],TXTFramePtr->header);
-      uint32_t tagSize = HeaderV2_getTagSize(ID3Tag->header);
-      HeaderV2_updateTagSize(&ID3Tag->header,tagSize + (newSize-oldSize));
+    if(TXTFramePtr != NULL) {
+      ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
     }
   }
   else if(strncasecmp(frameID,"PRIV",4)==0){
-    // ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
-    // ID3v2PRIVFrameType * PRIVFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
-    // while (PRIVFramePtr != NULL){
-    //   FramesV2_printPRIV(*PRIVFramePtr);
-    //   ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
-    //   PRIVFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
-    // }
-    printf("Not supportedFrame to modify\nYET\n");
-  }
-  else if(strncasecmp(frameID,"PRIV",4)==0){
-    // ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
-    // ID3v2PRIVFrameType * PRIVFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
-    // while (PRIVFramePtr != NULL){
-    //   FramesV2_printPRIV(*PRIVFramePtr);
-    //   ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
-    //   PRIVFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
-    // }
-    printf("Not supportedFrame to modify\nYET\n");
+    ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
+    ID3v2PRIVFrameType * PRIVFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
+    do{
+      fflush(stdout);
+      system("clear");
+      FramesV2_printPRIV(*PRIVFramePtr);
+      printf("\n\nWant to delete this frame? (y/n): ");
+      option = getchar();
+      cleanInputBuffer();
+      if(option == 'y') {
+        ListFramePtr_deleteActive(&ID3Tag->PRIVFrameList);
+      }
+      else{
+        ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
+      }
+      PRIVFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
+    }while (PRIVFramePtr != NULL);
   }
   else if(strncasecmp(frameID,"COMM",4)==0){
-    // ListFramePtr_setFirstActive(&ID3Tag->COMMFrameList);
-    // ID3v2COMMFrameType * COMMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
-    // while (COMMFramePtr != NULL){
-    //   FramesV2_printCOMM(*COMMFramePtr);
-    //   ListFramePtr_setNextActive(&ID3Tag->COMMFrameList);
-    //   COMMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
-    // }
-    printf("Not supportedFrame to modify\nYET\n");
+    ListFramePtr_setFirstActive(&ID3Tag->COMMFrameList);
+    ID3v2COMMFrameType * COMMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
+    do{
+      fflush(stdout);
+      system("clear");
+      FramesV2_printCOMM(*COMMFramePtr);
+      printf("\n\nWant to delete this frame? (y/n): ");
+      option = getchar();
+      cleanInputBuffer();
+      if(option == 'y') {
+        ListFramePtr_deleteActive(&ID3Tag->COMMFrameList);
+      }
+      else{
+        ListFramePtr_setNextActive(&ID3Tag->COMMFrameList);
+      }
+      COMMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
+    }while (COMMFramePtr != NULL);
   }
   else if(strncasecmp(frameID,"APIC",4)==0){
     ListFramePtr_setFirstActive(&ID3Tag->APICFrameList);
     ID3v2APICFrameType * APICFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
-    while (APICFramePtr != NULL && strncasecmp(frameID,APICFramePtr->header.frameId,4) != 0){
-      ListFramePtr_setNextActive(&ID3Tag->APICFrameList);
+    do{
+      fflush(stdout);
+      system("clear");
+      FramesV2_printAPIC(*APICFramePtr);
+      printf("\n\nWant to delete this frame? (y/n): ");
+      option = getchar();
+      cleanInputBuffer();
+      if(option == 'y') {
+        ListFramePtr_deleteActive(&ID3Tag->APICFrameList);
+      }
+      else{
+        ListFramePtr_setNextActive(&ID3Tag->APICFrameList);
+      }
       APICFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
-    }
-    if(APICFramePtr != NULL){
-      int oldSize = FramesV2_getFrameSize(ID3Tag->header.version[0],APICFramePtr->header);
-      FramesV2_ModifyAPIC(ID3Tag->header.version[0],APICFramePtr);
-      int newSize = FramesV2_getFrameSize(ID3Tag->header.version[0],APICFramePtr->header);
-      uint32_t tagSize = HeaderV2_getTagSize(ID3Tag->header);
-      HeaderV2_updateTagSize(&ID3Tag->header,tagSize + (newSize-oldSize));
-    }
-    // ListFramePtr_setFirstActive(&ID3Tag->APICFrameList);
-    // ID3v2APICFrameType * APICFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
-    // while (APICFramePtr != NULL){
-    //   FramesV2_printAPIC(*APICFramePtr);
-    //   ListFramePtr_setNextActive(&ID3Tag->APICFrameList);
-    //   APICFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
-    // }
-    // printf("Not supportedFrame to modify\nYET\n");
+    }while (APICFramePtr != NULL);
   }
   // THEY NEED TO BE LISTS
   else if(strncasecmp(frameID,"POPM",4)==0){ if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);}
   else printf("No frame in tag"); //Because of if anidation doesn't work in all tags
+
+}
+
+void ID3v2_addFrame(ID3TagType *ID3Tag, char *frameID){
+  // char option;
+  if(strncasecmp(frameID,"TXXX",4)==0){ 
+    char description[65];
+    char value[255];
+    char *mergedString;
+
+    ID3v2TXTFrameType *TXTFramePtr = (ID3v2TXTFrameType*) malloc(sizeof(ID3v2TXTFrameType));
+    memcpy(TXTFramePtr->header.frameId,"TXXX",4); 
+    TXTFramePtr->header.flags[0] = 0;TXTFramePtr->header.flags[1] = 0;
+    fgets(description, sizeof(description), stdin);
+    description[strcspn(description, "\n")] = 0;
+    fgets(value, sizeof(value), stdin);
+    value[strcspn(value, "\n")] = 0;
+
+    int totalLen = strlen(value)+strlen(description)+2;
+    mergedString = (char *) malloc(totalLen);
+    memcpy(mergedString, description, strlen(description)+1);
+    memcpy(mergedString + strlen(description)+1, value, strlen(value)+1);
+    TxtStr_storeTextString(&TXTFramePtr->content,mergedString,totalLen);
+    ListFramePtr_insertLast(&ID3Tag->TXTFrameList,TXTFramePtr);
+    FramesV2_updateFrameSize(ID3Tag->header.version[0],&TXTFramePtr->header,totalLen);
+    free(mergedString);
+
+    // ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
+    // ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+    // do{
+    //   if(strncasecmp(TXTFramePtr->header.frameId,"TXXX",4)==0){
+    //     fflush(stdout);
+    //     system("clear");
+    //     FramesV2_printTXTF(*TXTFramePtr);
+    //     printf("\n\nWant to delete this frame? (y/n): ");
+    //     option = getchar();
+    //     cleanInputBuffer();
+    //     if(option == 'y') {
+    //       ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
+    //     }
+    //     else{
+    //       ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
+    //     }
+    //   }
+    //   else{
+    //     ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
+    //   }
+    //   TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+    // }while (TXTFramePtr != NULL);
+  }
+  //LISTS
+  else if(strncasecmp(frameID,"T",1)==0){ //USER PRINT FRAME MANAGER TO PRINT TXXX
+    ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
+    ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+    while (TXTFramePtr != NULL && strncasecmp(frameID,TXTFramePtr->header.frameId,4) != 0){
+      ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
+      TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+    }
+    if(TXTFramePtr != NULL) {
+      ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
+    }
+  }
+  
 }
