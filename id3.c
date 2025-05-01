@@ -41,12 +41,19 @@ int main(){
   storeTag(file);
   int option;
   int c;
+  system("clear");
   do {
-    system("clear");
     printf("1. List Frames in TAG\n");
     printf("2. Print specific frame\n");
-    printf("X. Modify Tag Frames\n");
-    scanf("%d", &option);
+    printf("3. Modify Tag Frame\n");
+ 
+    if (scanf("%d", &option) != 1) {
+      system("clear");
+      while ((c = getchar()) != '\n' && c != EOF);
+      option = -1;
+    }
+
+
 
     switch(option) {
         case 1:
@@ -55,6 +62,7 @@ int main(){
             printf("\nPress enter to continue...\n");
             getchar();
             while ((c = getchar()) != '\n' && c != EOF);
+            system("clear");
             break;
         case 2:
             system("clear");
@@ -62,6 +70,7 @@ int main(){
             printf("\nPress enter to continue...\n");
             getchar();
             while ((c = getchar()) != '\n' && c != EOF);
+            system("clear");
             break;
         case 3:
             printf("Option 3.\n");
@@ -76,7 +85,7 @@ int main(){
             printf("Option 0.\n");
             break;
         default:
-            printf("Not avaliable option\n");
+            printf("Not avaliable option\n\n");
       }
   } while (option != 0);
   
