@@ -12,22 +12,20 @@
 typedef struct {
     ID3v2HeaderType header;
     ListFramePtr TXTFrameList;
-    // TXTFrameList TXTFrameList;
     ListFramePtr COMMFrameList;
-    // COMMFrameList COMMFrameList;
     ListFramePtr PRIVFrameList;
-    // PRIVFrameList PRIVFrameList;
     ListFramePtr APICFrameList; 
-    // ID3v2APICFrameType *APIC; //LIST
+
+    /*Only stored*/
     ID3v2MCDIFrameType *MCDI;
     ID3v2POPMFrameType *POPM; //LIST
-    /*Only stored*/
     ID3v2IPLSFrameType *IPLS;
     ID3v2SYTCFrameType *SYTC;
     ID3v2USERFrameType *USER;
     ID3v2OWNEFrameType *OWNE;
     ID3v2PCNTFrameType *PCNT;
     /**/
+    
     /*TO IMPLEMENT*/
     int UFID; //LIST
     int LISTWXXX; //LIST

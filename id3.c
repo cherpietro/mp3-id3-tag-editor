@@ -9,16 +9,15 @@ static void cleanInputBuffer(){
 }
 void storeTag(char *);
 
-// void storeAndSaveAPIC(char *);
-void listFrames(char *);
+// void listFrames(char *);
 
-void printFrame(char *);
+// void printFrame(char *);
 
-void modifyFrame(char *);
+// void modifyFrame(char *);
 
-void storeAndWritte(char *);
+// void storeAndWritte(char *);
 
-void storeAndPrint(char *);
+// void storeAndPrint(char *);
 
 void saveChangesInFile(char *, ID3TagType);
 
@@ -56,10 +55,9 @@ int main(){
   do {
     printf("1. List Frames in TAG\n");
     printf("2. Print specific frame\n");
-    printf("3. Modify Tag Frame\n");
-    printf("4. Remove Tag Frame\n");
-    printf("5. Add Tag Frame\n");
-    printf("6. Save changes in file\n");
+    printf("3. Remove Tag Frame\n");
+    printf("4. Add Tag Frame\n");
+    printf("5. Save changes in file\n");
     printf("0. Exit\n");
  
     if (scanf("%d", &option) != 1) {
@@ -67,23 +65,18 @@ int main(){
       cleanInputBuffer();
       option = -1;
     }
-
-
-
     switch(option) {
         case 1:
             system("clear");
-            // listFrames(file);
             ID3v2_listFrames(&ID3Tag);
+
             printf("\nPress enter to continue...\n");
             getchar();
             cleanInputBuffer();
             system("clear");
             break;
         case 2:
-            system("clear");
-            // printFrame(file)
-            
+            system("clear");          
             printf("Introduce the Frame id to print: ");
             scanf("%4s", frameID);
             ID3v2_printFrame(&ID3Tag, frameID);
@@ -95,20 +88,6 @@ int main(){
             break;
         case 3:
             system("clear");
-            // modifyFrame(file);
-            printf("Introduce the Frame id to modify: ");
-            scanf("%4s", frameID);
-            printf("%s\n", frameID);
-            cleanInputBuffer();
-            // ID3v2_modifyFrame(&ID3Tag, frameID);
-
-            printf("\nPress enter to continue...\n");
-            cleanInputBuffer();
-            system("clear");
-            break;
-        case 4:
-            system("clear");
-            // modifyFrame(file);
             printf("Introduce the Frame id to delete: ");
             scanf("%4s", frameID);
             printf("%s\n", frameID);
@@ -119,10 +98,9 @@ int main(){
             cleanInputBuffer();
             system("clear");
             break;
-        case 5:
+        case 4:
             system("clear");
-            // modifyFrame(file);
-            printf("Introduce the Frame id to implement: ");
+            printf("Introduce the Frame id to include: ");
             scanf("%4s", frameID);
             printf("%s\n", frameID);
             cleanInputBuffer();
@@ -132,10 +110,8 @@ int main(){
             cleanInputBuffer();
             system("clear");
             break;
-        case 6:
+        case 5:
             saveChangesInFile(file,ID3Tag);
-
-            // printf("\n");
             break;
         case 0:
             printf("Option 0.\n");
@@ -145,11 +121,6 @@ int main(){
       }
   } while (option != 0);
   ID3v2_free(&ID3Tag);
-  // char *file = "./files/auxFiles/overture.mp3";
-  // char *file = "./files/auxFiles/EliteFour.mp3";
-  // storeAndSaveAPIC(file);
-  // storeAndPrint(file);
-  // storeAndWritte(file);
   return 0;
 }
 
@@ -160,71 +131,63 @@ void saveChangesInFile(char *file, ID3TagType ID3Tag){
   printf("\n");
 }
 
-void printFrame(char *file){
-  ID3TagType ID3Tag;
-  ID3v2_init(&ID3Tag);
-  ID3v2_storeTagInStruct(file,&ID3Tag);
-
-  char frameID[5];
-  printf("Introduce the Frame id to print: ");
-  scanf("%4s", frameID);
-  printf("%s\n", frameID);
-  // int c;
-  // while ((c = getchar()) != '\n' && c != EOF);
-  ID3v2_printFrame(&ID3Tag, frameID);
-  ID3v2_free(&ID3Tag);  
-}
-
-void modifyFrame(char *file){
-  ID3TagType ID3Tag;
-  ID3v2_init(&ID3Tag);
-  ID3v2_storeTagInStruct(file,&ID3Tag);
-
-  char frameID[5];
-  printf("Introduce the Frame id to modify: ");
-  scanf("%4s", frameID);
-  printf("%s\n", frameID);
-  int c;
-  while ((c = getchar()) != '\n' && c != EOF);
-  // ID3v2_modifyFrame(&ID3Tag, frameID);
-  ID3v2_free(&ID3Tag);  
-}
-
-void listFrames(char *file){
-  ID3TagType ID3Tag;
-  ID3v2_init(&ID3Tag);
-  ID3v2_storeTagInStruct(file,&ID3Tag);
-  ID3v2_listFrames(&ID3Tag);
-  ID3v2_free(&ID3Tag);
-}
-
-void storeTag(char *file){
-  ID3TagType ID3Tag;
-  ID3v2_init(&ID3Tag);
-  ID3v2_storeTagInStruct(file,&ID3Tag);
-  ID3v2_free(&ID3Tag);
-}
-
-void storeAndPrint(char *file){
-  ID3TagType ID3Tag;
-  ID3v2_init(&ID3Tag);
-  ID3v2_storeTagInStruct(file,&ID3Tag);
-  printTag(&ID3Tag);
-  ID3v2_free(&ID3Tag);
-}
-
-// void storeAndSaveAPIC(char *file){
+// void printFrame(char *file){
 //   ID3TagType ID3Tag;
 //   ID3v2_init(&ID3Tag);
 //   ID3v2_storeTagInStruct(file,&ID3Tag);
-//   // ID3v2_saveAPICImage(&ID3Tag);
+
+//   char frameID[5];
+//   printf("Introduce the Frame id to print: ");
+//   scanf("%4s", frameID);
+//   printf("%s\n", frameID);
+//   // int c;
+//   // while ((c = getchar()) != '\n' && c != EOF);
+//   ID3v2_printFrame(&ID3Tag, frameID);
+//   ID3v2_free(&ID3Tag);  
+// }
+
+// void modifyFrame(char *file){
+//   ID3TagType ID3Tag;
+//   ID3v2_init(&ID3Tag);
+//   ID3v2_storeTagInStruct(file,&ID3Tag);
+
+//   char frameID[5];
+//   printf("Introduce the Frame id to modify: ");
+//   scanf("%4s", frameID);
+//   printf("%s\n", frameID);
+//   int c;
+//   while ((c = getchar()) != '\n' && c != EOF);
+//   // ID3v2_modifyFrame(&ID3Tag, frameID);
+//   ID3v2_free(&ID3Tag);  
+// }
+
+// void listFrames(char *file){
+//   ID3TagType ID3Tag;
+//   ID3v2_init(&ID3Tag);
+//   ID3v2_storeTagInStruct(file,&ID3Tag);
+//   ID3v2_listFrames(&ID3Tag);
 //   ID3v2_free(&ID3Tag);
 // }
 
-void storeAndWritte(char *file){
-  ID3TagType ID3Tag;
-  ID3v2_init(&ID3Tag);
-  ID3v2_storeTagInStruct(file,&ID3Tag);
-  ID3v2_writteTagIntoFile(file,&ID3Tag);
-  ID3v2_free(&ID3Tag);
-}
+// void storeTag(char *file){
+//   ID3TagType ID3Tag;
+//   ID3v2_init(&ID3Tag);
+//   ID3v2_storeTagInStruct(file,&ID3Tag);
+//   ID3v2_free(&ID3Tag);
+// }
+
+// void storeAndPrint(char *file){
+//   ID3TagType ID3Tag;
+//   ID3v2_init(&ID3Tag);
+//   ID3v2_storeTagInStruct(file,&ID3Tag);
+//   printTag(&ID3Tag);
+//   ID3v2_free(&ID3Tag);
+// }
+
+// void storeAndWritte(char *file){
+//   ID3TagType ID3Tag;
+//   ID3v2_init(&ID3Tag);
+//   ID3v2_storeTagInStruct(file,&ID3Tag);
+//   ID3v2_writteTagIntoFile(file,&ID3Tag);
+//   ID3v2_free(&ID3Tag);
+// }

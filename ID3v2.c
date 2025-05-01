@@ -9,6 +9,7 @@ static void cleanInputBuffer(){
   int ch;
   while ((ch = getchar()) != '\n' && ch != EOF);
 }
+
 void ID3v2_init(ID3TagType *ID3Tag){
   ListFramePtr_init(&ID3Tag->TXTFrameList);
   ListFramePtr_init(&ID3Tag->COMMFrameList);
@@ -443,16 +444,10 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
         printf("\n\nWant to delete this frame? (y/n): ");
         option = getchar();
         cleanInputBuffer();
-        if(option == 'y') {
-          ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
-        }
-        else{
-          ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
-        }
+        if(option == 'y')  ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
+        else ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
       }
-      else{
-        ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
-      }
+      else ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
       TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
     }while (TXTFramePtr != NULL);
   }
@@ -464,9 +459,7 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
       ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
       TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
     }
-    if(TXTFramePtr != NULL) {
-      ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
-    }
+    if(TXTFramePtr != NULL) ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
   }
   else if(strncasecmp(frameID,"PRIV",4)==0){
     ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
@@ -534,61 +527,21 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
 void ID3v2_addFrame(ID3TagType *ID3Tag, char *frameID){
   // char option;
   if(strncasecmp(frameID,"TXXX",4)==0){ 
-    char description[65];
-    char value[255];
-    char *mergedString;
-
-    ID3v2TXTFrameType *TXTFramePtr = (ID3v2TXTFrameType*) malloc(sizeof(ID3v2TXTFrameType));
-    memcpy(TXTFramePtr->header.frameId,"TXXX",4); 
-    TXTFramePtr->header.flags[0] = 0;TXTFramePtr->header.flags[1] = 0;
-    fgets(description, sizeof(description), stdin);
-    description[strcspn(description, "\n")] = 0;
-    fgets(value, sizeof(value), stdin);
-    value[strcspn(value, "\n")] = 0;
-
-    int totalLen = strlen(value)+strlen(description)+2;
-    mergedString = (char *) malloc(totalLen);
-    memcpy(mergedString, description, strlen(description)+1);
-    memcpy(mergedString + strlen(description)+1, value, strlen(value)+1);
-    TxtStr_storeTextString(&TXTFramePtr->content,mergedString,totalLen);
+    ID3v2TXTFrameType *TXTFramePtr = FramesV2_getTXXX();
     ListFramePtr_insertLast(&ID3Tag->TXTFrameList,TXTFramePtr);
-    FramesV2_updateFrameSize(ID3Tag->header.version[0],&TXTFramePtr->header,totalLen);
-    free(mergedString);
-
-    // ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
-    // ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
-    // do{
-    //   if(strncasecmp(TXTFramePtr->header.frameId,"TXXX",4)==0){
-    //     fflush(stdout);
-    //     system("clear");
-    //     FramesV2_printTXTF(*TXTFramePtr);
-    //     printf("\n\nWant to delete this frame? (y/n): ");
-    //     option = getchar();
-    //     cleanInputBuffer();
-    //     if(option == 'y') {
-    //       ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
-    //     }
-    //     else{
-    //       ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
-    //     }
-    //   }
-    //   else{
-    //     ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
-    //   }
-    //   TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
-    // }while (TXTFramePtr != NULL);
+    FramesV2_updateFrameSize(ID3Tag->header.version[0],&TXTFramePtr->header,TXTFramePtr->content.size);
   }
   //LISTS
-  else if(strncasecmp(frameID,"T",1)==0){ //USER PRINT FRAME MANAGER TO PRINT TXXX
-    ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
-    ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
-    while (TXTFramePtr != NULL && strncasecmp(frameID,TXTFramePtr->header.frameId,4) != 0){
-      ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
-      TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
-    }
-    if(TXTFramePtr != NULL) {
-      ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
-    }
-  }
+  // else if(strncasecmp(frameID,"T",1)==0){ //USER PRINT FRAME MANAGER TO PRINT TXXX
+  //   ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
+  //   ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+  //   while (TXTFramePtr != NULL && strncasecmp(frameID,TXTFramePtr->header.frameId,4) != 0){
+  //     ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
+  //     TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+  //   }
+  //   if(TXTFramePtr != NULL) {
+  //     ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
+  //   }
+  // }
   
 }
