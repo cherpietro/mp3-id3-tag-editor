@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "ID3v2.h"
+#include "PrintFrameManager.h"
 
 static void cleanInputBuffer(){
   int ch;
@@ -68,7 +69,7 @@ int main(){
     switch(option) {
         case 1:
             system("clear");
-            ID3v2_listFrames(&ID3Tag);
+            PrintFrame_listFrames(&ID3Tag);
 
             printf("\nPress enter to continue...\n");
             getchar();
@@ -79,7 +80,7 @@ int main(){
             system("clear");          
             printf("Introduce the Frame id to print: ");
             scanf("%4s", frameID);
-            ID3v2_printFrame(&ID3Tag, frameID);
+            PrintFrame_printFrame(&ID3Tag, frameID);
 
             printf("\nPress enter to continue...\n");
             getchar();
@@ -142,7 +143,7 @@ void saveChangesInFile(char *file, ID3TagType ID3Tag){
 //   printf("%s\n", frameID);
 //   // int c;
 //   // while ((c = getchar()) != '\n' && c != EOF);
-//   ID3v2_printFrame(&ID3Tag, frameID);
+//   PrintFrame_printFrame(&ID3Tag, frameID);
 //   ID3v2_free(&ID3Tag);  
 // }
 
@@ -165,7 +166,7 @@ void saveChangesInFile(char *file, ID3TagType ID3Tag){
 //   ID3TagType ID3Tag;
 //   ID3v2_init(&ID3Tag);
 //   ID3v2_storeTagInStruct(file,&ID3Tag);
-//   ID3v2_listFrames(&ID3Tag);
+//   PrintFrame_listFrames(&ID3Tag);
 //   ID3v2_free(&ID3Tag);
 // }
 

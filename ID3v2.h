@@ -62,13 +62,7 @@ void ID3v2_removeTagFromFile(char*);
 
 void ID3v2_writteTagIntoFile(char *, ID3TagType *);
 
-void printTag(ID3TagType *);
-
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *);
-
-void ID3v2_listFrames(ID3TagType *);
-
-void ID3v2_printFrame(ID3TagType *, char *);
 
 void ID3v2_deleteFrame(ID3TagType *, char *);
 
