@@ -248,7 +248,6 @@ void ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     FileManager_writteTXTFramesInFile(temp,&ID3Tag->TXTFrameList);
     FileManager_writtePRIVFramesInFile(temp,&ID3Tag->PRIVFrameList);
     FileManager_writteAPICFramesInFile(temp,&ID3Tag->APICFrameList);
-    // if(ID3Tag->APIC != NULL) FileManager_writteAPICFrameInFile(temp,*ID3Tag->APIC);
     if(ID3Tag->MCDI != NULL) FileManager_writteMCDIFrameInFile(temp,*ID3Tag->MCDI);
     if(ID3Tag->POPM != NULL) FileManager_writtePOPMFrameInFile(temp,*ID3Tag->POPM);
     FileManager_writtePadding(temp,ID3Tag->paddingSize);
@@ -334,13 +333,23 @@ void ID3v2_listFrames(ID3TagType *ID3Tag){
   }
   if(COMMCount != 0) printf("FramgeID: COMM (%d frames)\n",COMMCount);
 
-  ListFramePtr_setFirstActive(&(*ID3Tag).TXTFrameList);
   int TXTFCount = 0;
-  while(ID3Tag->TXTFrameList.active != NULL) {
-    TXTFCount += 1;
+  ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
+  ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+  while (TXTFramePtr != NULL){
+    if(strncmp("TXXX",TXTFramePtr->header.frameId,4) == 0) TXTFCount += 1;
+    else printf("FramgeID: %s\n",TXTFramePtr->header.frameId);
     ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
+    TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
   }
-  if(TXTFCount != 0) printf("FramgeID: TEXT (%d frames)\n",TXTFCount);
+  if(TXTFCount != 0) printf("FramgeID: TXXX (%d frames)\n",TXTFCount);
+  // ListFramePtr_setFirstActive(&(*ID3Tag).TXTFrameList);
+  // int TXTFCount = 0;
+  // while(ID3Tag->TXTFrameList.active != NULL) {
+  //   TXTFCount += 1;
+  //   ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
+  // }
+  // if(TXTFCount != 0) printf("FramgeID: TEXT (%d frames)\n",TXTFCount);
 
   int PRIVCount = 0;
   ListFramePtr_setFirstActive(&(*ID3Tag).PRIVFrameList);
@@ -364,6 +373,7 @@ void ID3v2_printFrame(ID3TagType *ID3Tag, char *frameID){
   else if(strncmp(frameID,"MLLT",4)==0);
   else if(strncmp(frameID,"ETCO",4)==0);
   else if(strncmp(frameID,"RVAD",4)==0);
+
   //LISTS
   else if(strncmp(frameID,"T",1)==0){ //USER PRINT FRAME MANAGER TO PRINT TXXX
     ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
@@ -413,8 +423,3 @@ void ID3v2_printFrame(ID3TagType *ID3Tag, char *frameID){
   // THEY NEED TO BE LISTS
   else if(strncmp(frameID,"POPM",4)==0){ if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);}
 }
-
-
-// void ID3v2_saveAPICImage(ID3TagType *ID3Tag){
-//   FramesV2_saveAPICImage(*ID3Tag->APIC);
-// }

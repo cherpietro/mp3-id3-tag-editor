@@ -23,12 +23,12 @@ int main(){
   
   // char *file = "./files/EliteFour.mp3";
   // char *file = "./files/gameFreak.mp3";
-  // char *file = "./files/jokin1.mp3";
+  char *file = "./files/jokin1.mp3";
   // char *file = "./files/jokin2.mp3"; //TEST TAG
   // char *file = "./files/jokin3.mp3";
   // char *file = "./files/nlp6.mp3";
   // char *file = "./files/opening.mp3";
-  char *file = "./files/overture.mp3";
+  // char *file = "./files/overture.mp3";
   // char *file = "./files/theme.mp3";
   // char *file = "./files/TimberHearth.mp3"; 
   // char *file = "./files/zelda.mp3";
@@ -40,7 +40,9 @@ int main(){
   // char *file = "./";
   storeTag(file);
   int option;
+  int c;
   do {
+    system("clear");
     printf("1. List Frames in TAG\n");
     printf("2. Print specific frame\n");
     printf("X. Modify Tag Frames\n");
@@ -48,10 +50,18 @@ int main(){
 
     switch(option) {
         case 1:
+            system("clear");
             listFrames(file);
+            printf("\nPress enter to continue...\n");
+            getchar();
+            while ((c = getchar()) != '\n' && c != EOF);
             break;
         case 2:
+            system("clear");
             printFrame(file);
+            printf("\nPress enter to continue...\n");
+            getchar();
+            while ((c = getchar()) != '\n' && c != EOF);
             break;
         case 3:
             printf("Option 3.\n");
@@ -87,8 +97,8 @@ void printFrame(char *file){
   printf("Introduce the Frame id to print: ");
   scanf("%4s", frameID);
   printf("%s\n", frameID);
-  int c;
-  while ((c = getchar()) != '\n' && c != EOF);
+  // int c;
+  // while ((c = getchar()) != '\n' && c != EOF);
   ID3v2_printFrame(&ID3Tag, frameID);
   ID3v2_free(&ID3Tag);  
 }
