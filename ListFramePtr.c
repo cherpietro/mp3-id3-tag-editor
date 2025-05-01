@@ -71,5 +71,6 @@ bool ListFramePtr_isEmpty(ListFramePtr list) {
 // }
 
 void *ListFramePtr_getActiveFramePtr(ListFramePtr list) {
-    return list.active->frame;
+    if(list.active != NULL) return list.active->frame;
+    return NULL;
 }

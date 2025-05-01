@@ -51,6 +51,7 @@ void FramesV2_printAPIC(ID3v2APICFrameType frame){
   printf("apicframe.pictureType: %u\n",frame.pictureType);
   printf("apicframe.description: %s\n",frame.description.string);
   printf("apicframe.imageSize: %ld\n",frame.imageDataSize);
+  FramesV2_saveAPICImage(frame);
 }
 void FramesV2_freeAPIC(ID3v2APICFrameType** APIC){
   TxtStr_freeTextString(&(*APIC)->mimeType);

@@ -21,14 +21,14 @@ int main(){
   
   // char *file = "./files/auxFiles/jokin1.mp3"; //there are frames that aren't readed yet
   
-  char *file = "./files/EliteFour.mp3";
+  // char *file = "./files/EliteFour.mp3";
   // char *file = "./files/gameFreak.mp3";
   // char *file = "./files/jokin1.mp3";
   // char *file = "./files/jokin2.mp3"; //TEST TAG
   // char *file = "./files/jokin3.mp3";
   // char *file = "./files/nlp6.mp3";
   // char *file = "./files/opening.mp3";
-  // char *file = "./files/overture.mp3";
+  char *file = "./files/overture.mp3";
   // char *file = "./files/theme.mp3";
   // char *file = "./files/TimberHearth.mp3"; 
   // char *file = "./files/zelda.mp3";
