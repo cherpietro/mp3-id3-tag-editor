@@ -96,20 +96,20 @@ typedef struct {
 void FramesV2_storeHeader(FILE*, ID3v2FrameHeaderType*);
 uint32_t FramesV2_getFrameSize(int ,ID3v2FrameHeaderType);
 
-void FramesV2_storeAPIC(uint8_t*, uint32_t, ID3v2APICFrameType**);
+void FramesV2_storeAPIC(FILE*, uint32_t, ID3v2APICFrameType*);
 void FramesV2_saveAPICImage(ID3v2APICFrameType);
 void FramesV2_printAPIC(ID3v2APICFrameType);
 void FramesV2_freeAPIC(ID3v2APICFrameType**);
 
-void FramesV2_getTXTF(FILE*, uint32_t,ID3v2TXTFrameType *);
+void FramesV2_storeTXTF(FILE*, uint32_t,ID3v2TXTFrameType *);
 void FramesV2_printTXTF(ID3v2TXTFrameType);
 void FramesV2_freeTXTF(ID3v2TXTFrameType**);
 
-void FramesV2_getCOMM(FILE *, uint32_t , ID3v2COMMFrameType *);
+void FramesV2_storeCOMM(FILE *, uint32_t , ID3v2COMMFrameType *);
 void FramesV2_printCOMM(ID3v2COMMFrameType);
 void FramesV2_freeCOMM(ID3v2COMMFrameType**);
 
-void FramesV2_getPRIV(FILE *, uint32_t , ID3v2PRIVFrameType *);
+void FramesV2_storePRIV(FILE *, uint32_t , ID3v2PRIVFrameType *);
 void FramesV2_printPRIV(ID3v2PRIVFrameType);
 void FramesV2_freePRIV(ID3v2PRIVFrameType**);
 

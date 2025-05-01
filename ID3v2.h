@@ -6,22 +6,22 @@
 #include <stdio.h>
 #include "ID3v2Header.h" 
 #include "ID3v2Frames.h"
-#include "TXTFrameList.h"
-#include "COMMFrameList.h"
-#include "PRIVFrameList.h"
+#include "ListFramePtr.h"
 #include "stdbool.h"
 
 typedef struct {
     ID3v2HeaderType header;
-    //AvaliableFrames
-    TXTFrameList TXTFrameList;
-    COMMFrameList COMMFrameList;
-    PRIVFrameList PRIVFrameList;
+    ListFramePtr TXTFrameList;
+    // TXTFrameList TXTFrameList;
+    ListFramePtr COMMFrameList;
+    // COMMFrameList COMMFrameList;
+    ListFramePtr PRIVFrameList;
+    // PRIVFrameList PRIVFrameList;
+    ListFramePtr APICFrameList; 
+    // ID3v2APICFrameType *APIC; //LIST
     ID3v2MCDIFrameType *MCDI;
     ID3v2POPMFrameType *POPM; //LIST
-    ID3v2APICFrameType *APIC; //LIST
-
-    /*Only stored Frames And NOT TESTED)*/
+    /*Only stored*/
     ID3v2IPLSFrameType *IPLS;
     ID3v2SYTCFrameType *SYTC;
     ID3v2USERFrameType *USER;
@@ -36,14 +36,13 @@ typedef struct {
     int GEOB; //LIST
     int LINK; //List
     
-   //Pending to check on documentation if they are list
+   
     int AENC;
     int POSS;
     int COMR;
     int ENCR;
     int GRID;
 
-    //Technically stored
     ID3v2DefaultFrameType *RVRB;
     ID3v2DefaultFrameType *EQUA;
     ID3v2DefaultFrameType *MLLT;
@@ -65,13 +64,8 @@ void ID3v2_removeTagFromFile(char*);
 
 void ID3v2_writteTagIntoFile(char *, ID3TagType *);
 
-void printTag(ID3TagType *); //delete
-
-void ID3v2_printFrame(ID3TagType *, char *); 
-
-void ID3v2_saveAPICImage(ID3TagType *); //Move to file manager?
+void printTag(ID3TagType *);
 
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *);
 
-void ID3v2_listFrames(ID3TagType *);
 #endif // ID3V2_H

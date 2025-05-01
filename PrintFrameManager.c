@@ -1,31 +1,42 @@
 #include "PrintFrameManager.h"
 
-void PrintFrame_PrintTXTFrames(TXTFrameList *TXTFrameList){
-  ID3v2TXTFrameType TXTFrame;
-  ListTXTF_setFirstActive(TXTFrameList);
+void PrintFrame_PrintTXTFrames(ListFramePtr *TXTFrameList){
+  ID3v2TXTFrameType *TXTFrame;
+  ListFramePtr_setFirstActive(TXTFrameList);
   while(TXTFrameList->active != NULL){
-    TXTFrame = ListTXTF_getActive(*TXTFrameList);
-    FramesV2_printTXTF(TXTFrame);
-    ListTXTF_setNextActive(TXTFrameList);
+    TXTFrame = (ID3v2TXTFrameType *)ListFramePtr_getActiveFramePtr(*TXTFrameList);
+    FramesV2_printTXTF(*TXTFrame);
+    ListFramePtr_setNextActive(TXTFrameList);
   }
 }
 
-void PrintFrame_PrintCOMMFrames(COMMFrameList *COMMFrameList){
-  ID3v2COMMFrameType COMMFrame;
-  ListCOMM_setFirstActive(COMMFrameList);
+void PrintFrame_PrintCOMMFrames(ListFramePtr *COMMFrameList){
+  ID3v2COMMFrameType *COMMFrame;
+  ListFramePtr_setFirstActive(COMMFrameList);
   while(COMMFrameList->active != NULL){
-    COMMFrame = ListCOMM_getActive(*COMMFrameList);
-    FramesV2_printCOMM(COMMFrame);
-    ListCOMM_setNextActive(COMMFrameList);
+    COMMFrame = (ID3v2COMMFrameType *)ListFramePtr_getActiveFramePtr(*COMMFrameList);
+    FramesV2_printCOMM(*COMMFrame);
+    ListFramePtr_setNextActive(COMMFrameList);
   }
 }
 
-void PrintFrame_PrintPRIVFrames(PRIVFrameList *PRIVFrameList){
-  ID3v2PRIVFrameType PRIVFrame;
-  ListPRIV_setFirstActive(PRIVFrameList);
+void PrintFrame_PrintPRIVFrames(ListFramePtr *PRIVFrameList){
+  ID3v2PRIVFrameType *PRIVFrame;
+  ListFramePtr_setFirstActive(PRIVFrameList);
   while(PRIVFrameList->active != NULL){
-    PRIVFrame = ListPRIV_getActive(*PRIVFrameList);
-    FramesV2_printPRIV(PRIVFrame);
-    ListPRIV_setNextActive(PRIVFrameList);
+    PRIVFrame = (ID3v2PRIVFrameType *) ListFramePtr_getActiveFramePtr(*PRIVFrameList);
+    FramesV2_printPRIV(*PRIVFrame);
+    ListFramePtr_setNextActive(PRIVFrameList);
+  }
+}
+
+void PrintFrame_PrintAPICFrames(ListFramePtr *APICFrameList){
+  ID3v2APICFrameType *APICFrame;
+  ListFramePtr_setFirstActive(APICFrameList);
+  while(APICFrameList->active != NULL){
+    APICFrame = (ID3v2APICFrameType *) ListFramePtr_getActiveFramePtr(*APICFrameList);
+    FramesV2_printAPIC(*APICFrame);
+    FramesV2_saveAPICImage(*APICFrame);
+    ListFramePtr_setNextActive(APICFrameList);
   }
 }
