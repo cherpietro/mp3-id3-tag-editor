@@ -12,5 +12,7 @@ int DeleteFrame_deleteMDCI(ID3v2MCDIFrameType **, int);
 int DeleteFrame_deleteWXXX(ListFramePtr *,int);
 int DeleteFrame_deleteWWWF(ListFramePtr *,char *,int);
 
+int DeleteFrame_default(ID3v2DefaultFrameType **,int);
+int DeleteFrame_defaultList(ListFramePtr *,int);
 
 #endif // DELETEFRAMEMANAGER_H

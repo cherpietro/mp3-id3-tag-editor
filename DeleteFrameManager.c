@@ -22,6 +22,7 @@ int DeleteFrame_deleteTXXX(ListFramePtr *TXTFrameList,int version){
                 cleanInputBuffer();
                 if(option == 'y'){
                     deletedSize += FramesV2_getFrameSize(version,TXTFramePtr->header)+10;
+                    FramesV2_freeTXTF(&TXTFramePtr);
                     ListFramePtr_deleteActive(TXTFrameList);
                 } 
                 else ListFramePtr_setNextActive(TXTFrameList);
@@ -50,6 +51,7 @@ int DeleteFrame_deleteTXTF(ListFramePtr *TXTFrameList, char *frameID, int versio
             cleanInputBuffer();
             if(option == 'y') {
                 deletedSize += FramesV2_getFrameSize(version,TXTFramePtr->header)+10;
+                FramesV2_freeTXTF(&TXTFramePtr);
                 ListFramePtr_deleteActive(TXTFrameList);
             } 
         } 
@@ -70,6 +72,7 @@ int DeleteFrame_deletePRIV(ListFramePtr *PRIVFrameList,int version){
         cleanInputBuffer();
         if(option == 'y') {
             deletedSize += FramesV2_getFrameSize(version,PRIVFramePtr->header)+10;
+            FramesV2_freePRIV(&PRIVFramePtr);
             ListFramePtr_deleteActive(PRIVFrameList);
         } 
         else ListFramePtr_setNextActive(PRIVFrameList);
@@ -92,6 +95,7 @@ int DeleteFrame_deleteCOMM(ListFramePtr *COMMFrameList,int version){
         cleanInputBuffer();
         if(option == 'y'){
             deletedSize += FramesV2_getFrameSize(version,COMMFramePtr->header)+10;
+            FramesV2_freeCOMM(&COMMFramePtr);
             ListFramePtr_deleteActive(COMMFrameList);
         } 
         else ListFramePtr_setNextActive(COMMFrameList);
@@ -113,6 +117,7 @@ int DeleteFrame_deleteAPIC(ListFramePtr *APICFrameList, int version){
         cleanInputBuffer();
         if(option == 'y') {
             deletedSize += FramesV2_getFrameSize(version,APICFramePtr->header)+10;
+            FramesV2_freeAPIC(&APICFramePtr);
             ListFramePtr_deleteActive(APICFrameList);
         } 
         else ListFramePtr_setNextActive(APICFrameList);
@@ -134,6 +139,7 @@ int DeleteFrame_deletePOPM(ListFramePtr *POPMFrameList, int version){
         cleanInputBuffer();
         if(option == 'y') {
             deletedSize += FramesV2_getFrameSize(version,POPMFramePtr->header)+10;
+            FramesV2_freePOPM(&POPMFramePtr);
             ListFramePtr_deleteActive(POPMFrameList);
         } 
         else ListFramePtr_setNextActive(POPMFrameList);
@@ -172,6 +178,7 @@ int DeleteFrame_deleteWXXX(ListFramePtr *WXXXFrameList,int version){
             cleanInputBuffer();
             if(option == 'y'){
                 deletedSize += FramesV2_getFrameSize(version,WXXXFramePtr->header)+10;
+                FramesV2_freeWXXX(&WXXXFramePtr);
                 ListFramePtr_deleteActive(WXXXFrameList);
             } 
             else ListFramePtr_setNextActive(WXXXFrameList);
@@ -198,8 +205,47 @@ int DeleteFrame_deleteWWWF(ListFramePtr *WWWFrameList, char *frameID, int versio
             cleanInputBuffer();
             if(option == 'y') {
                 deletedSize += FramesV2_getFrameSize(version,WWWFramePtr->header)+10;
+                FramesV2_freeWWWF(&WWWFramePtr);
                 ListFramePtr_deleteActive(WWWFrameList);
             } 
         } 
         return deletedSize;
+}
+
+int DeleteFrame_default(ID3v2DefaultFrameType **DefaultFramePtr,int version){
+    char option;
+    int deletedSize = 0;
+    fflush(stdout);
+    system("clear");
+    FramesV2_printDefaultFrame(**DefaultFramePtr);
+    printf("\n\nWant to delete this frame? (y/n): ");
+    option = getchar();
+    cleanInputBuffer();
+    if(option == 'y') {
+        deletedSize += FramesV2_getFrameSize(version,(*DefaultFramePtr)->header)+10;
+        FramesV2_freeDefaultFrame(DefaultFramePtr);
+    } 
+    return deletedSize;
+}
+int DeleteFrame_defaultList(ListFramePtr *DefaultFrameList,int version){
+    char option;
+    int deletedSize = 0;
+    ListFramePtr_setFirstActive(DefaultFrameList);
+    ID3v2DefaultFrameType * DefaultFramePtr = ListFramePtr_getActiveFramePtr(*DefaultFrameList);
+    do{
+        fflush(stdout);
+        system("clear");
+        FramesV2_printDefaultFrame(*DefaultFramePtr);
+        printf("\n\nWant to delete this frame? (y/n): ");
+        option = getchar();
+        cleanInputBuffer();
+        if(option == 'y') {
+            deletedSize += FramesV2_getFrameSize(version,DefaultFramePtr->header)+10;
+            FramesV2_freeDefaultFrame(&DefaultFramePtr);
+            ListFramePtr_deleteActive(DefaultFrameList);
+        } 
+        else ListFramePtr_setNextActive(DefaultFrameList);
+        DefaultFramePtr = ListFramePtr_getActiveFramePtr(*DefaultFrameList);
+    }while (DefaultFramePtr != NULL);
+    return deletedSize;
 }
