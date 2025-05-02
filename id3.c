@@ -29,6 +29,7 @@ int main(){
   char *file = "./files/overture.mp3"; //APIC-TXT-TXXX6
   // char *file = "./files/TimberHearth.mp3"; //COMM2-TXT
   // char *file = "./files/ingenium/(G)I-DLE/I feel/(G)I-DLE - Queencard.mp3"; //WOAS - USLT
+  // char *file = "./files/void.mp3";
 
   system("clear");
   ID3TagType ID3Tag;
