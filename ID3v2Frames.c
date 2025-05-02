@@ -1,6 +1,7 @@
 #include "ID3v2Frames.h"
 #include "SizeReader.h"
 #include <string.h>
+#include <ctype.h>
 
 void FramesV2_storeHeader(FILE *mp3FilePointer, ID3v2FrameHeaderType *header){
     fread(header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer);
@@ -115,23 +116,42 @@ void FramesV2_storeTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TXTFrameT
 }
 ID3v2TXTFrameType * FramesV2_getTXXX(){
     char description[65];
-        char value[255];
-        char *mergedString;
+    char value[255];
+    char *mergedString;
 
-        ID3v2TXTFrameType *TXTFramePtr = (ID3v2TXTFrameType*) malloc(sizeof(ID3v2TXTFrameType));
-        memcpy(TXTFramePtr->header.frameId,"TXXX",4); 
-        TXTFramePtr->header.flags[0] = 0;TXTFramePtr->header.flags[1] = 0;
-        fgets(description, sizeof(description), stdin);
-        description[strcspn(description, "\n")] = 0;
-        fgets(value, sizeof(value), stdin);
-        value[strcspn(value, "\n")] = 0;
-        int totalLen = strlen(value)+strlen(description)+2;
-        mergedString = (char *) malloc(totalLen);
-        memcpy(mergedString, description, strlen(description)+1);
-        memcpy(mergedString + strlen(description)+1, value, strlen(value)+1);
-        TxtStr_storeTextString(&TXTFramePtr->content,mergedString,totalLen);
-        free(mergedString);
-        return TXTFramePtr;
+    ID3v2TXTFrameType *TXTFramePtr = (ID3v2TXTFrameType*) malloc(sizeof(ID3v2TXTFrameType));
+    memcpy(TXTFramePtr->header.frameId,"TXXX",4); 
+    TXTFramePtr->header.flags[0] = 0;TXTFramePtr->header.flags[1] = 0;
+    printf("Insert tag description (max. size 64): ");
+    fgets(description, sizeof(description), stdin);
+    description[strcspn(description, "\n")] = 0;
+    printf("\n");
+    printf("Insert tag content (max. size 254): ");
+    fgets(value, sizeof(value), stdin);
+    printf("\n");
+    value[strcspn(value, "\n")] = 0;
+    int totalLen = strlen(value)+strlen(description)+2;
+    mergedString = (char *) malloc(totalLen);
+    memcpy(mergedString, description, strlen(description)+1);
+    memcpy(mergedString + strlen(description)+1, value, strlen(value)+1);
+    TxtStr_storeTextString(&TXTFramePtr->content,mergedString,totalLen);
+    free(mergedString);
+    return TXTFramePtr;
+}
+ID3v2TXTFrameType * FramesV2_getTXTF(char * frameID){
+    char content[255];
+
+    ID3v2TXTFrameType *TXTFramePtr = (ID3v2TXTFrameType*) malloc(sizeof(ID3v2TXTFrameType));
+    for (int i = 0; i < 4; i++) frameID[i] = toupper(frameID[i]);
+    memcpy(TXTFramePtr->header.frameId,frameID,4); 
+    TXTFramePtr->header.flags[0] = 0;TXTFramePtr->header.flags[1] = 0;
+    TXTFramePtr->textEncoding = 0;
+    printf("Insert tag content (max. size 254): ");
+    fgets(content, sizeof(content), stdin);
+    content[strcspn(content, "\n")] = 0;
+    printf("\n");
+    TxtStr_storeTextString(&TXTFramePtr->content,content,strlen(content)+1);
+    return TXTFramePtr;
 }
 void FramesV2_printTXTF(ID3v2TXTFrameType frame){
     printf("\n----FRAME----\n");
@@ -166,6 +186,18 @@ void FramesV2_freeTXTF(ID3v2TXTFrameType** TXTF){
     TxtStr_freeTextString(&(*TXTF)->content);
     free(*TXTF);
     *TXTF = NULL;
+}
+bool FramesV2_validTextFrameId(char *str) {
+    const char *frames[] = {
+        "TALB", "TBPM", "TCOM", "TCON", "TCOP", "TDAT", "TDLY", "TENC", "TEXT", "TFLT", 
+        "TIME", "TIT1", "TIT2", "TIT3", "TKEY", "TLAN", "TLEN", "TMED", "TOAL", "TOFN", 
+        "TOLY", "TOPE", "TORY", "TOWN", "TPE1", "TPE2", "TPE3", "TPE4", "TPOS", "TPUB", 
+        "TRCK", "TRDA", "TRSN", "TRSO", "TSIZ", "TSRC", "TSSE", "TYER"
+    };
+    for (int i = 0; i < 34; i++) {
+        if (strncmp(str, frames[i],4) == 0) return true;  
+    }
+    return false;
 }
 void FramesV2_ModifyTXTF(uint8_t version,ID3v2TXTFrameType *TXTF){
     char content[256];

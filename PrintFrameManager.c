@@ -65,11 +65,11 @@ void printTag(ID3TagType *ID3Tag){
 
 void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
   if(strncasecmp(frameID,"MCDI",4)==0){ if(ID3Tag->MCDI != NULL) FramesV2_printMDCI(*ID3Tag->MCDI);}
-  else if(strncasecmp(frameID,"SYTC",4)==0){ if(ID3Tag->SYTC != NULL) FramesV2_printSYTC(*ID3Tag->SYTC);}
-  else if(strncasecmp(frameID,"IPLS",4)==0){ if(ID3Tag->IPLS != NULL) FramesV2_printIPLS(*ID3Tag->IPLS);}
-  else if(strncasecmp(frameID,"USER",4)==0){ if(ID3Tag->USER != NULL) FramesV2_printUSER(*ID3Tag->USER);}
-  else if(strncasecmp(frameID,"OWNE",4)==0){ if(ID3Tag->OWNE != NULL) FramesV2_printOWNE(*ID3Tag->OWNE);}
-  else if(strncasecmp(frameID,"PCNT",4)==0){ if(ID3Tag->PCNT != NULL) FramesV2_printPCNT(*ID3Tag->PCNT);}
+  // else if(strncasecmp(frameID,"SYTC",4)==0){ if(ID3Tag->SYTC != NULL) FramesV2_printSYTC(*ID3Tag->SYTC);}
+  // else if(strncasecmp(frameID,"IPLS",4)==0){ if(ID3Tag->IPLS != NULL) FramesV2_printIPLS(*ID3Tag->IPLS);}
+  // else if(strncasecmp(frameID,"USER",4)==0){ if(ID3Tag->USER != NULL) FramesV2_printUSER(*ID3Tag->USER);}
+  // else if(strncasecmp(frameID,"OWNE",4)==0){ if(ID3Tag->OWNE != NULL) FramesV2_printOWNE(*ID3Tag->OWNE);}
+  // else if(strncasecmp(frameID,"PCNT",4)==0){ if(ID3Tag->PCNT != NULL) FramesV2_printPCNT(*ID3Tag->PCNT);}
 
   else if(strncasecmp(frameID,"RVRB",4)==0);
   else if(strncasecmp(frameID,"EQUA",4)==0);
@@ -156,11 +156,11 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
 
 void PrintFrame_listFrames(ID3TagType *ID3Tag){
   if(ID3Tag->MCDI != NULL) printf("FramgeID: MCDI\n");
-  if(ID3Tag->IPLS != NULL) printf("FramgeID: IPLS\n");
-  if(ID3Tag->SYTC != NULL) printf("FramgeID: SYTC\n");
-  if(ID3Tag->USER != NULL) printf("FramgeID: USER\n");
-  if(ID3Tag->OWNE != NULL) printf("FramgeID: OWNE\n");
-  if(ID3Tag->PCNT != NULL) printf("FramgeID: PCNT\n");
+  // if(ID3Tag->IPLS != NULL) printf("FramgeID: IPLS\n");
+  // if(ID3Tag->SYTC != NULL) printf("FramgeID: SYTC\n");
+  // if(ID3Tag->USER != NULL) printf("FramgeID: USER\n");
+  // if(ID3Tag->OWNE != NULL) printf("FramgeID: OWNE\n");
+  // if(ID3Tag->PCNT != NULL) printf("FramgeID: PCNT\n");
 
   // if(ID3Tag->POPM != NULL) printf("FramgeID: POPM\n");
   ListFramePtr_setFirstActive(&(*ID3Tag).POPMFrameList);

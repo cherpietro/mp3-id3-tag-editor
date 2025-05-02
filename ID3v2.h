@@ -21,11 +21,11 @@ typedef struct {
     /*NotTested*/
     ID3v2MCDIFrameType *MCDI;
     ListFramePtr POPMFrameList; //LIST
-    ID3v2IPLSFrameType *IPLS;
-    ID3v2SYTCFrameType *SYTC;
-    ID3v2USERFrameType *USER;
-    ID3v2OWNEFrameType *OWNE;
-    ID3v2PCNTFrameType *PCNT;
+    // ID3v2IPLSFrameType *IPLS;
+    // ID3v2SYTCFrameType *SYTC;
+    // ID3v2USERFrameType *USER;
+    // ID3v2OWNEFrameType *OWNE;
+    // ID3v2PCNTFrameType *PCNT;
     /**/
 
     /*TO IMPLEMENT*/
