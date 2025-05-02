@@ -77,6 +77,7 @@ void ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
         int paddingReached = 0;
         HeaderV2_storeHeader(mp3FilePointer,&ID3Tag->header);
         if(HeaderV2_isID3v2Tag(ID3Tag->header)){
+                HeaderV2_printTagHeader(ID3Tag->header);
                 uint32_t tagSize = HeaderV2_getTagSize(ID3Tag->header);
                 while(!paddingReached && ftell(mp3FilePointer) < tagSize + 10){
                     paddingReached = ID3v2_storeNextFrameInStruct(mp3FilePointer,ID3Tag);
@@ -93,7 +94,6 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     ID3v2FrameHeaderType header;
     FramesV2_storeHeader(mp3FilePointer,&header);
     uint32_t frameSize = FramesV2_getFrameSize(ID3Tag->header.version[0],header); 
-    // printf("FrameID: %s\n",header.frameId);
     if (memcmp(header.frameId, "\0\0\0\0", 4) == 0) return true;
     else if(strncasecmp(header.frameId,"T",1)==0){
         ID3v2TXTFrameType *TXTF;
@@ -244,38 +244,17 @@ void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
 void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
     int deletedSize;
     int oldSize;
-    if(strncasecmp(frameID,"TXXX",4)==0){ 
-        deletedSize = DeleteFrame_deleteTXXX(&ID3Tag->TXTFrameList,ID3Tag->header.version[0]);
-        oldSize = HeaderV2_getTagSize(ID3Tag->header);
-        HeaderV2_updateTagSize(&ID3Tag->header,oldSize-deletedSize);
-    }
+    if(strncasecmp(frameID,"TXXX",4)==0) deletedSize = DeleteFrame_deleteTXXX(&ID3Tag->TXTFrameList,ID3Tag->header.version[0]);
     //LISTS
-    else if(strncasecmp(frameID,"T",1)==0){ 
-        deletedSize = DeleteFrame_deleteTXTF(&ID3Tag->TXTFrameList,frameID,ID3Tag->header.version[0]);
-        oldSize = HeaderV2_getTagSize(ID3Tag->header);
-        HeaderV2_updateTagSize(&ID3Tag->header,oldSize-deletedSize);
-    }
-    else if(strncasecmp(frameID,"PRIV",4)==0){
-        deletedSize = DeleteFrame_deletePRIV(&ID3Tag->PRIVFrameList,ID3Tag->header.version[0]);
-        oldSize = HeaderV2_getTagSize(ID3Tag->header);
-        HeaderV2_updateTagSize(&ID3Tag->header,oldSize-deletedSize);
-    }
-    else if(strncasecmp(frameID,"COMM",4)==0){
-        deletedSize = DeleteFrame_deleteCOMM(&ID3Tag->COMMFrameList,ID3Tag->header.version[0]);
-        oldSize = HeaderV2_getTagSize(ID3Tag->header);
-        HeaderV2_updateTagSize(&ID3Tag->header,oldSize-deletedSize);
-    }
-    else if(strncasecmp(frameID,"APIC",4)==0){
-        deletedSize = DeleteFrame_deleteAPIC(&ID3Tag->APICFrameList,ID3Tag->header.version[0]);
-        oldSize = HeaderV2_getTagSize(ID3Tag->header);
-        HeaderV2_updateTagSize(&ID3Tag->header,oldSize-deletedSize);
-    }
-    else if(strncasecmp(frameID,"POPM",4)==0){
-        deletedSize = DeleteFrame_deletePOPM(&ID3Tag->POPMFrameList,ID3Tag->header.version[0]);
-        oldSize = HeaderV2_getTagSize(ID3Tag->header);
-        HeaderV2_updateTagSize(&ID3Tag->header,oldSize-deletedSize);
-    }
-    else printf("No frame in tag"); //NOT SUPPORTED TAG
+    else if(strncasecmp(frameID,"T",1)==0) deletedSize = DeleteFrame_deleteTXTF(&ID3Tag->TXTFrameList,frameID,ID3Tag->header.version[0]);
+    else if(strncasecmp(frameID,"PRIV",4)==0) deletedSize = DeleteFrame_deletePRIV(&ID3Tag->PRIVFrameList,ID3Tag->header.version[0]);
+    else if(strncasecmp(frameID,"COMM",4)==0) deletedSize = DeleteFrame_deleteCOMM(&ID3Tag->COMMFrameList,ID3Tag->header.version[0]);
+    else if(strncasecmp(frameID,"APIC",4)==0) deletedSize = DeleteFrame_deleteAPIC(&ID3Tag->APICFrameList,ID3Tag->header.version[0]);
+    else if(strncasecmp(frameID,"POPM",4)==0) deletedSize = DeleteFrame_deletePOPM(&ID3Tag->POPMFrameList,ID3Tag->header.version[0]);
+    else if(strncasecmp(frameID,"MDCI",4)==0) deletedSize = DeleteFrame_deleteMDCI(&ID3Tag->MCDI,ID3Tag->header.version[0]);
+    else return; //NOT SUPPORTED TAG
+    oldSize = HeaderV2_getTagSize(ID3Tag->header);
+    HeaderV2_updateTagSize(&ID3Tag->header,oldSize-deletedSize);
 
 }
 

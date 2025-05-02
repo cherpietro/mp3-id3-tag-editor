@@ -141,3 +141,19 @@ int DeleteFrame_deletePOPM(ListFramePtr *POPMFrameList, int version){
     }while (POPMFramePtr != NULL);
     return deletedSize;
 }
+
+int DeleteFrame_deleteMDCI(ID3v2MCDIFrameType **MDCIptr, int version){
+    char option;
+    int deletedSize = 0;
+    fflush(stdout);
+    system("clear");
+    FramesV2_printMDCI(**MDCIptr);
+    printf("\n\nWant to delete this frame? (y/n): ");
+    option = getchar();
+    cleanInputBuffer();
+    if(option == 'y') {
+        deletedSize += FramesV2_getFrameSize(version,(*MDCIptr)->header)+10;
+        FramesV2_freeMCDI(MDCIptr);
+    } 
+    return deletedSize;
+}
