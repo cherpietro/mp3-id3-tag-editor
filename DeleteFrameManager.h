@@ -2,11 +2,11 @@
 #define DELETEFRAMEMANAGER_H
 #include "ListFramePtr.h"
 
-void DeleteFrame_deleteTXXX(ListFramePtr *);
-void DeleteFrame_deleteTXTF(ListFramePtr *,char *);
-void DeleteFrame_deletePRIV(ListFramePtr *);
-void DeleteFrame_deleteCOMM(ListFramePtr *);
-void DeleteFrame_deleteAPIC(ListFramePtr *);
-void DeleteFrame_deletePOPM(ListFramePtr *);
+int DeleteFrame_deleteTXXX(ListFramePtr *,int);
+int DeleteFrame_deleteTXTF(ListFramePtr *,char *,int);
+int DeleteFrame_deletePRIV(ListFramePtr *,int);
+int DeleteFrame_deleteCOMM(ListFramePtr *,int);
+int DeleteFrame_deleteAPIC(ListFramePtr *,int);
+int DeleteFrame_deletePOPM(ListFramePtr *,int);
 
 #endif // DELETEFRAMEMANAGER_H
