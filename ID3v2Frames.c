@@ -138,7 +138,7 @@ ID3v2TXTFrameType * FramesV2_getTXXX(){
     free(mergedString);
     return TXTFramePtr;
 }
-ID3v2TXTFrameType * FramesV2_getTXTF(char * frameID){
+ID3v2TXTFrameType * FramesV2_getTXTF(char * frameID, int version){
     char content[255];
 
     ID3v2TXTFrameType *TXTFramePtr = (ID3v2TXTFrameType*) malloc(sizeof(ID3v2TXTFrameType));
@@ -146,11 +146,13 @@ ID3v2TXTFrameType * FramesV2_getTXTF(char * frameID){
     memcpy(TXTFramePtr->header.frameId,frameID,4); 
     TXTFramePtr->header.flags[0] = 0;TXTFramePtr->header.flags[1] = 0;
     TXTFramePtr->textEncoding = 0;
+    // TXTFramePtr->textEncoding = 3;
     printf("Insert tag content (max. size 254): ");
     fgets(content, sizeof(content), stdin);
     content[strcspn(content, "\n")] = 0;
     printf("\n");
     TxtStr_storeTextString(&TXTFramePtr->content,content,strlen(content)+1);
+    FramesV2_updateFrameSize(version,&TXTFramePtr->header,TXTFramePtr->content.size + 1);
     return TXTFramePtr;
 }
 void FramesV2_printTXTF(ID3v2TXTFrameType frame){
@@ -189,12 +191,12 @@ void FramesV2_freeTXTF(ID3v2TXTFrameType** TXTF){
 }
 bool FramesV2_validTextFrameId(char *str) {
     const char *frames[] = {
-        "TALB", "TBPM", "TCOM", "TCON", "TCOP", "TDAT", "TDLY", "TENC", "TEXT", "TFLT", 
+        "TSSE", "TBPM", "TCOM", "TCON", "TCOP", "TDAT", "TDLY", "TENC", "TEXT", "TFLT", 
         "TIME", "TIT1", "TIT2", "TIT3", "TKEY", "TLAN", "TLEN", "TMED", "TOAL", "TOFN", 
         "TOLY", "TOPE", "TORY", "TOWN", "TPE1", "TPE2", "TPE3", "TPE4", "TPOS", "TPUB", 
-        "TRCK", "TRDA", "TRSN", "TRSO", "TSIZ", "TSRC", "TSSE", "TYER"
+        "TRCK", "TRDA", "TRSN", "TRSO", "TSIZ", "TSRC", "TYER", "TALB"
     };
-    for (int i = 0; i < 34; i++) {
+    for (int i = 0; i < 38; i++) {
         if (strncasecmp(str, frames[i],4) == 0) return true;  
     }
     return false;

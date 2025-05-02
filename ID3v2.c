@@ -3,8 +3,11 @@
 #include "FileFrameManager.h"
 #include "PrintFrameManager.h"
 #include "DeleteFrameManager.h"
+#include "AddFrameManager.h"
 
 #include <string.h>
+
+
 
 void ID3v2_init(ID3TagType *ID3Tag){
     ListFramePtr_init(&ID3Tag->TXTFrameList);
@@ -453,30 +456,19 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
 }
 
 void ID3v2_addFrame(ID3TagType *ID3Tag, char *frameID){
-    // char option;
+    int incrementedSize = 0;
+    int oldSize = 0;
     if(strncasecmp(frameID,"TXXX",4)==0){ 
-        ID3v2TXTFrameType *TXTFramePtr = FramesV2_getTXXX();
-        ListFramePtr_insertLast(&ID3Tag->TXTFrameList,TXTFramePtr);
-        FramesV2_updateFrameSize(ID3Tag->header.version[0],&TXTFramePtr->header,TXTFramePtr->content.size);
-        FramesV2_printTXTF(*TXTFramePtr);
+        incrementedSize = AddFrame_addTXXX(&ID3Tag->TXTFrameList,ID3Tag->header.version[0]);
+        oldSize = HeaderV2_getTagSize(ID3Tag->header);
+        HeaderV2_updateTagSize(&ID3Tag->header,oldSize+incrementedSize);
     }    
     else if(strncasecmp(frameID,"T",1)==0){ 
         if(FramesV2_validTextFrameId(frameID)){
-            ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
-            ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
-            while (TXTFramePtr != NULL && strncasecmp(frameID,TXTFramePtr->header.frameId,4) != 0){
-                ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
-                TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
-            }
-            if(TXTFramePtr != NULL) {
-                FramesV2_printTXTF(*TXTFramePtr);
-                printf("FRAME ALREADY EXIST\n");
-                return;
-            }
-            TXTFramePtr = FramesV2_getTXTF(frameID);
-            ListFramePtr_insertLast(&ID3Tag->TXTFrameList,TXTFramePtr);
-            FramesV2_updateFrameSize(ID3Tag->header.version[0],&TXTFramePtr->header,TXTFramePtr->content.size);
-            FramesV2_printTXTF(*TXTFramePtr);
+            // int oldSize;
+            AddFrame_addTXTF(&ID3Tag->TXTFrameList,frameID,ID3Tag->header.version[0]);
+            oldSize = HeaderV2_getTagSize(ID3Tag->header);
+            HeaderV2_updateTagSize(&ID3Tag->header,oldSize+incrementedSize);
         }
         else{
             printf("Not supported tag to include");

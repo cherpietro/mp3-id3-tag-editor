@@ -117,7 +117,7 @@ void FramesV2_ModifyAPIC(uint8_t, ID3v2APICFrameType*);
 
 void FramesV2_storeTXTF(FILE*, uint32_t,ID3v2TXTFrameType *);
 ID3v2TXTFrameType* FramesV2_getTXXX();
-ID3v2TXTFrameType* FramesV2_getTXTF(char *);
+ID3v2TXTFrameType* FramesV2_getTXTF(char *,int);
 void FramesV2_printTXTF(ID3v2TXTFrameType);
 void FramesV2_freeTXTF(ID3v2TXTFrameType**);
 bool FramesV2_validTextFrameId(char *);
