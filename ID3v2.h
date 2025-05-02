@@ -29,19 +29,17 @@ typedef struct {
     /**/
 
     /*TO IMPLEMENT*/
-    int UFID; //LIST
-    int USLT; //LIST
-    int SYLT; //LIST
-    int GEOB; //LIST
-    int LINK; //List
+    ListFramePtr UFIDFrameList; //LIST
+    ListFramePtr USLTFrameList; //LIST
+    ListFramePtr SYLTFrameList; //LIST
+    ListFramePtr GEOBFrameList; //LIST
+    ListFramePtr LINKFrameList; //List
+    ListFramePtr AENCFrameList; //LIST
+    ListFramePtr ENCRFrameList; //LIST
+    ListFramePtr GRIDFrameList; //LIST
     
-   
-    int AENC; //LIST
-    int POSS;
-    int COMR; //???
-    int ENCR; //LIST
-    int GRID; //LIST
-
+    ID3v2DefaultFrameType *COMR; //???
+    ID3v2DefaultFrameType *POSS;
     ID3v2DefaultFrameType *RVRB;
     ID3v2DefaultFrameType *EQUA;
     ID3v2DefaultFrameType *MLLT;
