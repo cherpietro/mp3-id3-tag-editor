@@ -157,3 +157,49 @@ int DeleteFrame_deleteMDCI(ID3v2MCDIFrameType **MDCIptr, int version){
     } 
     return deletedSize;
 }
+
+int DeleteFrame_deleteWXXX(ListFramePtr *WXXXFrameList,int version){
+    char option;
+    int deletedSize = 0;
+    ListFramePtr_setFirstActive(WXXXFrameList);
+        ID3v2WXXXFrameType * WXXXFramePtr = ListFramePtr_getActiveFramePtr(*WXXXFrameList);
+        do{
+            fflush(stdout);
+            system("clear");
+            FramesV2_printWXXX(*WXXXFramePtr);
+            printf("\n\nWant to delete this frame? (y/n): ");
+            option = getchar();
+            cleanInputBuffer();
+            if(option == 'y'){
+                deletedSize += FramesV2_getFrameSize(version,WXXXFramePtr->header)+10;
+                ListFramePtr_deleteActive(WXXXFrameList);
+            } 
+            else ListFramePtr_setNextActive(WXXXFrameList);
+            WXXXFramePtr = ListFramePtr_getActiveFramePtr(*WXXXFrameList);
+        }while (WXXXFramePtr != NULL);
+        return deletedSize;
+}
+
+int DeleteFrame_deleteWWWF(ListFramePtr *WWWFrameList, char *frameID, int version){
+    char option;
+    int deletedSize = 0;
+    ListFramePtr_setFirstActive(WWWFrameList);
+        ID3v2WWWFrameType * WWWFramePtr = ListFramePtr_getActiveFramePtr(*WWWFrameList);
+        while (WWWFramePtr != NULL && strncasecmp(frameID,WWWFramePtr->header.frameId,4) != 0){
+            ListFramePtr_setNextActive(WWWFrameList);
+            WWWFramePtr = ListFramePtr_getActiveFramePtr(*WWWFrameList);
+        }
+        if(WWWFramePtr != NULL){
+            fflush(stdout);
+            system("clear");
+            FramesV2_printWWWF(*WWWFramePtr);
+            printf("\n\nWant to delete this frame? (y/n): ");
+            option = getchar();
+            cleanInputBuffer();
+            if(option == 'y') {
+                deletedSize += FramesV2_getFrameSize(version,WWWFramePtr->header)+10;
+                ListFramePtr_deleteActive(WWWFrameList);
+            } 
+        } 
+        return deletedSize;
+}

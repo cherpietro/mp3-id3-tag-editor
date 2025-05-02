@@ -15,6 +15,8 @@ typedef struct {
     ListFramePtr COMMFrameList;
     ListFramePtr PRIVFrameList;
     ListFramePtr APICFrameList; 
+    ListFramePtr WWWFrameList; 
+    ListFramePtr WXXXFrameList; 
 
     /*NotTested*/
     ID3v2MCDIFrameType *MCDI;
