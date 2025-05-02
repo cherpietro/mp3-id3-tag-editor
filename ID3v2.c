@@ -465,7 +465,6 @@ void ID3v2_addFrame(ID3TagType *ID3Tag, char *frameID){
     }    
     else if(strncasecmp(frameID,"T",1)==0){ 
         if(FramesV2_validTextFrameId(frameID)){
-            // int oldSize;
             AddFrame_addTXTF(&ID3Tag->TXTFrameList,frameID,ID3Tag->header.version[0]);
             oldSize = HeaderV2_getTagSize(ID3Tag->header);
             HeaderV2_updateTagSize(&ID3Tag->header,oldSize+incrementedSize);
@@ -473,5 +472,10 @@ void ID3v2_addFrame(ID3TagType *ID3Tag, char *frameID){
         else{
             printf("Not supported tag to include");
         }   
+    }
+    else if(strncasecmp(frameID,"APIC",4)==0){
+        incrementedSize = AddFrame_addAPIC(&ID3Tag->APICFrameList,ID3Tag->header.version[0]);
+        oldSize = HeaderV2_getTagSize(ID3Tag->header);
+        HeaderV2_updateTagSize(&ID3Tag->header,oldSize+incrementedSize);
     }
 }

@@ -65,6 +65,44 @@ void FramesV2_freeAPIC(ID3v2APICFrameType** APIC){
     free(*APIC);
     *APIC = NULL;
 }
+ID3v2APICFrameType *FramesV2_getAPIC(int version){
+    ID3v2APICFrameType *APICFramePtr = (ID3v2APICFrameType *) malloc(sizeof(ID3v2APICFrameType));
+    char description[65]; //max length is 64 characters
+    memcpy(APICFramePtr->header.frameId,"APIC",4); 
+    printf("Introduce description of the image (can be empty|max 64 characters): ");
+    fgets(description, sizeof(description), stdin);
+    description[strcspn(description, "\n")] = 0;
+    TxtStr_storeTextString(&APICFramePtr->description,description,strlen(description)+1);
+    TxtStr_storeTextString(&APICFramePtr->mimeType,"image/jpeg\0",11); 
+    
+    char coverFileName[35];
+    printf("Introduce the name of the image: ");
+    fgets(coverFileName, sizeof(coverFileName), stdin);
+    coverFileName[strcspn(coverFileName, "\n")] = 0;
+    
+    FILE *coverPtr = fopen(coverFileName, "rb");
+    // FILE *coverPtr = fopen("pipoCover.jpg", "rb");
+
+    if (coverPtr){        
+        fseek(coverPtr, 0, SEEK_END);
+        APICFramePtr->imageDataSize = ftell(coverPtr); 
+        fseek(coverPtr, 0, SEEK_SET);
+        APICFramePtr->imageData = (uint8_t *)malloc(APICFramePtr->imageDataSize);
+        size_t bytesRead = fread(APICFramePtr->imageData, 1, APICFramePtr   ->imageDataSize, coverPtr);
+        if (bytesRead != APICFramePtr->imageDataSize) {
+            free(APICFramePtr->imageData);
+        }    
+        fclose(coverPtr);
+        uint32_t newSize = APICFramePtr->description.size + APICFramePtr->imageDataSize + APICFramePtr->mimeType.size;
+        FramesV2_updateFrameSize(version,&APICFramePtr->header,newSize);
+        return APICFramePtr;
+    }
+    else{
+        printf("Error opening cover file\n");
+        FramesV2_freeAPIC(&APICFramePtr);
+        return NULL;
+    }
+}
 void FramesV2_ModifyAPIC(uint8_t version,ID3v2APICFrameType *APIC){
     int c;
     // FILE *newCover = fopen("overtureCover.jpg", "rb");
@@ -136,6 +174,7 @@ ID3v2TXTFrameType * FramesV2_getTXXX(){
     memcpy(mergedString + strlen(description)+1, value, strlen(value)+1);
     TxtStr_storeTextString(&TXTFramePtr->content,mergedString,totalLen);
     free(mergedString);
+
     return TXTFramePtr;
 }
 ID3v2TXTFrameType * FramesV2_getTXTF(char * frameID, int version){

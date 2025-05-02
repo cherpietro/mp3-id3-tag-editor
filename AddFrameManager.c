@@ -42,3 +42,11 @@ int AddFrame_addTXTF(ListFramePtr *TXTFrameList,char *frameID,int version){
     FramesV2_printTXTF(*TXTFramePtr);
     return (incrementedSize + 10);
 }
+
+int AddFrame_addAPIC(ListFramePtr *APICFrameList,int version){
+    ID3v2APICFrameType *APICFramePtr = FramesV2_getAPIC(version);
+    if(APICFramePtr == NULL)return 0;
+    ListFramePtr_insertLast(APICFrameList,APICFramePtr);
+    FramesV2_printAPIC(*APICFramePtr);
+    return (FramesV2_getFrameSize(version,APICFramePtr->header) +10);
+}

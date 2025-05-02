@@ -113,6 +113,7 @@ void FramesV2_storeAPIC(FILE*, uint32_t, ID3v2APICFrameType*);
 void FramesV2_saveAPICImage(ID3v2APICFrameType);
 void FramesV2_printAPIC(ID3v2APICFrameType);
 void FramesV2_freeAPIC(ID3v2APICFrameType**);
+ID3v2APICFrameType* FramesV2_getAPIC(int);
 void FramesV2_ModifyAPIC(uint8_t, ID3v2APICFrameType*);
 
 void FramesV2_storeTXTF(FILE*, uint32_t,ID3v2TXTFrameType *);
