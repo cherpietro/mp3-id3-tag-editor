@@ -12,22 +12,20 @@
 typedef struct {
     ID3v2HeaderType header;
     ListFramePtr TXTFrameList;
-    // TXTFrameList TXTFrameList;
     ListFramePtr COMMFrameList;
-    // COMMFrameList COMMFrameList;
     ListFramePtr PRIVFrameList;
-    // PRIVFrameList PRIVFrameList;
     ListFramePtr APICFrameList; 
-    // ID3v2APICFrameType *APIC; //LIST
+
+    /*NotTested*/
     ID3v2MCDIFrameType *MCDI;
-    ID3v2POPMFrameType *POPM; //LIST
-    /*Only stored*/
+    ListFramePtr POPMFrameList; //LIST
     ID3v2IPLSFrameType *IPLS;
     ID3v2SYTCFrameType *SYTC;
     ID3v2USERFrameType *USER;
     ID3v2OWNEFrameType *OWNE;
     ID3v2PCNTFrameType *PCNT;
     /**/
+
     /*TO IMPLEMENT*/
     int UFID; //LIST
     int LISTWXXX; //LIST
@@ -37,11 +35,11 @@ typedef struct {
     int LINK; //List
     
    
-    int AENC;
+    int AENC; //LIST
     int POSS;
-    int COMR;
-    int ENCR;
-    int GRID;
+    int COMR; //???
+    int ENCR; //LIST
+    int GRID; //LIST
 
     ID3v2DefaultFrameType *RVRB;
     ID3v2DefaultFrameType *EQUA;
@@ -60,17 +58,7 @@ void ID3v2_storeTagInStruct(char*, ID3TagType*);
 
 bool ID3v2_storeNextFrameInStruct(FILE*, ID3TagType*);
 
-void ID3v2_removeTagFromFile(char*);
-
-void ID3v2_writteTagIntoFile(char *, ID3TagType *);
-
-void printTag(ID3TagType *);
-
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *);
-
-void ID3v2_listFrames(ID3TagType *);
-
-void ID3v2_printFrame(ID3TagType *, char *);
 
 void ID3v2_deleteFrame(ID3TagType *, char *);
 

@@ -13,13 +13,13 @@ void testEliteFour();
 
 void testJokin1();
 
-void testJokin1_ID3v2_writteTagIntoFile(char *, ID3TagType *);
+void testJokin1_FileManager_writteTagIntoFile(char *, ID3TagType *);
 
-void TIMBERHEARTH_ID3v2_writteTagIntoFile(char *, ID3TagType *);
+void TIMBERHEARTH_FileManager_writteTagIntoFile(char *, ID3TagType *);
 
-void JOKIN3_ID3v2_writteTagIntoFile(char *, ID3TagType *);
+void JOKIN3_FileManager_writteTagIntoFile(char *, ID3TagType *);
 
-void ELITEFOUR_ID3v2_writteTagIntoFile(char *, ID3TagType *);
+void ELITEFOUR_FileManager_writteTagIntoFile(char *, ID3TagType *);
 int main(){
   testJokin1();
   testEliteFour();
@@ -32,7 +32,7 @@ void testJokin1(){
   char *file = "./files/auxFiles/jokin1.mp3";
   ID3v2_init(&ID3Tag);
   ID3v2_storeTagInStruct(file,&ID3Tag);
-  testJokin1_ID3v2_writteTagIntoFile(file,&ID3Tag);
+  testJokin1_FileManager_writteTagIntoFile(file,&ID3Tag);
   ID3v2_free(&ID3Tag);
   printf("Difference between files: \n");
   system("cmp -l ./files/jokin1.mp3 ./files/auxFiles/jokin1.mp3 | wc -l");
@@ -43,7 +43,7 @@ void testOverture(){
   char *file = "./files/auxFiles/overture.mp3";
   ID3v2_init(&ID3Tag);
   ID3v2_storeTagInStruct(file,&ID3Tag);
-  ID3v2_writteTagIntoFile(file,&ID3Tag);
+  FileManager_writteTagIntoFile(file,&ID3Tag);
   ID3v2_free(&ID3Tag);
   printf("Difference between files: \n");
   system("cmp -l ./files/overture.mp3 ./files/auxFiles/overture.mp3 | wc -l");
@@ -54,7 +54,7 @@ void testEliteFour(){
   char *file = "./files/auxFiles/EliteFour.mp3";  
   ID3v2_init(&ID3Tag);
   ID3v2_storeTagInStruct(file,&ID3Tag);
-  ELITEFOUR_ID3v2_writteTagIntoFile(file,&ID3Tag);
+  ELITEFOUR_FileManager_writteTagIntoFile(file,&ID3Tag);
   ID3v2_free(&ID3Tag);
   
   printf("Difference between files: \n");
@@ -65,7 +65,7 @@ void testTimberHearth(){
   char *file = "./files/auxFiles/TimberHearth.mp3";
   ID3v2_init(&ID3Tag);
   ID3v2_storeTagInStruct(file,&ID3Tag);
-  TIMBERHEARTH_ID3v2_writteTagIntoFile(file,&ID3Tag);
+  TIMBERHEARTH_FileManager_writteTagIntoFile(file,&ID3Tag);
   ID3v2_free(&ID3Tag);
   
   printf("Difference between files: \n");
@@ -77,15 +77,15 @@ void testJokin3(){
   char *file = "./files/auxFiles/jokin3.mp3";
   ID3v2_init(&ID3Tag);
   ID3v2_storeTagInStruct(file,&ID3Tag);
-  JOKIN3_ID3v2_writteTagIntoFile(file,&ID3Tag);
+  JOKIN3_FileManager_writteTagIntoFile(file,&ID3Tag);
   ID3v2_free(&ID3Tag);
   
   printf("Difference between files: \n");
   system("cmp -l ./files/jokin3.mp3 ./files/auxFiles/jokin3.mp3 | wc -l");
 }
 
-void TIMBERHEARTH_ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
-  ID3v2_removeTagFromFile(file);
+void TIMBERHEARTH_FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
+  FileManager_removeTagFromFile(file);
 
   FILE *mp3FilePointer = fopen(file,"r");
   if(mp3FilePointer){
@@ -150,8 +150,8 @@ void TIMBERHEARTH_ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
   }
 }
 
-void JOKIN3_ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
-  ID3v2_removeTagFromFile(file);
+void JOKIN3_FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
+  FileManager_removeTagFromFile(file);
   FILE *mp3FilePointer = fopen(file,"r");
   if(mp3FilePointer){
     fseek(mp3FilePointer,0,SEEK_END);
@@ -224,8 +224,8 @@ void JOKIN3_ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     rename("temp.mp3",file);
   }
 }
-void testJokin1_ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
-  ID3v2_removeTagFromFile(file);
+void testJokin1_FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
+  FileManager_removeTagFromFile(file);
   FILE *mp3FilePointer = fopen(file,"r");
   if(mp3FilePointer){
     fseek(mp3FilePointer,0,SEEK_END);
@@ -335,8 +335,8 @@ void testJokin1_ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
   }
 }
 
-void ELITEFOUR_ID3v2_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
-  ID3v2_removeTagFromFile(file);
+void ELITEFOUR_FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
+  FileManager_removeTagFromFile(file);
   FILE *mp3FilePointer = fopen(file,"r");
   if(mp3FilePointer){
     fseek(mp3FilePointer,0,SEEK_END);

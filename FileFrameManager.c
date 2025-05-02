@@ -1,4 +1,5 @@
 #include "FileFrameManager.h"
+#include "ID3v2Header.h"
 
 void FileManager_writteTXTFramesInFile(FILE *destFilePtr, ListFramePtr *TXTFrameList){
   ID3v2TXTFrameType *TXTFrame;
@@ -72,10 +73,99 @@ void FileManager_writteAPICFramesInFile(FILE *destFilePtr, ListFramePtr *APICFra
     ListFramePtr_setNextActive(APICFrameList);
   }
 }
+void FileManager_writtePOPMFramesInFile(FILE *destFilePtr, ListFramePtr *POPMFrameList){
+  ID3v2POPMFrameType *POPMFrame;
+  ListFramePtr_setFirstActive(POPMFrameList);
+  while(POPMFrameList->active != NULL){
+    POPMFrame = (ID3v2POPMFrameType *)ListFramePtr_getActiveFramePtr(*POPMFrameList);
+    fwrite(&POPMFrame->header,1, sizeof(POPMFrame->header),destFilePtr);
+    fwrite(POPMFrame->userEmail.string,1, TxtStr_getStringLen(POPMFrame->userEmail),destFilePtr);
+    fwrite(&POPMFrame->rating,1, 1,destFilePtr);
+    fwrite(&POPMFrame->counter,1, 4,destFilePtr);
+    ListFramePtr_setNextActive(POPMFrameList);
+  }
+}
 
 void FileManager_writtePadding(FILE *destFilePtr, int paddingSize){
   char zero = 0;
   for (int i = 0; i < paddingSize; i++) {
       fwrite(&zero, 1, 1, destFilePtr);
   }
+}
+
+void FileManager_removeTagFromFile(char*file){
+  FILE *mp3FilePointer = fopen(file,"r");
+  if (mp3FilePointer) {
+    fseek(mp3FilePointer, 0, SEEK_SET);
+    uint32_t fileSize = ftell(mp3FilePointer);
+    ID3v2HeaderType header;
+    HeaderV2_storeHeader(mp3FilePointer,&header);
+    if(HeaderV2_isID3v2Tag(header)){
+        uint32_t tagSize = HeaderV2_getTagSize(header);
+        fseek(mp3FilePointer, tagSize+10, SEEK_SET);
+        uint32_t remainingSize = fileSize - tagSize;
+        unsigned char *dataBuffer = (unsigned char *)malloc(remainingSize);
+        if (!dataBuffer) {
+            printf("error\n");
+            return;
+        }
+        size_t bytesRead = fread(dataBuffer, 1, remainingSize, mp3FilePointer);
+        FILE *temp = fopen("savedFiles/tagRemoved.mp3", "wb");
+        if (!temp) {
+          printf("error\n");
+          free(dataBuffer);
+          return;
+        }
+        fwrite(dataBuffer, 1, bytesRead, temp);
+        fclose(temp);
+        free(dataBuffer);
+
+        // remove(file);
+        // rename("tagRe6moved.mp3",file);
+      }
+    else printf("Not ID3v2 Tag detected or not yet supported version\n");
+    fclose(mp3FilePointer);
+  }
+  else printf("The file DOESN'T exist!\n");
+}
+
+void FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
+  FileManager_removeTagFromFile(file);
+  FILE *mp3FilePointer = fopen("./savedFiles/tagRemoved.mp3","r");
+  if(mp3FilePointer){
+    fseek(mp3FilePointer,0,SEEK_END);
+    uint32_t fileSize = ftell(mp3FilePointer);
+    fseek(mp3FilePointer,0,SEEK_SET);
+    unsigned char *dataBuffer = (unsigned char *)malloc(fileSize);
+    if(!dataBuffer){
+      printf("error");
+      fclose(mp3FilePointer);
+      return;
+    }
+    fread(dataBuffer,1,fileSize,mp3FilePointer);
+    FILE *temp = fopen("./savedFiles/modified.mp3","w");
+    if(!temp){
+      printf("error");
+      fclose(temp);
+      return;
+    }
+    // header
+    fwrite(&ID3Tag->header,1,sizeof(ID3Tag->header),temp);
+
+    FileManager_writteTXTFramesInFile(temp,&ID3Tag->TXTFrameList);
+    FileManager_writteCOMMFramesInFile(temp,&ID3Tag->COMMFrameList);
+    FileManager_writtePRIVFramesInFile(temp,&ID3Tag->PRIVFrameList);
+    FileManager_writteAPICFramesInFile(temp,&ID3Tag->APICFrameList);
+    if(ID3Tag->MCDI != NULL) FileManager_writteMCDIFrameInFile(temp,*ID3Tag->MCDI);
+    FileManager_writtePOPMFramesInFile(temp,&ID3Tag->POPMFrameList);
+    // if(ID3Tag->POPM != NULL) FileManager_writtePOPMFrameInFile(temp,*ID3Tag->POPM);
+    FileManager_writtePadding(temp,ID3Tag->paddingSize);
+    
+    // content
+    fwrite(dataBuffer,1,fileSize,temp);
+    fclose(temp);
+    // remove(file);
+    // rename("temp.mp3",file);
+  }
+  remove("./savedFiles/tagRemoved.mp3");
 }

@@ -104,6 +104,7 @@ void FramesV2_freeAPIC(ID3v2APICFrameType**);
 void FramesV2_ModifyAPIC(uint8_t, ID3v2APICFrameType*);
 
 void FramesV2_storeTXTF(FILE*, uint32_t,ID3v2TXTFrameType *);
+ID3v2TXTFrameType* FramesV2_getTXXX();
 void FramesV2_printTXTF(ID3v2TXTFrameType);
 void FramesV2_freeTXTF(ID3v2TXTFrameType**);
 void FramesV2_ModifyTXTF(uint8_t, ID3v2TXTFrameType *);
@@ -120,7 +121,7 @@ void FramesV2_storeMDCI(FILE*, uint32_t, ID3v2MCDIFrameType**);
 void FramesV2_printMDCI(ID3v2MCDIFrameType);
 void FramesV2_freeMCDI(ID3v2MCDIFrameType**);
 
-void FramesV2_storePOPM(FILE*, uint32_t, ID3v2POPMFrameType**);
+void FramesV2_storePOPM(FILE*, uint32_t, ID3v2POPMFrameType*);
 void FramesV2_printPOPM(ID3v2POPMFrameType);
 void FramesV2_freePOPM(ID3v2POPMFrameType**);
 

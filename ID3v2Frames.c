@@ -113,6 +113,26 @@ void FramesV2_storeTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TXTFrameT
   TxtStr_storeTextString(&frame->content,contentPtr, frameSize-1);
   free(frameContent);
 }
+ID3v2TXTFrameType * FramesV2_getTXXX(){
+  char description[65];
+    char value[255];
+    char *mergedString;
+
+    ID3v2TXTFrameType *TXTFramePtr = (ID3v2TXTFrameType*) malloc(sizeof(ID3v2TXTFrameType));
+    memcpy(TXTFramePtr->header.frameId,"TXXX",4); 
+    TXTFramePtr->header.flags[0] = 0;TXTFramePtr->header.flags[1] = 0;
+    fgets(description, sizeof(description), stdin);
+    description[strcspn(description, "\n")] = 0;
+    fgets(value, sizeof(value), stdin);
+    value[strcspn(value, "\n")] = 0;
+    int totalLen = strlen(value)+strlen(description)+2;
+    mergedString = (char *) malloc(totalLen);
+    memcpy(mergedString, description, strlen(description)+1);
+    memcpy(mergedString + strlen(description)+1, value, strlen(value)+1);
+    TxtStr_storeTextString(&TXTFramePtr->content,mergedString,totalLen);
+    free(mergedString);
+    return TXTFramePtr;
+}
 void FramesV2_printTXTF(ID3v2TXTFrameType frame){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",frame.header.frameId);
@@ -263,22 +283,22 @@ void FramesV2_freeMCDI(ID3v2MCDIFrameType **MCDI){
   *MCDI = NULL;
 }
 
-void FramesV2_storePOPM(FILE *mp3FilePointer, uint32_t frameSize,ID3v2POPMFrameType** POPM){
-  *POPM = (ID3v2POPMFrameType *)malloc(sizeof(ID3v2POPMFrameType));
-  size_t index = 0;
+void FramesV2_storePOPM(FILE *mp3FilePointer, uint32_t frameSize,ID3v2POPMFrameType* POPM){
   uint8_t *frameContent = (uint8_t *)malloc(frameSize);
   fread(frameContent, frameSize, 1, mp3FilePointer);
+
+  size_t index = 0;
   char *emailPtr = (char *)frameContent;
   size_t emailSize = strlen(emailPtr) + 1;
-  TxtStr_storeTextString(&(*POPM)->userEmail,emailPtr,emailSize);
+  TxtStr_storeTextString(&(POPM)->userEmail,emailPtr,emailSize);
   index += emailSize;
   char *ratingPtr = (char *)frameContent + index ; 
-  (*POPM)->rating = ratingPtr[0];
+  (POPM)->rating = ratingPtr[0];
   char *counterPtr = (char *)frameContent + index +1; 
-  (*POPM)->counter[0] = counterPtr[0];
-  (*POPM)->counter[1] = counterPtr[1];
-  (*POPM)->counter[2] = counterPtr[2];
-  (*POPM)->counter[3] = counterPtr[3];
+  (POPM)->counter[0] = counterPtr[0];
+  (POPM)->counter[1] = counterPtr[1];
+  (POPM)->counter[2] = counterPtr[2];
+  (POPM)->counter[3] = counterPtr[3];
   free(frameContent);
 }
 void FramesV2_printPOPM(ID3v2POPMFrameType POPM){
