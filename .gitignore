@@ -1,5 +1,6 @@
 /.vscode
 /files
+/old_files
 /savedFiles
 a.out
 *.o

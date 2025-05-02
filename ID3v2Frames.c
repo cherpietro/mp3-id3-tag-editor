@@ -74,6 +74,7 @@ ID3v2APICFrameType *FramesV2_getAPIC(int version){
     description[strcspn(description, "\n")] = 0;
     TxtStr_storeTextString(&APICFramePtr->description,description,strlen(description)+1);
     TxtStr_storeTextString(&APICFramePtr->mimeType,"image/jpeg\0",11); 
+    APICFramePtr->textEncoding = 3;
     
     char coverFileName[35];
     printf("Introduce the name of the image: ");
@@ -160,6 +161,7 @@ ID3v2TXTFrameType * FramesV2_getTXXX(){
     ID3v2TXTFrameType *TXTFramePtr = (ID3v2TXTFrameType*) malloc(sizeof(ID3v2TXTFrameType));
     memcpy(TXTFramePtr->header.frameId,"TXXX",4); 
     TXTFramePtr->header.flags[0] = 0;TXTFramePtr->header.flags[1] = 0;
+    TXTFramePtr->textEncoding = 3;
     printf("Insert tag description (max. size 64): ");
     fgets(description, sizeof(description), stdin);
     description[strcspn(description, "\n")] = 0;
@@ -184,8 +186,8 @@ ID3v2TXTFrameType * FramesV2_getTXTF(char * frameID, int version){
     for (int i = 0; i < 4; i++) frameID[i] = toupper(frameID[i]);
     memcpy(TXTFramePtr->header.frameId,frameID,4); 
     TXTFramePtr->header.flags[0] = 0;TXTFramePtr->header.flags[1] = 0;
-    TXTFramePtr->textEncoding = 0;
-    // TXTFramePtr->textEncoding = 3;
+    // TXTFramePtr->textEncoding = 0;
+    TXTFramePtr->textEncoding = 3;
     printf("Insert tag content (max. size 254): ");
     fgets(content, sizeof(content), stdin);
     content[strcspn(content, "\n")] = 0;

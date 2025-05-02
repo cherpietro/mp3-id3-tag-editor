@@ -111,7 +111,7 @@ int main(){
 
 void saveChangesInFile(char *file, ID3TagType ID3Tag){
   ID3v2_getTagSizeOfTheStruct(&ID3Tag);
-  // FileManager_writteTagIntoFile(file,&ID3Tag);
+  FileManager_writteTagIntoFile(file,&ID3Tag);
   // printf("difference between files: \n");
   // system("cmp -l ./files/overture.mp3 ./savedFiles/modified.mp3 | wc -l");
   // printf("\n");
