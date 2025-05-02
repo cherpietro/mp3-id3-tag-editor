@@ -195,7 +195,7 @@ bool FramesV2_validTextFrameId(char *str) {
         "TRCK", "TRDA", "TRSN", "TRSO", "TSIZ", "TSRC", "TSSE", "TYER"
     };
     for (int i = 0; i < 34; i++) {
-        if (strncmp(str, frames[i],4) == 0) return true;  
+        if (strncasecmp(str, frames[i],4) == 0) return true;  
     }
     return false;
 }

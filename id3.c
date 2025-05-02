@@ -45,12 +45,11 @@ int main(){
     printf("5. Save changes in file\n");
     printf("0. Exit\n");
  
-    // if (scanf("%d", &option) != 1) {
-    //   system("clear");
-    //   cleanInputBuffer();
-    //   option = -1;
-    // }
-    option = 0;
+    if (scanf("%d", &option) != 1) {
+      system("clear");
+      cleanInputBuffer();
+      option = -1;
+    }
     switch(option) {
         case 1:
             system("clear");
