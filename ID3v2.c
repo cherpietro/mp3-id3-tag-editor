@@ -11,8 +11,10 @@ void ID3v2_init(ID3TagType *ID3Tag){
     ListFramePtr_init(&ID3Tag->COMMFrameList);
     ListFramePtr_init(&ID3Tag->PRIVFrameList);
     ListFramePtr_init(&ID3Tag->APICFrameList);
-
     ListFramePtr_init(&ID3Tag->POPMFrameList);
+    ListFramePtr_init(&ID3Tag->WWWFrameList);
+    ListFramePtr_init(&ID3Tag->WXXXFrameList);
+
     ID3Tag->MCDI = NULL;
     ID3Tag->IPLS = NULL;
     ID3Tag->SYTC = NULL;
@@ -51,12 +53,23 @@ void ID3v2_free(ID3TagType *ID3Tag){
             FramesV2_freeAPIC(&ptrAPIC);
             ListFramePtr_deleteActive(&ID3Tag->APICFrameList);
     }
-    // if(ID3Tag->POPM != NULL) FramesV2_freePOPM(&ID3Tag->POPM);
     ListFramePtr_setFirstActive(&ID3Tag->POPMFrameList);
     while (!ListFramePtr_isEmpty(ID3Tag->POPMFrameList)) {
         ID3v2POPMFrameType* ptrPOPM = (ID3v2POPMFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->POPMFrameList);
             FramesV2_freePOPM(&ptrPOPM);
             ListFramePtr_deleteActive(&ID3Tag->POPMFrameList);
+    }
+    ListFramePtr_setFirstActive(&ID3Tag->WXXXFrameList);
+    while (!ListFramePtr_isEmpty(ID3Tag->WXXXFrameList)) {
+        ID3v2WXXXFrameType* ptrWXXX = (ID3v2WXXXFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->WXXXFrameList);
+            FramesV2_freeWXXX(&ptrWXXX);
+            ListFramePtr_deleteActive(&ID3Tag->WXXXFrameList);
+    }
+    ListFramePtr_setFirstActive(&ID3Tag->WWWFrameList);
+    while (!ListFramePtr_isEmpty(ID3Tag->WWWFrameList)) {
+        ID3v2WWWFrameType* ptrWWW = (ID3v2WWWFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->WWWFrameList);
+            FramesV2_freeWWWF(&ptrWWW);
+            ListFramePtr_deleteActive(&ID3Tag->WWWFrameList);
     }
     if(ID3Tag->MCDI != NULL) FramesV2_freeMCDI(&ID3Tag->MCDI);
     if(ID3Tag->IPLS != NULL) FramesV2_freeIPLS(&ID3Tag->IPLS);
@@ -94,6 +107,7 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     ID3v2FrameHeaderType header;
     FramesV2_storeHeader(mp3FilePointer,&header);
     uint32_t frameSize = FramesV2_getFrameSize(ID3Tag->header.version[0],header); 
+    printf("FrameID: %s\n",header.frameId);
     if (memcmp(header.frameId, "\0\0\0\0", 4) == 0) return true;
     else if(strncasecmp(header.frameId,"T",1)==0){
         ID3v2TXTFrameType *TXTF;
@@ -137,6 +151,22 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
         POPM->header = header;
         FramesV2_storePOPM(mp3FilePointer,frameSize, POPM);
         ListFramePtr_insertLast(&ID3Tag->POPMFrameList,POPM);
+    }
+    else if(strncasecmp(header.frameId,"WXXX",4)==0){
+        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+        ID3v2WXXXFrameType *WXXX;
+        WXXX = (ID3v2WXXXFrameType *) malloc(sizeof(ID3v2WXXXFrameType));
+        WXXX->header = header;
+        FramesV2_storeWXXX(mp3FilePointer,frameSize,WXXX);
+        ListFramePtr_insertLast(&ID3Tag->WXXXFrameList,WXXX);
+    }
+    else if(strncasecmp(header.frameId,"W",1)==0){
+        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+        ID3v2WWWFrameType *WWWF;
+        WWWF = (ID3v2WWWFrameType *) malloc(sizeof(ID3v2WWWFrameType));
+        WWWF->header = header;
+        FramesV2_storeWWWF(mp3FilePointer,frameSize,WWWF);
+        ListFramePtr_insertLast(&ID3Tag->WWWFrameList,WWWF);
     }
     else if(strncasecmp(header.frameId,"IPLS",4)==0){
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
@@ -205,6 +235,8 @@ void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
     ID3v2COMMFrameType *COMMFrame;
     ID3v2APICFrameType *APICFrame;
     ID3v2PRIVFrameType *PRIVFrame;
+    ID3v2WWWFrameType *WWWFrame;
+    ID3v2WXXXFrameType *WXXXFrame;
 
     ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
     while(ID3Tag->TXTFrameList.active != NULL){
@@ -233,6 +265,18 @@ void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
         tagSizeOfStruct += FramesV2_getFrameSize(ID3Tag->header.version[0],PRIVFrame->header) + 10;
         ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
     }
+    ListFramePtr_setFirstActive(&ID3Tag->WWWFrameList);
+    while(ID3Tag->WWWFrameList.active != NULL){
+        WWWFrame = ListFramePtr_getActiveFramePtr(ID3Tag->WWWFrameList);
+        tagSizeOfStruct += FramesV2_getFrameSize(ID3Tag->header.version[0],WWWFrame->header) + 10;
+        ListFramePtr_setNextActive(&ID3Tag->WWWFrameList);
+    }
+    ListFramePtr_setFirstActive(&ID3Tag->WXXXFrameList);
+    while(ID3Tag->WXXXFrameList.active != NULL){
+        WXXXFrame = ListFramePtr_getActiveFramePtr(ID3Tag->WXXXFrameList);
+        tagSizeOfStruct += FramesV2_getFrameSize(ID3Tag->header.version[0],WXXXFrame->header) + 10;
+        ListFramePtr_setNextActive(&ID3Tag->WXXXFrameList);
+    }
     if((HeaderV2_getTagSize(ID3Tag->header) +10 - ID3Tag->paddingSize )== tagSizeOfStruct ){
         printf("size is okay\n");
     }
@@ -244,13 +288,18 @@ void ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
 void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
     int deletedSize;
     int oldSize;
-    if(strncasecmp(frameID,"TXXX",4)==0) deletedSize = DeleteFrame_deleteTXXX(&ID3Tag->TXTFrameList,ID3Tag->header.version[0]);
     //LISTS
+    if(strncasecmp(frameID,"TXXX",4)==0) deletedSize = DeleteFrame_deleteTXXX(&ID3Tag->TXTFrameList,ID3Tag->header.version[0]);
     else if(strncasecmp(frameID,"T",1)==0) deletedSize = DeleteFrame_deleteTXTF(&ID3Tag->TXTFrameList,frameID,ID3Tag->header.version[0]);
+    else if(strncasecmp(frameID,"WXXX",4)==0) deletedSize = DeleteFrame_deleteWXXX(&ID3Tag->WXXXFrameList,ID3Tag->header.version[0]);
+    else if(strncasecmp(frameID,"W",1)==0) {
+    deletedSize = DeleteFrame_deleteWWWF(&ID3Tag->WWWFrameList,frameID,ID3Tag->header.version[0]);
+    }
     else if(strncasecmp(frameID,"PRIV",4)==0) deletedSize = DeleteFrame_deletePRIV(&ID3Tag->PRIVFrameList,ID3Tag->header.version[0]);
     else if(strncasecmp(frameID,"COMM",4)==0) deletedSize = DeleteFrame_deleteCOMM(&ID3Tag->COMMFrameList,ID3Tag->header.version[0]);
     else if(strncasecmp(frameID,"APIC",4)==0) deletedSize = DeleteFrame_deleteAPIC(&ID3Tag->APICFrameList,ID3Tag->header.version[0]);
     else if(strncasecmp(frameID,"POPM",4)==0) deletedSize = DeleteFrame_deletePOPM(&ID3Tag->POPMFrameList,ID3Tag->header.version[0]);
+    //SINGLE FRAME
     else if(strncasecmp(frameID,"MDCI",4)==0) deletedSize = DeleteFrame_deleteMDCI(&ID3Tag->MCDI,ID3Tag->header.version[0]);
     else return; //NOT SUPPORTED TAG
     oldSize = HeaderV2_getTagSize(ID3Tag->header);

@@ -89,6 +89,18 @@ typedef struct {
 
 typedef struct {
   ID3v2FrameHeaderType header;
+  TextStringType url;
+} ID3v2WWWFrameType;
+
+typedef struct {
+  ID3v2FrameHeaderType header;
+  uint8_t textEncoding;
+  TextStringType description;
+  TextStringType url;
+} ID3v2WXXXFrameType;
+
+typedef struct {
+  ID3v2FrameHeaderType header;
   uint8_t *frameData;
 } ID3v2DefaultFrameType;
 
@@ -149,5 +161,11 @@ void FramesV2_storeDefaultFrame(FILE*, uint32_t, ID3v2DefaultFrameType**);
 void FramesV2_printDefaultFrame(ID3v2DefaultFrameType);
 void FramesV2_freeDefaultFrame(ID3v2DefaultFrameType**);
 
+void FramesV2_storeWWWF(FILE*, uint32_t,ID3v2WWWFrameType *);
+void FramesV2_printWWWF(ID3v2WWWFrameType);
+void FramesV2_freeWWWF(ID3v2WWWFrameType**);
 
+void FramesV2_storeWXXX(FILE*, uint32_t,ID3v2WXXXFrameType *);
+void FramesV2_printWXXX(ID3v2WXXXFrameType);
+void FramesV2_freeWXXX(ID3v2WXXXFrameType**);
 #endif // ID3V2FRAMES_H

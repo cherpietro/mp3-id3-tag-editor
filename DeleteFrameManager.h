@@ -8,6 +8,9 @@ int DeleteFrame_deletePRIV(ListFramePtr *,int);
 int DeleteFrame_deleteCOMM(ListFramePtr *,int);
 int DeleteFrame_deleteAPIC(ListFramePtr *,int);
 int DeleteFrame_deletePOPM(ListFramePtr *,int);
-int DeleteFrame_deleteMDCI(ID3v2MCDIFrameType **, int );
+int DeleteFrame_deleteMDCI(ID3v2MCDIFrameType **, int);
+int DeleteFrame_deleteWXXX(ListFramePtr *,int);
+int DeleteFrame_deleteWWWF(ListFramePtr *,char *,int);
+
 
 #endif // DELETEFRAMEMANAGER_H

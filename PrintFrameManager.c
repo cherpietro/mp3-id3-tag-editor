@@ -78,7 +78,7 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
   else if(strncasecmp(frameID,"RVAD",4)==0);
 
   //LISTS
-  else if(strncasecmp(frameID,"T",1)==0){
+  else if(strncasecmp(frameID,"TXXX",4)==0){
     ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
     ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
     while (TXTFramePtr != NULL){
@@ -87,7 +87,7 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
       TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
     }
   }
-  else if(strncasecmp(frameID,"T",1)==0){ //USER PRINT FRAME MANAGER TO PRINT TXXX
+  else if(strncasecmp(frameID,"T",1)==0){
     ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
     ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
     while (TXTFramePtr != NULL && strncasecmp(frameID,TXTFramePtr->header.frameId,4) != 0){
@@ -95,6 +95,24 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
       TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
     }
     if(TXTFramePtr != NULL) FramesV2_printTXTF(*TXTFramePtr);
+  }
+  else if(strncasecmp(frameID,"WXXX",4)==0){
+    ListFramePtr_setFirstActive(&ID3Tag->WXXXFrameList);
+    ID3v2WXXXFrameType * WXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WXXXFrameList);
+    while (WXXXFramePtr != NULL){
+      if(strncasecmp(frameID,WXXXFramePtr->header.frameId,4) == 0) FramesV2_printWXXX(*WXXXFramePtr);
+      ListFramePtr_setNextActive(&ID3Tag->WXXXFrameList);
+      WXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WXXXFrameList);
+    }
+  }
+  else if(strncasecmp(frameID,"w",1)==0){
+    ListFramePtr_setFirstActive(&ID3Tag->WWWFrameList);
+    ID3v2WWWFrameType * WWWFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WWWFrameList);
+    while (WWWFramePtr != NULL && strncasecmp(frameID,WWWFramePtr->header.frameId,4) != 0){
+      ListFramePtr_setNextActive(&ID3Tag->WWWFrameList);
+      WWWFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WWWFrameList);
+    }
+    if(WWWFramePtr != NULL) FramesV2_printWWWF(*WWWFramePtr);
   }
   else if(strncasecmp(frameID,"PRIV",4)==0){
     ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
@@ -180,6 +198,25 @@ void PrintFrame_listFrames(ID3TagType *ID3Tag){
     TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
   }
   if(TXTFCount != 0) printf("FramgeID: TXXX (%d frames)\n",TXTFCount);
+  
+  int WXXXCount = 0;
+  ListFramePtr_setFirstActive(&ID3Tag->WXXXFrameList);
+  ID3v2WXXXFrameType * WXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WXXXFrameList);
+  while (WXXXFramePtr != NULL){
+    if(strncasecmp("WXXX",WXXXFramePtr->header.frameId,4) == 0) WXXXCount += 1;
+    ListFramePtr_setNextActive(&ID3Tag->WXXXFrameList);
+    WXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WXXXFrameList);
+  }
+  if(WXXXCount != 0) printf("FramgeID: WXXX (%d frames)\n",WXXXCount);
+
+  ListFramePtr_setFirstActive(&ID3Tag->WWWFrameList);
+  ID3v2WWWFrameType * WWWFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WWWFrameList);
+  while (WWWFramePtr != NULL){
+    printf("FramgeID: %s\n",WWWFramePtr->header.frameId);
+    ListFramePtr_setNextActive(&ID3Tag->WWWFrameList);
+    WWWFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WWWFrameList);
+  }
+  if(WXXXCount != 0) printf("FramgeID: WXXX (%d frames)\n",WXXXCount);
   
   int PRIVCount = 0;
   ListFramePtr_setFirstActive(&(*ID3Tag).PRIVFrameList);
