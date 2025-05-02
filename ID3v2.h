@@ -30,7 +30,6 @@ typedef struct {
 
     /*TO IMPLEMENT*/
     int UFID; //LIST
-    int LISTWXXX; //LIST
     int USLT; //LIST
     int SYLT; //LIST
     int GEOB; //LIST
