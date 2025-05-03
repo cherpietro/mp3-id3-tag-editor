@@ -75,6 +75,7 @@ ID3v2APICFrameType *FramesV2_getAPIC(int version){
     TxtStr_storeTextString(&APICFramePtr->description,description,strlen(description)+1);
     TxtStr_storeTextString(&APICFramePtr->mimeType,"image/jpeg\0",11); 
     APICFramePtr->textEncoding = 3;
+    APICFramePtr->pictureType = 0;
     
     char coverFileName[35];
     printf("Introduce the name of the image: ");
@@ -95,7 +96,7 @@ ID3v2APICFrameType *FramesV2_getAPIC(int version){
         }    
         fclose(coverPtr);
         uint32_t newSize = APICFramePtr->description.size + APICFramePtr->imageDataSize + APICFramePtr->mimeType.size;
-        FramesV2_updateFrameSize(version,&APICFramePtr->header,newSize);
+        FramesV2_updateFrameSize(version,&APICFramePtr->header,newSize+2);
         return APICFramePtr;
     }
     else{
