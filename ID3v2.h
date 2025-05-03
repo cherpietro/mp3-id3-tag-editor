@@ -15,12 +15,12 @@ typedef struct {
     ListFramePtr APICFrameList; 
     ListFramePtr WWWFrameList; 
     ListFramePtr WXXXFrameList; 
+    ListFramePtr COMMFrameList;
     //Not supported addition
     ListFramePtr PRIVFrameList;
     //Pending to include addition
-    ListFramePtr COMMFrameList;
-    /*NotTested*/
     ID3v2MCDIFrameType *MCDI;
+    /*NotTested*/
     ListFramePtr POPMFrameList; //LIST
     /**/
 
@@ -56,8 +56,6 @@ void ID3v2_init(ID3TagType *);
 void ID3v2_free(ID3TagType *);
 
 void ID3v2_storeTagInStruct(char*, ID3TagType*);
-
-bool ID3v2_storeNextFrameInStruct(FILE*, ID3TagType*);
 
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *);
 
