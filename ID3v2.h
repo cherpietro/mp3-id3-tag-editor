@@ -15,21 +15,14 @@ typedef struct {
     ListFramePtr APICFrameList; 
     ListFramePtr WWWFrameList; 
     ListFramePtr WXXXFrameList; 
+    ListFramePtr COMMFrameList;
     //Not supported addition
     ListFramePtr PRIVFrameList;
+    ID3v2MCDIFrameType *MCDI; // SAVE AS DEFAULT
     //Pending to include addition
-    ListFramePtr COMMFrameList;
-
-    /*NotTested*/
-    ID3v2MCDIFrameType *MCDI;
     ListFramePtr POPMFrameList; //LIST
-    // ID3v2IPLSFrameType *IPLS;
-    // ID3v2SYTCFrameType *SYTC;
-    // ID3v2USERFrameType *USER;
-    // ID3v2OWNEFrameType *OWNE;
-    // ID3v2PCNTFrameType *PCNT;
     /**/
-
+    
     /*TO IMPLEMENT*/
     ListFramePtr UFIDFrameList; //LIST
     ListFramePtr USLTFrameList; //LIST
@@ -40,6 +33,12 @@ typedef struct {
     ListFramePtr ENCRFrameList; //LIST
     ListFramePtr GRIDFrameList; //LIST
     
+    ID3v2DefaultFrameType *IPLS;
+    ID3v2DefaultFrameType *SYTC;
+    ID3v2DefaultFrameType *USER;
+    ID3v2DefaultFrameType *OWNE;
+    ID3v2DefaultFrameType *PCNT;
+    //
     ID3v2DefaultFrameType *COMR; //???
     ID3v2DefaultFrameType *POSS;
     ID3v2DefaultFrameType *RVRB;
@@ -56,8 +55,6 @@ void ID3v2_init(ID3TagType *);
 void ID3v2_free(ID3TagType *);
 
 void ID3v2_storeTagInStruct(char*, ID3TagType*);
-
-bool ID3v2_storeNextFrameInStruct(FILE*, ID3TagType*);
 
 void ID3v2_getTagSizeOfTheStruct(ID3TagType *);
 

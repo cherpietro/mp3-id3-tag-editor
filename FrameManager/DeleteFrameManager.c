@@ -1,5 +1,6 @@
 #include "DeleteFrameManager.h"
-#include "ID3v2Header.h"
+#include "PrintFrameManager.h"
+#include "../ID3v2Header.h"
 #include <string.h>
 
 static void cleanInputBuffer(){
@@ -16,7 +17,7 @@ int DeleteFrame_deleteTXXX(ListFramePtr *TXTFrameList,int version){
             if(strncasecmp(TXTFramePtr->header.frameId,"TXXX",4)==0){
                 fflush(stdout);
                 system("clear");
-                FramesV2_printTXTF(*TXTFramePtr);
+                PrintFrame_TXTF(*TXTFramePtr);
                 printf("\n\nWant to delete this frame? (y/n): ");
                 option = getchar();
                 cleanInputBuffer();
@@ -45,7 +46,7 @@ int DeleteFrame_deleteTXTF(ListFramePtr *TXTFrameList, char *frameID, int versio
         if(TXTFramePtr != NULL){
             fflush(stdout);
             system("clear");
-            FramesV2_printTXTF(*TXTFramePtr);
+            PrintFrame_TXTF(*TXTFramePtr);
             printf("\n\nWant to delete this frame? (y/n): ");
             option = getchar();
             cleanInputBuffer();
@@ -66,7 +67,7 @@ int DeleteFrame_deletePRIV(ListFramePtr *PRIVFrameList,int version){
     do{
         fflush(stdout);
         system("clear");
-        FramesV2_printPRIV(*PRIVFramePtr);
+        PrintFrame_PRIV(*PRIVFramePtr);
         printf("\n\nWant to delete this frame? (y/n): ");
         option = getchar();
         cleanInputBuffer();
@@ -89,7 +90,7 @@ int DeleteFrame_deleteCOMM(ListFramePtr *COMMFrameList,int version){
     do{
         fflush(stdout);
         system("clear");
-        FramesV2_printCOMM(*COMMFramePtr);
+        PrintFrame_COMM(*COMMFramePtr);
         printf("\n\nWant to delete this frame? (y/n): ");
         option = getchar();
         cleanInputBuffer();
@@ -111,7 +112,7 @@ int DeleteFrame_deleteAPIC(ListFramePtr *APICFrameList, int version){
     do{
         fflush(stdout);
         system("clear");
-        FramesV2_printAPIC(*APICFramePtr);
+        PrintFrame_APIC(*APICFramePtr);
         printf("\n\nWant to delete this frame? (y/n): ");
         option = getchar();
         cleanInputBuffer();
@@ -133,7 +134,7 @@ int DeleteFrame_deletePOPM(ListFramePtr *POPMFrameList, int version){
     do{
         fflush(stdout);
         system("clear");
-        FramesV2_printPOPM(*POPMFramePtr);
+        PrintFrame_POPM(*POPMFramePtr);
         printf("\n\nWant to delete this frame? (y/n): ");
         option = getchar();
         cleanInputBuffer();
@@ -153,7 +154,7 @@ int DeleteFrame_deleteMDCI(ID3v2MCDIFrameType **MDCIptr, int version){
     int deletedSize = 0;
     fflush(stdout);
     system("clear");
-    FramesV2_printMDCI(**MDCIptr);
+    PrintFrame_MDCI(**MDCIptr);
     printf("\n\nWant to delete this frame? (y/n): ");
     option = getchar();
     cleanInputBuffer();
@@ -172,7 +173,7 @@ int DeleteFrame_deleteWXXX(ListFramePtr *WXXXFrameList,int version){
         do{
             fflush(stdout);
             system("clear");
-            FramesV2_printWXXX(*WXXXFramePtr);
+            PrintFrame_WXXX(*WXXXFramePtr);
             printf("\n\nWant to delete this frame? (y/n): ");
             option = getchar();
             cleanInputBuffer();
@@ -199,7 +200,7 @@ int DeleteFrame_deleteWWWF(ListFramePtr *WWWFrameList, char *frameID, int versio
         if(WWWFramePtr != NULL){
             fflush(stdout);
             system("clear");
-            FramesV2_printWWWF(*WWWFramePtr);
+            PrintFrame_WWWF(*WWWFramePtr);
             printf("\n\nWant to delete this frame? (y/n): ");
             option = getchar();
             cleanInputBuffer();
@@ -217,7 +218,7 @@ int DeleteFrame_default(ID3v2DefaultFrameType **DefaultFramePtr,int version){
     int deletedSize = 0;
     fflush(stdout);
     system("clear");
-    FramesV2_printDefaultFrame(**DefaultFramePtr);
+    PrintFrame_DefaultFrame(**DefaultFramePtr);
     printf("\n\nWant to delete this frame? (y/n): ");
     option = getchar();
     cleanInputBuffer();
@@ -235,7 +236,7 @@ int DeleteFrame_defaultList(ListFramePtr *DefaultFrameList,int version){
     do{
         fflush(stdout);
         system("clear");
-        FramesV2_printDefaultFrame(*DefaultFramePtr);
+        PrintFrame_DefaultFrame(*DefaultFramePtr);
         printf("\n\nWant to delete this frame? (y/n): ");
         option = getchar();
         cleanInputBuffer();

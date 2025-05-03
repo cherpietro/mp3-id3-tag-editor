@@ -1,8 +1,8 @@
-OBJ= ID3v2.o ID3v2Header.o ID3v2Frames.o SizeReader.o  TextString.o FileFrameManager.o PrintFrameManager.o ListFramePtr.o DeleteFrameManager.o AddFrameManager.o
+OBJ= ID3v2.o ID3v2Header.o ID3v2Frames.o SizeReader.o  TextString.o FileFrameManager.o PrintFrameManager.o ListFramePtr.o DeleteFrameManager.o AddFrameManager.o StoreFrameManager.o SizeFrameManager.o GetFrameManager.o
 CFLAGS=-g -Wall -Wextra -pedantic 
 CC=gcc
 
-all: compile
+all: compile clear
 	./a.out
 
 compile: clean $(OBJ)
@@ -17,18 +17,27 @@ ID3v2.o: ID3v2.c ID3v2.h ID3v2Header.h
 
 ListFramePtr.o: ListFramePtr.c ListFramePtr.h
 	$(CC) $(CFLAGS) -c ListFramePtr.c
-
-DeleteFrameManager.o: DeleteFrameManager.c DeleteFrameManager.h
-	$(CC) $(CFLAGS) -c DeleteFrameManager.c
-
-AddFrameManager.o: AddFrameManager.c AddFrameManager.h
-	$(CC) $(CFLAGS) -c AddFrameManager.c
 	
-FileFrameManager.o: FileFrameManager.c FileFrameManager.h
-	$(CC) $(CFLAGS) -c FileFrameManager.c
+GetFrameManager.o: FrameManager/GetFrameManager.c FrameManager/GetFrameManager.h
+	$(CC) $(CFLAGS) -c FrameManager/GetFrameManager.c
+
+DeleteFrameManager.o: FrameManager/DeleteFrameManager.c FrameManager/DeleteFrameManager.h
+	$(CC) $(CFLAGS) -c FrameManager/DeleteFrameManager.c
+
+StoreFrameManager.o: FrameManager/StoreFrameManager.c FrameManager/StoreFrameManager.h
+	$(CC) $(CFLAGS) -c FrameManager/StoreFrameManager.c
+
+SizeFrameManager.o: FrameManager/SizeFrameManager.c FrameManager/SizeFrameManager.h
+	$(CC) $(CFLAGS) -c FrameManager/SizeFrameManager.c
+
+AddFrameManager.o: FrameManager/AddFrameManager.c FrameManager/AddFrameManager.h
+	$(CC) $(CFLAGS) -c FrameManager/AddFrameManager.c
 	
-PrintFrameManager.o: PrintFrameManager.c PrintFrameManager.h
-	$(CC) $(CFLAGS) -c PrintFrameManager.c
+FileFrameManager.o: FrameManager/FileFrameManager.c FrameManager/FileFrameManager.h
+	$(CC) $(CFLAGS) -c FrameManager/FileFrameManager.c
+	
+PrintFrameManager.o: FrameManager/PrintFrameManager.c FrameManager/PrintFrameManager.h
+	$(CC) $(CFLAGS) -c FrameManager/PrintFrameManager.c
 
 ID3v2Frames.o: ID3v2Frames.c ID3v2Frames.h
 	$(CC) $(CFLAGS) -c ID3v2Frames.c
@@ -44,3 +53,6 @@ SizeReader.o: SizeReader.c SizeReader.h
 
 clean:
 	rm -f a.out *.o cover.jpg
+
+clear:
+	rm -f  *.o

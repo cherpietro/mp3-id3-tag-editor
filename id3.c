@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include <string.h>
 #include "ID3v2.h"
-#include "PrintFrameManager.h"
-#include "FileFrameManager.h"
+#include "FrameManager/PrintFrameManager.h"
+#include "FrameManager/FileFrameManager.h"
 
 static void cleanInputBuffer(){
   int ch;
@@ -27,9 +27,9 @@ int main(){
   // char *file = "./files/jokin1.mp3"; //COMM1-APIC1-TXT-TXXX1-PRIV1
   // char *file = "./files/EliteFour.mp3"; //MDCI-TXT-APIC-PRIV(10)
   // char *file = "./files/overture.mp3"; //APIC-TXT-TXXX6
-  // char *file = "./files/TimberHearth.mp3"; //COMM2-TXT
+  char *file = "./files/TimberHearth.mp3"; //COMM2-TXT
   // char *file = "./files/ingenium/(G)I-DLE/I feel/(G)I-DLE - Queencard.mp3"; //WOAS - USLT
-  char *file = "./files/void.mp3";
+  // char *file = "./files/void.mp3";
 
   system("clear");
   ID3TagType ID3Tag;
@@ -98,6 +98,9 @@ int main(){
             break;
         case 5:
             saveChangesInFile(file,ID3Tag);
+            break;
+        case 6:
+            printTag(&ID3Tag);
             break;
         case 0:
             printf("Option 0.\n");

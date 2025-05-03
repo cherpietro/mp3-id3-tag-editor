@@ -2,9 +2,9 @@
 #define FILEFRAMEMANAGER_H
 
 #include <stdio.h>
-#include "ID3v2Frames.h"
-#include "ListFramePtr.h"
-#include "ID3v2.h"
+#include "../ID3v2Frames.h"
+#include "../ListFramePtr.h"
+#include "../ID3v2.h"
 
 
 void FileManager_writteTXTFramesInFile(FILE *, ListFramePtr *);
