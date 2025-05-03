@@ -8,7 +8,15 @@
 #include "SizeFrameManager.h"
 #include <string.h>
 
-void ID3v2_init(ID3TagType *ID3Tag){
+#define FREE_FRAME_LIST(frameList,frameType,freeFrameFunc)\
+    ListFramePtr_setFirstActive(&ID3Tag->frameList);\
+    while (!ListFramePtr_isEmpty(ID3Tag->frameList)) {\
+        frameType* framePtr = (frameType*) ListFramePtr_getActiveFramePtr(ID3Tag->frameList);\
+        freeFrameFunc(&framePtr);\
+        ListFramePtr_deleteActive(&ID3Tag->frameList);\
+    }
+
+    void ID3v2_init(ID3TagType *ID3Tag){
     ListFramePtr_init(&ID3Tag->TXTFrameList);
     ListFramePtr_init(&ID3Tag->COMMFrameList);
     ListFramePtr_init(&ID3Tag->PRIVFrameList);
@@ -42,97 +50,23 @@ void ID3v2_init(ID3TagType *ID3Tag){
 }
 
 void ID3v2_free(ID3TagType *ID3Tag){
-    ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
-    while (!ListFramePtr_isEmpty(ID3Tag->TXTFrameList)) {
-        ID3v2TXTFrameType* ptrTXT = (ID3v2TXTFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
-        FramesV2_freeTXTF(&ptrTXT);
-        ListFramePtr_deleteActive(&ID3Tag->TXTFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->COMMFrameList);
-    while (!ListFramePtr_isEmpty(ID3Tag->COMMFrameList)) {
-        ID3v2COMMFrameType* ptrCOMM = (ID3v2COMMFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
-        FramesV2_freeCOMM(&ptrCOMM);
-        ListFramePtr_deleteActive(&ID3Tag->COMMFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
-    while (!ListFramePtr_isEmpty(ID3Tag->COMMFrameList)) {
-        ID3v2PRIVFrameType* ptrPRIV = (ID3v2PRIVFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
-        FramesV2_freePRIV(&ptrPRIV);
-        ListFramePtr_deleteActive(&ID3Tag->PRIVFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->APICFrameList);
-    while (!ListFramePtr_isEmpty(ID3Tag->APICFrameList)) {
-        ID3v2APICFrameType* ptrAPIC = (ID3v2APICFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
-        FramesV2_freeAPIC(&ptrAPIC);
-        ListFramePtr_deleteActive(&ID3Tag->APICFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->POPMFrameList);
-    while (!ListFramePtr_isEmpty(ID3Tag->POPMFrameList)) {
-        ID3v2POPMFrameType* ptrPOPM = (ID3v2POPMFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->POPMFrameList);
-        FramesV2_freePOPM(&ptrPOPM);
-        ListFramePtr_deleteActive(&ID3Tag->POPMFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->WXXXFrameList);
-    while (!ListFramePtr_isEmpty(ID3Tag->WXXXFrameList)) {
-        ID3v2WXXXFrameType* ptrWXXX = (ID3v2WXXXFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->WXXXFrameList);
-        FramesV2_freeWXXX(&ptrWXXX);
-        ListFramePtr_deleteActive(&ID3Tag->WXXXFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->WWWFrameList);
-    while (!ListFramePtr_isEmpty(ID3Tag->WWWFrameList)) {
-        ID3v2WWWFrameType* ptrWWW = (ID3v2WWWFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->WWWFrameList);
-        FramesV2_freeWWWF(&ptrWWW);
-        ListFramePtr_deleteActive(&ID3Tag->WWWFrameList);
-    }
+    FREE_FRAME_LIST(TXTFrameList,ID3v2TXTFrameType,FramesV2_freeTXTF);
+    FREE_FRAME_LIST(APICFrameList,ID3v2APICFrameType,FramesV2_freeAPIC);
+    FREE_FRAME_LIST(WWWFrameList,ID3v2WWWFrameType,FramesV2_freeWWWF);
+    FREE_FRAME_LIST(WXXXFrameList,ID3v2WXXXFrameType,FramesV2_freeWXXX);
+    FREE_FRAME_LIST(COMMFrameList,ID3v2COMMFrameType,FramesV2_freeCOMM);
+    FREE_FRAME_LIST(PRIVFrameList,ID3v2PRIVFrameType,FramesV2_freePRIV);
+    FREE_FRAME_LIST(POPMFrameList,ID3v2POPMFrameType,FramesV2_freePOPM);
     if(ID3Tag->MCDI != NULL) FramesV2_freeMCDI(&ID3Tag->MCDI);
-    ListFramePtr_setFirstActive(&ID3Tag->UFIDFrameList);
-    while (!ListFramePtr_isEmpty(ID3Tag->UFIDFrameList)) {
-        ID3v2DefaultFrameType* defaultPtr = (ID3v2DefaultFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->UFIDFrameList);
-        FramesV2_freeDefaultFrame(&defaultPtr);
-        ListFramePtr_deleteActive(&ID3Tag->UFIDFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->USLTFrameList);
-    while (!ListFramePtr_isEmpty(ID3Tag->USLTFrameList)) {
-        ID3v2DefaultFrameType* defaultPtr = (ID3v2DefaultFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->USLTFrameList);
-        FramesV2_freeDefaultFrame(&defaultPtr);
-        ListFramePtr_deleteActive(&ID3Tag->USLTFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->SYLTFrameList);
-    while (!ListFramePtr_isEmpty(ID3Tag->SYLTFrameList)) {
-        ID3v2DefaultFrameType* defaultPtr = (ID3v2DefaultFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->SYLTFrameList);
-        FramesV2_freeDefaultFrame(&defaultPtr);
-        ListFramePtr_deleteActive(&ID3Tag->SYLTFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->GEOBFrameList);
-    while (!ListFramePtr_isEmpty(ID3Tag->GEOBFrameList)) {
-        ID3v2DefaultFrameType* defaultPtr = (ID3v2DefaultFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->GEOBFrameList);
-        FramesV2_freeDefaultFrame(&defaultPtr);
-        ListFramePtr_deleteActive(&ID3Tag->GEOBFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->LINKFrameList);
-    while (!ListFramePtr_isEmpty(ID3Tag->LINKFrameList)) {
-        ID3v2DefaultFrameType* defaultPtr = (ID3v2DefaultFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->LINKFrameList);
-        FramesV2_freeDefaultFrame(&defaultPtr);
-        ListFramePtr_deleteActive(&ID3Tag->LINKFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->AENCFrameList);
-    while (!ListFramePtr_isEmpty(ID3Tag->AENCFrameList)) {
-        ID3v2DefaultFrameType* defaultPtr = (ID3v2DefaultFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->AENCFrameList);
-        FramesV2_freeDefaultFrame(&defaultPtr);
-        ListFramePtr_deleteActive(&ID3Tag->AENCFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->ENCRFrameList);
-    while (!ListFramePtr_isEmpty(ID3Tag->ENCRFrameList)) {
-        ID3v2DefaultFrameType* defaultPtr = (ID3v2DefaultFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->ENCRFrameList);
-        FramesV2_freeDefaultFrame(&defaultPtr);
-        ListFramePtr_deleteActive(&ID3Tag->ENCRFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->GRIDFrameList);
-    while (!ListFramePtr_isEmpty(ID3Tag->GRIDFrameList)) {
-        ID3v2DefaultFrameType* defaultPtr = (ID3v2DefaultFrameType*) ListFramePtr_getActiveFramePtr(ID3Tag->GRIDFrameList);
-        FramesV2_freeDefaultFrame(&defaultPtr);
-        ListFramePtr_deleteActive(&ID3Tag->GRIDFrameList);
-    }
+
+    FREE_FRAME_LIST(UFIDFrameList,ID3v2DefaultFrameType,FramesV2_freeDefaultFrame);
+    FREE_FRAME_LIST(USLTFrameList,ID3v2DefaultFrameType,FramesV2_freeDefaultFrame);
+    FREE_FRAME_LIST(SYLTFrameList,ID3v2DefaultFrameType,FramesV2_freeDefaultFrame);
+    FREE_FRAME_LIST(GEOBFrameList,ID3v2DefaultFrameType,FramesV2_freeDefaultFrame);
+    FREE_FRAME_LIST(LINKFrameList,ID3v2DefaultFrameType,FramesV2_freeDefaultFrame);
+    FREE_FRAME_LIST(AENCFrameList,ID3v2DefaultFrameType,FramesV2_freeDefaultFrame);
+    FREE_FRAME_LIST(ENCRFrameList,ID3v2DefaultFrameType,FramesV2_freeDefaultFrame);
+    FREE_FRAME_LIST(GRIDFrameList,ID3v2DefaultFrameType,FramesV2_freeDefaultFrame);
     if(ID3Tag->COMR != NULL) FramesV2_freeDefaultFrame(&ID3Tag->COMR);
     if(ID3Tag->POSS != NULL) FramesV2_freeDefaultFrame(&ID3Tag->POSS);
     if(ID3Tag->RVRB != NULL) FramesV2_freeDefaultFrame(&ID3Tag->RVRB);
