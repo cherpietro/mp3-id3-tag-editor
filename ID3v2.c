@@ -32,11 +32,11 @@ void ID3v2_init(ID3TagType *ID3Tag){
     ID3Tag->ETCO = NULL;
     ID3Tag->RVAD = NULL;
 
-    // ID3Tag->IPLS = NULL;
-    // ID3Tag->SYTC = NULL;
-    // ID3Tag->USER = NULL;
-    // ID3Tag->OWNE = NULL;
-    // ID3Tag->PCNT = NULL;
+    ID3Tag->IPLS = NULL;
+    ID3Tag->SYTC = NULL;
+    ID3Tag->USER = NULL;
+    ID3Tag->OWNE = NULL;
+    ID3Tag->PCNT = NULL;
 }
 
 void ID3v2_free(ID3TagType *ID3Tag){
@@ -138,11 +138,11 @@ void ID3v2_free(ID3TagType *ID3Tag){
     if(ID3Tag->MLLT != NULL) FramesV2_freeDefaultFrame(&ID3Tag->MLLT);
     if(ID3Tag->ETCO != NULL) FramesV2_freeDefaultFrame(&ID3Tag->ETCO);
     if(ID3Tag->RVAD != NULL) FramesV2_freeDefaultFrame(&ID3Tag->RVAD);
-    // if(ID3Tag->IPLS != NULL) FramesV2_freeIPLS(&ID3Tag->IPLS);
-    // if(ID3Tag->SYTC != NULL) FramesV2_freeSYTC(&ID3Tag->SYTC);
-    // if(ID3Tag->USER != NULL) FramesV2_freeUSER(&ID3Tag->USER);
-    // if(ID3Tag->OWNE != NULL) FramesV2_freeOWNE(&ID3Tag->OWNE);
-    // if(ID3Tag->PCNT != NULL) FramesV2_freePCNT(&ID3Tag->PCNT);
+    if(ID3Tag->IPLS != NULL) FramesV2_freeDefaultFrame(&ID3Tag->IPLS);
+    if(ID3Tag->SYTC != NULL) FramesV2_freeDefaultFrame(&ID3Tag->SYTC);
+    if(ID3Tag->USER != NULL) FramesV2_freeDefaultFrame(&ID3Tag->USER);
+    if(ID3Tag->OWNE != NULL) FramesV2_freeDefaultFrame(&ID3Tag->OWNE);
+    if(ID3Tag->PCNT != NULL) FramesV2_freeDefaultFrame(&ID3Tag->PCNT);
 }
 
 void ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
@@ -316,31 +316,32 @@ bool ID3v2_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
         FramesV2_storeDefaultFrame(mp3FilePointer,frameSize,&framePtr);
         ListFramePtr_insertLast(&ID3Tag->GRIDFrameList,framePtr);
     }
-    // else if(strncasecmp(header.frameId,"IPLS",4)==0){
-    //     printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    //     FramesV2_storeIPLS(mp3FilePointer,frameSize,&ID3Tag->IPLS);
-    //     ID3Tag->IPLS->header = header;
-    // }
-    // else if(strncasecmp(header.frameId,"SYTC",4)==0){
-    //     printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    //     FramesV2_storeSYTC(mp3FilePointer,frameSize,&ID3Tag->SYTC);
-    //     ID3Tag->SYTC->header = header;
-    // }
-    // else if(strncasecmp(header.frameId,"USER",4)==0){
-    //     printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    //     FramesV2_storeUSER(mp3FilePointer,frameSize,&ID3Tag->USER);
-    //     ID3Tag->USER->header = header;
-    // }
-    // else if(strncasecmp(header.frameId,"OWNE",4)==0){
-    //     printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    //     FramesV2_storeOWNE(mp3FilePointer,frameSize,&ID3Tag->OWNE);
-    //     ID3Tag->OWNE->header = header;
-    // }
-    // else if(strncasecmp(header.frameId,"PCNT",4)==0){
-    //     printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    //     FramesV2_storePCNT(mp3FilePointer,frameSize,&ID3Tag->PCNT);
-    //     ID3Tag->PCNT->header = header;
-    // }
+    ///////////////////////////////////////////////////////////////
+    else if(strncasecmp(header.frameId,"IPLS",4)==0){
+        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+        FramesV2_storeDefaultFrame(mp3FilePointer,frameSize,&ID3Tag->IPLS);
+        ID3Tag->IPLS->header = header;
+    }
+    else if(strncasecmp(header.frameId,"SYTC",4)==0){
+        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+        FramesV2_storeDefaultFrame(mp3FilePointer,frameSize,&ID3Tag->SYTC);
+        ID3Tag->SYTC->header = header;
+    }
+    else if(strncasecmp(header.frameId,"USER",4)==0){
+        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+        FramesV2_storeDefaultFrame(mp3FilePointer,frameSize,&ID3Tag->USER);
+        ID3Tag->USER->header = header;
+    }
+    else if(strncasecmp(header.frameId,"OWNE",4)==0){
+        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+        FramesV2_storeDefaultFrame(mp3FilePointer,frameSize,&ID3Tag->OWNE);
+        ID3Tag->OWNE->header = header;
+    }
+    else if(strncasecmp(header.frameId,"PCNT",4)==0){
+        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
+        FramesV2_storeDefaultFrame(mp3FilePointer,frameSize,&ID3Tag->PCNT);
+        ID3Tag->PCNT->header = header;
+    }
     else{
         printf("NOT SUPPORTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
         uint8_t *buffer = (uint8_t *)malloc(frameSize);
@@ -435,11 +436,11 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
     else if(strncasecmp(frameID,"AENC",4)==0){deletedSize = DeleteFrame_defaultList(&ID3Tag->AENCFrameList,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"ENCR",4)==0){deletedSize = DeleteFrame_defaultList(&ID3Tag->ENCRFrameList,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"GRID",4)==0){deletedSize = DeleteFrame_defaultList(&ID3Tag->GRIDFrameList,ID3Tag->header.version[0]);}
-    // else if(strncasecmp(frameID,"IPLS",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->IPLS,frameID,ID3Tag->header.version[0]);}
-    // else if(strncasecmp(frameID,"SYTC",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->SYTC,frameID,ID3Tag->header.version[0]);}
-    // else if(strncasecmp(frameID,"USER",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->USER,frameID,ID3Tag->header.version[0]);}
-    // else if(strncasecmp(frameID,"OWNE",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->OWNE,frameID,ID3Tag->header.version[0]);}
-    // else if(strncasecmp(frameID,"PCNT",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->PCNT,frameID,ID3Tag->header.version[0]);}
+    else if(strncasecmp(frameID,"IPLS",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->IPLS,ID3Tag->header.version[0]);}
+    else if(strncasecmp(frameID,"SYTC",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->SYTC,ID3Tag->header.version[0]);}
+    else if(strncasecmp(frameID,"USER",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->USER,ID3Tag->header.version[0]);}
+    else if(strncasecmp(frameID,"OWNE",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->OWNE,ID3Tag->header.version[0]);}
+    else if(strncasecmp(frameID,"PCNT",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->PCNT,ID3Tag->header.version[0]);}
     else return; //NOT SUPPORTED TAG
     oldSize = HeaderV2_getTagSize(ID3Tag->header);
     HeaderV2_updateTagSize(&ID3Tag->header,oldSize-deletedSize);

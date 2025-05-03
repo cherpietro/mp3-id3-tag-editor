@@ -19,15 +19,9 @@ typedef struct {
     ListFramePtr PRIVFrameList;
     //Pending to include addition
     ListFramePtr COMMFrameList;
-
     /*NotTested*/
     ID3v2MCDIFrameType *MCDI;
     ListFramePtr POPMFrameList; //LIST
-    // ID3v2IPLSFrameType *IPLS;
-    // ID3v2SYTCFrameType *SYTC;
-    // ID3v2USERFrameType *USER;
-    // ID3v2OWNEFrameType *OWNE;
-    // ID3v2PCNTFrameType *PCNT;
     /**/
 
     /*TO IMPLEMENT*/
@@ -40,6 +34,12 @@ typedef struct {
     ListFramePtr ENCRFrameList; //LIST
     ListFramePtr GRIDFrameList; //LIST
     
+    ID3v2DefaultFrameType *IPLS;
+    ID3v2DefaultFrameType *SYTC;
+    ID3v2DefaultFrameType *USER;
+    ID3v2DefaultFrameType *OWNE;
+    ID3v2DefaultFrameType *PCNT;
+    //
     ID3v2DefaultFrameType *COMR; //???
     ID3v2DefaultFrameType *POSS;
     ID3v2DefaultFrameType *RVRB;
