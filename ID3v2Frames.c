@@ -14,7 +14,7 @@ void FramesV2_updateFrameSize(int version, ID3v2FrameHeaderType *header,uint32_t
 void FramesV2_freeAPIC(ID3v2APICFrameType** APIC){
     TxtStr_freeTextString(&(*APIC)->mimeType);
     TxtStr_freeTextString(&(*APIC)->description);
-    free((*APIC)->imageData);
+    if((*APIC)->imageData != NULL) free((*APIC)->imageData);
     free(*APIC);
     *APIC = NULL;
 }
@@ -58,7 +58,7 @@ void FramesV2_freeWWWF(ID3v2WWWFrameType **WWWF){
     *WWWF = NULL;
 }
 void FramesV2_freeDefaultFrame(ID3v2DefaultFrameType **DefaultFrame){
-    free((*DefaultFrame)->frameData);
+    if((*DefaultFrame)->frameData != NULL) free((*DefaultFrame)->frameData);
     free(*DefaultFrame);
     *DefaultFrame = NULL;
 }

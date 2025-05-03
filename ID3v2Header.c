@@ -7,10 +7,12 @@ void HeaderV2_storeHeader(FILE* mp3FilePointer, ID3v2HeaderType* header) {
 }
 
 void HeaderV2_printTagHeader(ID3v2HeaderType header){
+    printf("----TAG HEADER----\n");
     printf("Version: 2.%d.%d\n",header.version[0],header.version[1]);
     printf("Flag: %u\n",header.flags);
     uint32_t tagSize = syncsafeToSize(header.size);
-    printf("Size: %u bytes\n",tagSize);   
+    printf("Size: %u bytes\n",tagSize); 
+    printf("\n");
 }
 
 int HeaderV2_isID3v2Tag(ID3v2HeaderType header){

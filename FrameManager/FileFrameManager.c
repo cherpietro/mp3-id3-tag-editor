@@ -93,7 +93,7 @@ void FileManager_writtePadding(FILE *destFilePtr, int paddingSize){
   }
 }
 
-void FileManager_removeTagFromFile(char*file){
+bool FileManager_removeTagFromFile(char*file){
   FILE *mp3FilePointer = fopen(file,"r");
   if (mp3FilePointer) {
     fseek(mp3FilePointer, 0, SEEK_SET);
@@ -107,30 +107,33 @@ void FileManager_removeTagFromFile(char*file){
         unsigned char *dataBuffer = (unsigned char *)malloc(remainingSize);
         if (!dataBuffer) {
             printf("error\n");
-            return;
+            return false;
         }
         size_t bytesRead = fread(dataBuffer, 1, remainingSize, mp3FilePointer);
         FILE *temp = fopen("savedFiles/tagRemoved.mp3", "wb");
         if (!temp) {
           printf("error\n");
           free(dataBuffer);
-          return;
+          return false;
         }
         fwrite(dataBuffer, 1, bytesRead, temp);
         fclose(temp);
         free(dataBuffer);
-
+        return true;
         // remove(file);
         // rename("tagRe6moved.mp3",file);
       }
     else printf("Not ID3v2 Tag detected or not yet supported version\n");
     fclose(mp3FilePointer);
+    return false;
+
   }
   else printf("The file DOESN'T exist!\n");
+  return false;
 }
 
 void FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
-  FileManager_removeTagFromFile(file);
+  if(!FileManager_removeTagFromFile(file)) return;
   FILE *mp3FilePointer = fopen("./savedFiles/tagRemoved.mp3","r");
   if(mp3FilePointer){
     fseek(mp3FilePointer,0,SEEK_END);

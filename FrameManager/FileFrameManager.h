@@ -25,7 +25,7 @@ void FileManager_writteAPICFramesInFile(FILE *, ListFramePtr * );
 
 void FileManager_writtePadding(FILE *, int );
 
-void FileManager_removeTagFromFile(char*);
+bool FileManager_removeTagFromFile(char*);
 
 void FileManager_writteTagIntoFile(char *, ID3TagType *);
 

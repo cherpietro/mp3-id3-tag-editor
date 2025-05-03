@@ -28,7 +28,7 @@ bool StoreFrame_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag)
     ID3v2FrameHeaderType header;
     StoreFrame_Header(mp3FilePointer,&header);
     uint32_t frameSize = FramesV2_getFrameSize(ID3Tag->header.version[0],header); 
-    printf("FrameID: %s\n",header.frameId);
+    // printf("FrameID: %s\n",header.frameId);
     if (memcmp(header.frameId, "\0\0\0\0", 4) == 0) return true;
     else if(strncmp(header.frameId,"T",1)==0){
         STORE_LIST(TXTFrameList,ID3v2TXTFrameType,StoreFrame_TXTF);

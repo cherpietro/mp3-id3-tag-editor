@@ -54,9 +54,9 @@ void ID3v2_init(ID3TagType *);
 
 void ID3v2_free(ID3TagType *);
 
-void ID3v2_storeTagInStruct(char*, ID3TagType*);
+int ID3v2_storeTagInStruct(char*, ID3TagType*);
 
-void ID3v2_getTagSizeOfTheStruct(ID3TagType *);
+bool ID3v2_getTagSizeOfTheStruct(ID3TagType *);
 
 void ID3v2_deleteFrame(ID3TagType *, char *);
 
