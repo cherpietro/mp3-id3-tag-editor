@@ -166,7 +166,9 @@ void FramesV2_freeDefaultFrame(ID3v2DefaultFrameType**);
 
 void FramesV2_storeWWWF(FILE*, uint32_t,ID3v2WWWFrameType *);
 void FramesV2_printWWWF(ID3v2WWWFrameType);
+ID3v2WWWFrameType* FramesV2_getWWWF(char *,int);
 void FramesV2_freeWWWF(ID3v2WWWFrameType**);
+bool FramesV2_validWebFrameId(char *);
 
 void FramesV2_storeWXXX(FILE*, uint32_t,ID3v2WXXXFrameType *);
 void FramesV2_printWXXX(ID3v2WXXXFrameType);

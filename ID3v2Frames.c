@@ -243,6 +243,7 @@ bool FramesV2_validTextFrameId(char *str) {
     }
     return false;
 }
+
 void FramesV2_ModifyTXTF(uint8_t version,ID3v2TXTFrameType *TXTF){
     char content[256];
     printf("Introduce the new text modify: ");
@@ -576,6 +577,22 @@ void FramesV2_storeWWWF(FILE* mp3FilePointer, uint32_t frameSize,ID3v2WWWFrameTy
     TxtStr_storeTextString(&(WWWF)->url,urlPtr,frameSize);
     free(frameContent);
 }
+ID3v2WWWFrameType * FramesV2_getWWWF(char * frameID, int version){
+    char url[255];
+
+    ID3v2WWWFrameType *WWWFramePtr = (ID3v2WWWFrameType*) malloc(sizeof(ID3v2WWWFrameType));
+    for (int i = 0; i < 4; i++) frameID[i] = toupper(frameID[i]);
+    memcpy(WWWFramePtr->header.frameId,frameID,4); 
+    WWWFramePtr->header.flags[0] = 0;WWWFramePtr->header.flags[1] = 0;
+
+    printf("Insert tag url (max. size 254): ");
+    fgets(url, sizeof(url), stdin);
+    url[strcspn(url, "\n")] = 0;
+    printf("\n");
+    TxtStr_storeTextString(&WWWFramePtr->url,url,strlen(url)+1);
+    FramesV2_updateFrameSize(version,&WWWFramePtr->header,WWWFramePtr->url.size);
+    return WWWFramePtr;
+}
 void FramesV2_printWWWF(ID3v2WWWFrameType frame){
     printf("\n----FRAME----\n");
     printf("Frame ID: %s\n",frame.header.frameId);
@@ -591,6 +608,15 @@ void FramesV2_freeWWWF(ID3v2WWWFrameType **WWWF){
     TxtStr_freeTextString(&(*WWWF)->url);
     free(*WWWF);
     *WWWF = NULL;
+}
+bool FramesV2_validWebFrameId(char *str) {
+    const char *frames[] = {
+        "WCOM", "WCOP", "WOAF", "WOAR", "WOAS", "WORS", "WPAY", "WPUB"
+    };
+    for (int i = 0; i < 8; i++) {
+        if (strncasecmp(str, frames[i],4) == 0) return true;  
+    }
+    return false;
 }
 
 void FramesV2_storeWXXX(FILE *mp3FilePointer, uint32_t frameSize,ID3v2WXXXFrameType *WXXX){
