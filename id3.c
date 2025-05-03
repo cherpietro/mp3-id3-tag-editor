@@ -25,11 +25,11 @@ int main(){
   // char *saveFile = "./files/auxFiles/overture.mp3";
   // char *file = "./files/jokin2.mp3"; //PCNT-APIC1-COMM1-TXT-TXXX8-PRIV8
   // char *file = "./files/jokin1.mp3"; //COMM1-APIC1-TXT-TXXX1-PRIV1
-  // char *file = "./files/EliteFour.mp3"; //MDCI-TXT-APIC-PRIV(10)
+  char *file = "./files/EliteFour.mp3"; //MDCI-TXT-APIC-PRIV(10)
   // char *file = "./files/overture.mp3"; //APIC-TXT-TXXX6
   // char *file = "./files/TimberHearth.mp3"; //COMM2-TXT
   // char *file = "./files/ingenium/(G)I-DLE/I feel/(G)I-DLE - Queencard.mp3"; //WOAS - USLT
-  char *file = "./files/void.mp3";
+  // char *file = "./files/void.mp3";
 
   system("clear");
   ID3TagType ID3Tag;

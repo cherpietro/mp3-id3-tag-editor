@@ -2,59 +2,44 @@
 #include "ID3v2Frames.h"
 #include "ListFramePtr.h"
 
+#define ADD_FRAME_SIZE_LIST(frameList, frameType)\
+    ListFramePtr_setFirstActive(&ID3Tag->frameList);\
+    while(ID3Tag->frameList.active != NULL){\
+        frameType *frame = ListFramePtr_getActiveFramePtr(ID3Tag->frameList);\
+        tagSizeOfStruct += FramesV2_getFrameSize(ID3Tag->header.version[0], frame->header) + 10;\
+        ListFramePtr_setNextActive(&ID3Tag->frameList);\
+    }
+#define ADD_FRAME_SIZE(frame)\
+    if(ID3Tag->frame != NULL){tagSizeOfStruct += FramesV2_getFrameSize(ID3Tag->header.version[0], ID3Tag->frame->header) + 10;}
+
+
 size_t SizeFrame_getFrameListSize(ID3TagType *ID3Tag){
-    size_t tagSizeOfStruct = 10; //header
-    ID3v2TXTFrameType *TXTPtr;
-    ID3v2APICFrameType *APICFrame;
-    ID3v2WWWFrameType *WWWFrame;
-    ID3v2WXXXFrameType *WXXXFrame;
-    ID3v2COMMFrameType *COMMFrame;
-    ID3v2PRIVFrameType *PRIVFrame;
-    ID3v2POPMFrameType *POPMFrame; 
+    size_t tagSizeOfStruct = 10; // header
 
-    // ID3v2DefaultFrameType defaultPtr;
+    ADD_FRAME_SIZE_LIST(TXTFrameList, ID3v2TXTFrameType);
+    ADD_FRAME_SIZE_LIST(COMMFrameList, ID3v2COMMFrameType);
+    ADD_FRAME_SIZE_LIST(APICFrameList, ID3v2APICFrameType);
+    ADD_FRAME_SIZE_LIST(PRIVFrameList, ID3v2PRIVFrameType);
+    ADD_FRAME_SIZE_LIST(WWWFrameList, ID3v2WWWFrameType);
+    ADD_FRAME_SIZE_LIST(WXXXFrameList, ID3v2WXXXFrameType);
+    ADD_FRAME_SIZE_LIST(POPMFrameList, ID3v2POPMFrameType);
+    ADD_FRAME_SIZE(MCDI);
+    
+    ADD_FRAME_SIZE_LIST(UFIDFrameList, ID3v2DefaultFrameType);
+    ADD_FRAME_SIZE_LIST(USLTFrameList, ID3v2DefaultFrameType);
+    ADD_FRAME_SIZE_LIST(SYLTFrameList, ID3v2DefaultFrameType);
+    ADD_FRAME_SIZE_LIST(GEOBFrameList, ID3v2DefaultFrameType);
+    ADD_FRAME_SIZE_LIST(LINKFrameList, ID3v2DefaultFrameType);
+    ADD_FRAME_SIZE_LIST(AENCFrameList, ID3v2DefaultFrameType);
+    ADD_FRAME_SIZE_LIST(ENCRFrameList, ID3v2DefaultFrameType);
+    ADD_FRAME_SIZE_LIST(GRIDFrameList, ID3v2DefaultFrameType);
+    ADD_FRAME_SIZE(COMR);
+    ADD_FRAME_SIZE(POSS);
+    ADD_FRAME_SIZE(RVRB);
+    ADD_FRAME_SIZE(EQUA);
+    ADD_FRAME_SIZE(MLLT);
+    ADD_FRAME_SIZE(ETCO);
+    ADD_FRAME_SIZE(RVAD);
 
-    ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
-    while(ID3Tag->TXTFrameList.active != NULL){
-        TXTPtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
-        tagSizeOfStruct += FramesV2_getFrameSize(ID3Tag->header.version[0],TXTPtr->header) + 10;
-        ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->COMMFrameList);
-    while(ID3Tag->COMMFrameList.active != NULL){
-        COMMFrame = ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
-        tagSizeOfStruct += FramesV2_getFrameSize(ID3Tag->header.version[0],COMMFrame->header) + 10;
-        ListFramePtr_setNextActive(&ID3Tag->COMMFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->APICFrameList);
-    while(ID3Tag->APICFrameList.active != NULL){
-        APICFrame = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
-        tagSizeOfStruct +=  FramesV2_getFrameSize(ID3Tag->header.version[0],APICFrame->header) + 10;
-        ListFramePtr_setNextActive(&ID3Tag->APICFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
-    while(ID3Tag->PRIVFrameList.active != NULL){
-        PRIVFrame = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
-        tagSizeOfStruct += FramesV2_getFrameSize(ID3Tag->header.version[0],PRIVFrame->header) + 10;
-        ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->WWWFrameList);
-    while(ID3Tag->WWWFrameList.active != NULL){
-        WWWFrame = ListFramePtr_getActiveFramePtr(ID3Tag->WWWFrameList);
-        tagSizeOfStruct += FramesV2_getFrameSize(ID3Tag->header.version[0],WWWFrame->header) + 10;
-        ListFramePtr_setNextActive(&ID3Tag->WWWFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->WXXXFrameList);
-    while(ID3Tag->WXXXFrameList.active != NULL){
-        WXXXFrame = ListFramePtr_getActiveFramePtr(ID3Tag->WXXXFrameList);
-        tagSizeOfStruct += FramesV2_getFrameSize(ID3Tag->header.version[0],WXXXFrame->header) + 10;
-        ListFramePtr_setNextActive(&ID3Tag->WXXXFrameList);
-    }
-    ListFramePtr_setFirstActive(&ID3Tag->POPMFrameList);
-    while(ID3Tag->POPMFrameList.active != NULL){
-        POPMFrame = ListFramePtr_getActiveFramePtr(ID3Tag->POPMFrameList);
-        tagSizeOfStruct += FramesV2_getFrameSize(ID3Tag->header.version[0],POPMFrame->header) + 10;
-        ListFramePtr_setNextActive(&ID3Tag->POPMFrameList);
-    }
     return tagSizeOfStruct;
 }
