@@ -480,4 +480,9 @@ void ID3v2_addFrame(ID3TagType *ID3Tag, char *frameID){
         oldSize = HeaderV2_getTagSize(ID3Tag->header);
         HeaderV2_updateTagSize(&ID3Tag->header,oldSize+incrementedSize);
     }
+    else if(strncasecmp(frameID,"COMM",4)==0){
+        incrementedSize = AddFrame_addCOMM(&ID3Tag->COMMFrameList,ID3Tag->header.version[0]);
+        oldSize = HeaderV2_getTagSize(ID3Tag->header);
+        HeaderV2_updateTagSize(&ID3Tag->header,oldSize+incrementedSize);
+    }
 }

@@ -13,4 +13,6 @@ int AddFrame_addWXXX(ListFramePtr *,int);
 
 int AddFrame_addAPIC(ListFramePtr *,int );
 
+int AddFrame_addCOMM(ListFramePtr *,int );
+
 #endif // ADDFRAMEMANAGER_H

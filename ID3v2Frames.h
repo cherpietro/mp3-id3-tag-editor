@@ -125,6 +125,7 @@ bool FramesV2_validTextFrameId(char *);
 void FramesV2_ModifyTXTF(uint8_t, ID3v2TXTFrameType *);
 
 void FramesV2_storeCOMM(FILE *, uint32_t , ID3v2COMMFrameType *);
+ID3v2COMMFrameType* FramesV2_getCOMM(int);
 void FramesV2_printCOMM(ID3v2COMMFrameType);
 void FramesV2_freeCOMM(ID3v2COMMFrameType**);
 

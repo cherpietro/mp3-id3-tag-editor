@@ -3,6 +3,11 @@
 #include <string.h>
 #include <ctype.h>
 
+static void cleanInputBuffer(){
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF);
+}
+
 void FramesV2_storeHeader(FILE *mp3FilePointer, ID3v2FrameHeaderType *header){
     fread(header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer);
 }
@@ -280,6 +285,38 @@ void FramesV2_storeCOMM(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrame
     size_t contentSize = frameSize - index ; //Check this operation
     TxtStr_storeTextString(&frame->actualText,contentPtr, contentSize);
     free(frameContent);
+}
+ID3v2COMMFrameType* FramesV2_getCOMM(int version){
+    char description[65];
+    char content[255];
+    char language[4];
+    ID3v2COMMFrameType *COMMFramePtr = (ID3v2COMMFrameType*) malloc(sizeof(ID3v2COMMFrameType));
+    COMMFramePtr->header.flags[0] = 0;COMMFramePtr->header.flags[1] = 0;
+    memcpy(COMMFramePtr->header.frameId,"COMM",4); 
+    COMMFramePtr->textEncoding = 3;
+    printf("Insert tag language (3 characters): ");
+    fgets(language, sizeof(language), stdin);
+    cleanInputBuffer();
+    language[strcspn(language, "\n")] = 0;
+    COMMFramePtr->language[0] = language[0];
+    COMMFramePtr->language[1] = language[1];
+    COMMFramePtr->language[2] = language[2];//Language should not have '\0'
+    printf("\n");
+    printf("Insert tag content description (64 characters): ");
+    fgets(description, sizeof(description), stdin);
+    description[strcspn(description, "\n")] = 0;
+    TxtStr_storeTextString(&COMMFramePtr->contentDescript ,description,strlen(description)+1); 
+    printf("\n");
+    
+    printf("Insert tag content  (254 characters): ");
+    fgets(content, sizeof(content), stdin);
+    content[strcspn(content, "\n")] = 0;
+    TxtStr_storeTextString(&COMMFramePtr->actualText ,content,strlen(content)+1); 
+    printf("\n");
+
+    size_t size = 1 + 3 + COMMFramePtr->contentDescript.size + COMMFramePtr->actualText.size;
+    FramesV2_updateFrameSize(version,&COMMFramePtr->header,size);
+    return COMMFramePtr;
 }
 void FramesV2_printCOMM(ID3v2COMMFrameType frame){
     printf("\n----FRAME----\n");
@@ -579,7 +616,6 @@ void FramesV2_storeWWWF(FILE* mp3FilePointer, uint32_t frameSize,ID3v2WWWFrameTy
 }
 ID3v2WWWFrameType * FramesV2_getWWWF(char * frameID, int version){
     char url[255];
-
     ID3v2WWWFrameType *WWWFramePtr = (ID3v2WWWFrameType*) malloc(sizeof(ID3v2WWWFrameType));
     for (int i = 0; i < 4; i++) frameID[i] = toupper(frameID[i]);
     memcpy(WWWFramePtr->header.frameId,frameID,4); 

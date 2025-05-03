@@ -79,8 +79,17 @@ int AddFrame_addWXXX(ListFramePtr *WXXXFrameList,int version){
 
 int AddFrame_addAPIC(ListFramePtr *APICFrameList,int version){
     ID3v2APICFrameType *APICFramePtr = FramesV2_getAPIC(version);
+    //IMPLEMENT THIS IN ALL TAGS
     if(APICFramePtr == NULL)return 0;
     ListFramePtr_insertLast(APICFrameList,APICFramePtr);
     FramesV2_printAPIC(*APICFramePtr);
     return (FramesV2_getFrameSize(version,APICFramePtr->header) +10);
+}
+
+int AddFrame_addCOMM(ListFramePtr *COMMFrameList,int version){
+    ID3v2COMMFrameType *COMMFramePtr = FramesV2_getCOMM(version);
+    if(COMMFramePtr == NULL)return 0;
+    ListFramePtr_insertLast(COMMFrameList,COMMFramePtr);
+    FramesV2_printCOMM(*COMMFramePtr);
+    return (FramesV2_getFrameSize(version,COMMFramePtr->header) +10);
 }
