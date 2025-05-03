@@ -8,9 +8,8 @@ static void cleanInputBuffer(){
 }
 
 int AddFrame_addTXXX(ListFramePtr *TXTFrameList,int version){
-    ID3v2TXTFrameType *TXTFramePtr = FramesV2_getTXXX();
+    ID3v2TXTFrameType *TXTFramePtr = FramesV2_getTXXX(version);
     ListFramePtr_insertLast(TXTFrameList,TXTFramePtr);
-    FramesV2_updateFrameSize(version,&TXTFramePtr->header,TXTFramePtr->content.size);
     FramesV2_printTXTF(*TXTFramePtr);
     return (FramesV2_getFrameSize(version,TXTFramePtr->header) +10);
 }
@@ -43,10 +42,54 @@ int AddFrame_addTXTF(ListFramePtr *TXTFrameList,char *frameID,int version){
     return (incrementedSize + 10);
 }
 
+int AddFrame_addWWWF(ListFramePtr *WWWFrameList,char *frameID,int version){
+    char option;
+    int deletedSize = 0;
+    int incrementedSize = 0;
+    ListFramePtr_setFirstActive(WWWFrameList);
+    ID3v2WWWFrameType * WWWFramePtr = ListFramePtr_getActiveFramePtr(*WWWFrameList);
+    while (WWWFramePtr != NULL && strncasecmp(frameID,WWWFramePtr->header.frameId,4) != 0){
+        ListFramePtr_setNextActive(WWWFrameList);
+        WWWFramePtr = ListFramePtr_getActiveFramePtr(*WWWFrameList);
+    }
+    if(WWWFramePtr != NULL) {
+        FramesV2_printWWWF(*WWWFramePtr);
+        printf("\n\nFRAME ALREADY EXIST. Want to delete this frame? (y/n): ");
+        option = getchar();
+        cleanInputBuffer();
+        if(option == 'n') { return 0;}
+        deletedSize = FramesV2_getFrameSize(version,WWWFramePtr->header)+10;
+        FramesV2_freeWWWF(&WWWFramePtr);
+        ListFramePtr_deleteActive(WWWFrameList);
+        incrementedSize -= deletedSize;
+    }
+    WWWFramePtr = FramesV2_getWWWF(frameID,version);
+    ListFramePtr_insertLast(WWWFrameList,WWWFramePtr);
+    incrementedSize += FramesV2_getFrameSize(version,WWWFramePtr->header);
+    FramesV2_printWWWF(*WWWFramePtr);
+    return (incrementedSize + 10);
+}
+
+int AddFrame_addWXXX(ListFramePtr *WXXXFrameList,int version){
+    ID3v2WXXXFrameType *WXXXFramePtr = FramesV2_getWXXX(version);
+    ListFramePtr_insertLast(WXXXFrameList,WXXXFramePtr);
+    FramesV2_printWXXX(*WXXXFramePtr);
+    return (FramesV2_getFrameSize(version,WXXXFramePtr->header) +10);
+}
+
 int AddFrame_addAPIC(ListFramePtr *APICFrameList,int version){
     ID3v2APICFrameType *APICFramePtr = FramesV2_getAPIC(version);
+    //IMPLEMENT THIS IN ALL TAGS
     if(APICFramePtr == NULL)return 0;
     ListFramePtr_insertLast(APICFrameList,APICFramePtr);
     FramesV2_printAPIC(*APICFramePtr);
     return (FramesV2_getFrameSize(version,APICFramePtr->header) +10);
+}
+
+int AddFrame_addCOMM(ListFramePtr *COMMFrameList,int version){
+    ID3v2COMMFrameType *COMMFramePtr = FramesV2_getCOMM(version);
+    if(COMMFramePtr == NULL)return 0;
+    ListFramePtr_insertLast(COMMFrameList,COMMFramePtr);
+    FramesV2_printCOMM(*COMMFramePtr);
+    return (FramesV2_getFrameSize(version,COMMFramePtr->header) +10);
 }

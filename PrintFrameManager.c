@@ -216,7 +216,6 @@ void PrintFrame_listFrames(ID3TagType *ID3Tag){
     ListFramePtr_setNextActive(&ID3Tag->WWWFrameList);
     WWWFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WWWFrameList);
   }
-  if(WXXXCount != 0) printf("FramgeID: WXXX (%d frames)\n",WXXXCount);
   
   int PRIVCount = 0;
   ListFramePtr_setFirstActive(&(*ID3Tag).PRIVFrameList);

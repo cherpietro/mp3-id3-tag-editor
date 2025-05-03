@@ -3,6 +3,11 @@
 #include <string.h>
 #include <ctype.h>
 
+static void cleanInputBuffer(){
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF);
+}
+
 void FramesV2_storeHeader(FILE *mp3FilePointer, ID3v2FrameHeaderType *header){
     fread(header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer);
 }
@@ -154,7 +159,7 @@ void FramesV2_storeTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TXTFrameT
     TxtStr_storeTextString(&frame->content,contentPtr, frameSize-1);
     free(frameContent);
 }
-ID3v2TXTFrameType * FramesV2_getTXXX(){
+ID3v2TXTFrameType * FramesV2_getTXXX(int version){
     char description[65];
     char value[255];
     char *mergedString;
@@ -177,7 +182,7 @@ ID3v2TXTFrameType * FramesV2_getTXXX(){
     memcpy(mergedString + strlen(description)+1, value, strlen(value)+1);
     TxtStr_storeTextString(&TXTFramePtr->content,mergedString,totalLen);
     free(mergedString);
-
+    FramesV2_updateFrameSize(version,&TXTFramePtr->header,TXTFramePtr->content.size+1);
     return TXTFramePtr;
 }
 ID3v2TXTFrameType * FramesV2_getTXTF(char * frameID, int version){
@@ -243,6 +248,7 @@ bool FramesV2_validTextFrameId(char *str) {
     }
     return false;
 }
+
 void FramesV2_ModifyTXTF(uint8_t version,ID3v2TXTFrameType *TXTF){
     char content[256];
     printf("Introduce the new text modify: ");
@@ -279,6 +285,38 @@ void FramesV2_storeCOMM(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrame
     size_t contentSize = frameSize - index ; //Check this operation
     TxtStr_storeTextString(&frame->actualText,contentPtr, contentSize);
     free(frameContent);
+}
+ID3v2COMMFrameType* FramesV2_getCOMM(int version){
+    char description[65];
+    char content[255];
+    char language[4];
+    ID3v2COMMFrameType *COMMFramePtr = (ID3v2COMMFrameType*) malloc(sizeof(ID3v2COMMFrameType));
+    COMMFramePtr->header.flags[0] = 0;COMMFramePtr->header.flags[1] = 0;
+    memcpy(COMMFramePtr->header.frameId,"COMM",4); 
+    COMMFramePtr->textEncoding = 3;
+    printf("Insert tag language (3 characters): ");
+    fgets(language, sizeof(language), stdin);
+    cleanInputBuffer();
+    language[strcspn(language, "\n")] = 0;
+    COMMFramePtr->language[0] = language[0];
+    COMMFramePtr->language[1] = language[1];
+    COMMFramePtr->language[2] = language[2];//Language should not have '\0'
+    printf("\n");
+    printf("Insert tag content description (64 characters): ");
+    fgets(description, sizeof(description), stdin);
+    description[strcspn(description, "\n")] = 0;
+    TxtStr_storeTextString(&COMMFramePtr->contentDescript ,description,strlen(description)+1); 
+    printf("\n");
+    
+    printf("Insert tag content  (254 characters): ");
+    fgets(content, sizeof(content), stdin);
+    content[strcspn(content, "\n")] = 0;
+    TxtStr_storeTextString(&COMMFramePtr->actualText ,content,strlen(content)+1); 
+    printf("\n");
+
+    size_t size = 1 + 3 + COMMFramePtr->contentDescript.size + COMMFramePtr->actualText.size;
+    FramesV2_updateFrameSize(version,&COMMFramePtr->header,size);
+    return COMMFramePtr;
 }
 void FramesV2_printCOMM(ID3v2COMMFrameType frame){
     printf("\n----FRAME----\n");
@@ -576,6 +614,21 @@ void FramesV2_storeWWWF(FILE* mp3FilePointer, uint32_t frameSize,ID3v2WWWFrameTy
     TxtStr_storeTextString(&(WWWF)->url,urlPtr,frameSize);
     free(frameContent);
 }
+ID3v2WWWFrameType * FramesV2_getWWWF(char * frameID, int version){
+    char url[255];
+    ID3v2WWWFrameType *WWWFramePtr = (ID3v2WWWFrameType*) malloc(sizeof(ID3v2WWWFrameType));
+    for (int i = 0; i < 4; i++) frameID[i] = toupper(frameID[i]);
+    memcpy(WWWFramePtr->header.frameId,frameID,4); 
+    WWWFramePtr->header.flags[0] = 0;WWWFramePtr->header.flags[1] = 0;
+
+    printf("Insert tag url (max. size 254): ");
+    fgets(url, sizeof(url), stdin);
+    url[strcspn(url, "\n")] = 0;
+    printf("\n");
+    TxtStr_storeTextString(&WWWFramePtr->url,url,strlen(url)+1);
+    FramesV2_updateFrameSize(version,&WWWFramePtr->header,WWWFramePtr->url.size);
+    return WWWFramePtr;
+}
 void FramesV2_printWWWF(ID3v2WWWFrameType frame){
     printf("\n----FRAME----\n");
     printf("Frame ID: %s\n",frame.header.frameId);
@@ -591,6 +644,15 @@ void FramesV2_freeWWWF(ID3v2WWWFrameType **WWWF){
     TxtStr_freeTextString(&(*WWWF)->url);
     free(*WWWF);
     *WWWF = NULL;
+}
+bool FramesV2_validWebFrameId(char *str) {
+    const char *frames[] = {
+        "WCOM", "WCOP", "WOAF", "WOAR", "WOAS", "WORS", "WPAY", "WPUB"
+    };
+    for (int i = 0; i < 8; i++) {
+        if (strncasecmp(str, frames[i],4) == 0) return true;  
+    }
+    return false;
 }
 
 void FramesV2_storeWXXX(FILE *mp3FilePointer, uint32_t frameSize,ID3v2WXXXFrameType *WXXX){
@@ -608,6 +670,29 @@ void FramesV2_storeWXXX(FILE *mp3FilePointer, uint32_t frameSize,ID3v2WXXXFrameT
     TxtStr_storeTextString(&WXXX->url,urlPtr, urlSize);
     free(frameContent);
 }
+ID3v2WXXXFrameType * FramesV2_getWXXX(int version){
+    ID3v2WXXXFrameType *WXXXFramePtr = (ID3v2WXXXFrameType*) malloc(sizeof(ID3v2WXXXFrameType));
+    char url[255];
+    char description[255];
+
+    WXXXFramePtr->textEncoding = 3;
+    memcpy(WXXXFramePtr->header.frameId,"WXXX",4); 
+    WXXXFramePtr->header.flags[0] = 0;WXXXFramePtr->header.flags[1] = 0;
+
+    printf("Insert tag description (max. size 254): ");
+    fgets(description, sizeof(description), stdin);
+    description[strcspn(description, "\n")] = 0;
+    printf("\n");
+    TxtStr_storeTextString(&WXXXFramePtr->description,description,strlen(description)+1);
+
+    printf("Insert tag url (max. size 254): ");
+    fgets(url, sizeof(url), stdin);
+    url[strcspn(url, "\n")] = 0;
+    TxtStr_storeTextString(&WXXXFramePtr->url,url,strlen(url)+1);
+    printf("\n");
+    FramesV2_updateFrameSize(version,&WXXXFramePtr->header,WXXXFramePtr->url.size+WXXXFramePtr->description.size+1);
+    return WXXXFramePtr;
+}
 void FramesV2_printWXXX(ID3v2WXXXFrameType frame){
     printf("\n----FRAME----\n");
     printf("Frame ID: %s\n",frame.header.frameId);
@@ -620,7 +705,7 @@ void FramesV2_printWXXX(ID3v2WXXXFrameType frame){
     }
     printf("\n");
     printf("url: ");
-    for (int i = strlen(frame.url.string)+1; i < (int)frame.url.size; i++) {
+    for (int i = 0; i < (int)frame.url.size; i++) {
         if(frame.url.string[i] == '\0') printf(" ");
         else putchar(frame.url.string[i]);
     }
