@@ -13,12 +13,12 @@ typedef struct {
     ID3v2HeaderType header;
     ListFramePtr TXTFrameList;
     ListFramePtr APICFrameList; 
+    ListFramePtr WWWFrameList; 
+    ListFramePtr WXXXFrameList; 
     //Not supported addition
     ListFramePtr PRIVFrameList;
     //Pending to include addition
-    ListFramePtr WWWFrameList; 
     ListFramePtr COMMFrameList;
-    ListFramePtr WXXXFrameList; 
 
     /*NotTested*/
     ID3v2MCDIFrameType *MCDI;
