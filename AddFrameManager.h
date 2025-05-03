@@ -9,6 +9,8 @@ int AddFrame_addTXTF(ListFramePtr *,char *,int );
 
 int AddFrame_addWWWF(ListFramePtr *,char *,int );
 
+int AddFrame_addWXXX(ListFramePtr *,int);
+
 int AddFrame_addAPIC(ListFramePtr *,int );
 
 #endif // ADDFRAMEMANAGER_H

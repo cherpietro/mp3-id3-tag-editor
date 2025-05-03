@@ -462,9 +462,14 @@ void ID3v2_addFrame(ID3TagType *ID3Tag, char *frameID){
         }
         else printf("Not supported tag to include");
     }
+    else if(strncasecmp(frameID,"WXXX",4)==0){
+        incrementedSize = AddFrame_addWXXX(&ID3Tag->WXXXFrameList,ID3Tag->header.version[0]);
+        oldSize = HeaderV2_getTagSize(ID3Tag->header);
+        HeaderV2_updateTagSize(&ID3Tag->header,oldSize+incrementedSize);
+    }
     else if(strncasecmp(frameID,"W",1)==0){
         if(FramesV2_validWebFrameId(frameID)){
-            incrementedSize = AddFrame_addWWWF(&ID3Tag->TXTFrameList,frameID,ID3Tag->header.version[0]);
+            incrementedSize = AddFrame_addWWWF(&ID3Tag->WWWFrameList,frameID,ID3Tag->header.version[0]);
             oldSize = HeaderV2_getTagSize(ID3Tag->header);
             HeaderV2_updateTagSize(&ID3Tag->header,oldSize+incrementedSize);
         }

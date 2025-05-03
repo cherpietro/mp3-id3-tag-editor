@@ -8,9 +8,8 @@ static void cleanInputBuffer(){
 }
 
 int AddFrame_addTXXX(ListFramePtr *TXTFrameList,int version){
-    ID3v2TXTFrameType *TXTFramePtr = FramesV2_getTXXX();
+    ID3v2TXTFrameType *TXTFramePtr = FramesV2_getTXXX(version);
     ListFramePtr_insertLast(TXTFrameList,TXTFramePtr);
-    FramesV2_updateFrameSize(version,&TXTFramePtr->header,TXTFramePtr->content.size);
     FramesV2_printTXTF(*TXTFramePtr);
     return (FramesV2_getFrameSize(version,TXTFramePtr->header) +10);
 }
@@ -69,6 +68,13 @@ int AddFrame_addWWWF(ListFramePtr *WWWFrameList,char *frameID,int version){
     incrementedSize += FramesV2_getFrameSize(version,WWWFramePtr->header);
     FramesV2_printWWWF(*WWWFramePtr);
     return (incrementedSize + 10);
+}
+
+int AddFrame_addWXXX(ListFramePtr *WXXXFrameList,int version){
+    ID3v2WXXXFrameType *WXXXFramePtr = FramesV2_getWXXX(version);
+    ListFramePtr_insertLast(WXXXFrameList,WXXXFramePtr);
+    FramesV2_printWXXX(*WXXXFramePtr);
+    return (FramesV2_getFrameSize(version,WXXXFramePtr->header) +10);
 }
 
 int AddFrame_addAPIC(ListFramePtr *APICFrameList,int version){

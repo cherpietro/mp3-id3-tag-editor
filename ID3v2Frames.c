@@ -154,7 +154,7 @@ void FramesV2_storeTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TXTFrameT
     TxtStr_storeTextString(&frame->content,contentPtr, frameSize-1);
     free(frameContent);
 }
-ID3v2TXTFrameType * FramesV2_getTXXX(){
+ID3v2TXTFrameType * FramesV2_getTXXX(int version){
     char description[65];
     char value[255];
     char *mergedString;
@@ -177,7 +177,7 @@ ID3v2TXTFrameType * FramesV2_getTXXX(){
     memcpy(mergedString + strlen(description)+1, value, strlen(value)+1);
     TxtStr_storeTextString(&TXTFramePtr->content,mergedString,totalLen);
     free(mergedString);
-
+    FramesV2_updateFrameSize(version,&TXTFramePtr->header,TXTFramePtr->content.size+1);
     return TXTFramePtr;
 }
 ID3v2TXTFrameType * FramesV2_getTXTF(char * frameID, int version){
@@ -634,6 +634,29 @@ void FramesV2_storeWXXX(FILE *mp3FilePointer, uint32_t frameSize,ID3v2WXXXFrameT
     TxtStr_storeTextString(&WXXX->url,urlPtr, urlSize);
     free(frameContent);
 }
+ID3v2WXXXFrameType * FramesV2_getWXXX(int version){
+    ID3v2WXXXFrameType *WXXXFramePtr = (ID3v2WXXXFrameType*) malloc(sizeof(ID3v2WXXXFrameType));
+    char url[255];
+    char description[255];
+
+    WXXXFramePtr->textEncoding = 3;
+    memcpy(WXXXFramePtr->header.frameId,"WXXX",4); 
+    WXXXFramePtr->header.flags[0] = 0;WXXXFramePtr->header.flags[1] = 0;
+
+    printf("Insert tag description (max. size 254): ");
+    fgets(description, sizeof(description), stdin);
+    description[strcspn(description, "\n")] = 0;
+    printf("\n");
+    TxtStr_storeTextString(&WXXXFramePtr->description,description,strlen(description)+1);
+
+    printf("Insert tag url (max. size 254): ");
+    fgets(url, sizeof(url), stdin);
+    url[strcspn(url, "\n")] = 0;
+    TxtStr_storeTextString(&WXXXFramePtr->url,url,strlen(url)+1);
+    printf("\n");
+    FramesV2_updateFrameSize(version,&WXXXFramePtr->header,WXXXFramePtr->url.size+WXXXFramePtr->description.size+1);
+    return WXXXFramePtr;
+}
 void FramesV2_printWXXX(ID3v2WXXXFrameType frame){
     printf("\n----FRAME----\n");
     printf("Frame ID: %s\n",frame.header.frameId);
@@ -646,7 +669,7 @@ void FramesV2_printWXXX(ID3v2WXXXFrameType frame){
     }
     printf("\n");
     printf("url: ");
-    for (int i = strlen(frame.url.string)+1; i < (int)frame.url.size; i++) {
+    for (int i = 0; i < (int)frame.url.size; i++) {
         if(frame.url.string[i] == '\0') printf(" ");
         else putchar(frame.url.string[i]);
     }

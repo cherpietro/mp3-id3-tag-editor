@@ -117,7 +117,7 @@ ID3v2APICFrameType* FramesV2_getAPIC(int);
 void FramesV2_ModifyAPIC(uint8_t, ID3v2APICFrameType*);
 
 void FramesV2_storeTXTF(FILE*, uint32_t,ID3v2TXTFrameType *);
-ID3v2TXTFrameType* FramesV2_getTXXX();
+ID3v2TXTFrameType* FramesV2_getTXXX(int);
 ID3v2TXTFrameType* FramesV2_getTXTF(char *,int);
 void FramesV2_printTXTF(ID3v2TXTFrameType);
 void FramesV2_freeTXTF(ID3v2TXTFrameType**);
@@ -173,4 +173,5 @@ bool FramesV2_validWebFrameId(char *);
 void FramesV2_storeWXXX(FILE*, uint32_t,ID3v2WXXXFrameType *);
 void FramesV2_printWXXX(ID3v2WXXXFrameType);
 void FramesV2_freeWXXX(ID3v2WXXXFrameType**);
+ID3v2WXXXFrameType* FramesV2_getWXXX(int);
 #endif // ID3V2FRAMES_H
