@@ -1,4 +1,4 @@
-#include "ID3v2Frames.h"
+#include "../ID3v2Frames.h"
 
 ID3v2APICFrameType* GetFrame_APIC(int);
 ID3v2TXTFrameType* GetFrame_TXXX(int);

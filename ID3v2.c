@@ -1,13 +1,13 @@
 #include "ID3v2.h"
 #include "SizeReader.h"
-#include "FileFrameManager.h"
-#include "PrintFrameManager.h"
-#include "DeleteFrameManager.h"
-#include "AddFrameManager.h"
-#include "StoreFrameManager.h"
-#include "SizeFrameManager.h"
+#include "FrameManager/FileFrameManager.h"
+#include "FrameManager/PrintFrameManager.h"
+#include "FrameManager/DeleteFrameManager.h"
+#include "FrameManager/AddFrameManager.h"
+#include "FrameManager/StoreFrameManager.h"
+#include "FrameManager/SizeFrameManager.h"
 #include <string.h>
-#include "GetFrameManager.h"
+#include "FrameManager/GetFrameManager.h"
 
 
 #define FREE_FRAME_LIST(frameList,frameType,freeFrameFunc)\

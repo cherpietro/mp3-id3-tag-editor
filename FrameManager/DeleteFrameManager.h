@@ -1,6 +1,6 @@
 #ifndef DELETEFRAMEMANAGER_H
 #define DELETEFRAMEMANAGER_H
-#include "ListFramePtr.h"
+#include "../ListFramePtr.h"
 
 int DeleteFrame_deleteTXXX(ListFramePtr *,int);
 int DeleteFrame_deleteTXTF(ListFramePtr *,char *,int);

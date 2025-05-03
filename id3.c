@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include <string.h>
 #include "ID3v2.h"
-#include "PrintFrameManager.h"
-#include "FileFrameManager.h"
+#include "FrameManager/PrintFrameManager.h"
+#include "FrameManager/FileFrameManager.h"
 
 static void cleanInputBuffer(){
   int ch;

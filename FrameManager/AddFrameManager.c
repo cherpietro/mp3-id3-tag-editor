@@ -1,7 +1,7 @@
 #include "AddFrameManager.h"
 #include "PrintFrameManager.h"
 #include "GetFrameManager.h"
-#include "ID3v2Frames.h"
+#include "../ID3v2Frames.h"
 #include <string.h>
 
 #define ADD_FRAME(FrameList,FrameType,FramePtr,FrameGetFunct,FramePrintFunct)\

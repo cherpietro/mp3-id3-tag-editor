@@ -1,8 +1,8 @@
 #ifndef PRINTFRAMEMANAGER_H
 #define PRINTFRAMEMANAGER_H
-#include "ID3v2Frames.h"
-#include "ListFramePtr.h"
-#include "ID3v2.h"
+#include "../ID3v2Frames.h"
+#include "../ListFramePtr.h"
+#include "../ID3v2.h"
 
 void printTag(ID3TagType *);
 

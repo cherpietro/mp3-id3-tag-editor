@@ -1,6 +1,6 @@
 #include "SizeFrameManager.h"
-#include "ID3v2Frames.h"
-#include "ListFramePtr.h"
+#include "../ID3v2Frames.h"
+#include "../ListFramePtr.h"
 
 #define ADD_FRAME_SIZE_LIST(frameList, frameType)\
     ListFramePtr_setFirstActive(&ID3Tag->frameList);\

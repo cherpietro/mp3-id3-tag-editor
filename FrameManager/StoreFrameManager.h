@@ -1,8 +1,8 @@
 #ifndef STOREfRAMEMANAGER_H
 #define STOREfRAMEMANAGER_H
 #include <stdio.h>
-#include "ID3v2.h"
-#include "ID3v2Frames.h"
+#include "../ID3v2.h"
+#include "../ID3v2Frames.h"
 
 void StoreFrame_Header(FILE*, ID3v2FrameHeaderType*);
 
