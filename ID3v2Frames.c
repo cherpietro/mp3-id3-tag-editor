@@ -110,45 +110,6 @@ ID3v2APICFrameType *FramesV2_getAPIC(int version){
         return NULL;
     }
 }
-void FramesV2_ModifyAPIC(uint8_t version,ID3v2APICFrameType *APIC){
-    int c;
-    // FILE *newCover = fopen("overtureCover.jpg", "rb");
-    
-    char description[65]; //max length is 64 characters
-    printf("Introduce description of the image (can be empty|max 64 characters): ");
-    fgets(description, sizeof(description), stdin);
-    description[strcspn(description, "\n")] = 0;
-
-    TxtStr_freeTextString(&APIC->description);
-    TxtStr_storeTextString(&APIC->description,description,strlen(description)+1);
-    TxtStr_storeTextString(&APIC->description,description,strlen(description)+1);
-
-    char newCoverFileName[35];
-    printf("Introduce the name of the image: ");
-    scanf("%34s", newCoverFileName);
-    while ((c = getchar()) != '\n' && c != EOF);
-    FILE *newCover = fopen(newCoverFileName, "rb");
-    // FILE *newCover = fopen("pipoCover.jpg", "rb");
-    if (newCover) {
-        free(APIC->imageData);
-        
-        fseek(newCover, 0, SEEK_END);
-        APIC->imageDataSize = ftell(newCover); 
-        fseek(newCover, 0, SEEK_SET);
-        
-        APIC->imageData = (uint8_t *)malloc(APIC->imageDataSize);
-        
-        size_t bytesRead = fread(APIC->imageData, 1, APIC->imageDataSize, newCover);
-        if (bytesRead != APIC->imageDataSize) {
-            free(APIC->imageData);
-        }    
-        fclose(newCover);
-        uint32_t newSize = APIC->description.size + APIC->imageDataSize;
-        printf("OLD SIZE: %d\n",FramesV2_getFrameSize(version,APIC->header));
-        FramesV2_updateFrameSize(version,&APIC->header,newSize);
-        printf("NEW SIZE: %d\n",FramesV2_getFrameSize(version,APIC->header));
-    }
-}
 
 void FramesV2_storeTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TXTFrameType *frame){
     uint8_t *frameContent = (uint8_t *)malloc(frameSize);
@@ -247,22 +208,6 @@ bool FramesV2_validTextFrameId(char *str) {
         if (strncasecmp(str, frames[i],4) == 0) return true;  
     }
     return false;
-}
-
-void FramesV2_ModifyTXTF(uint8_t version,ID3v2TXTFrameType *TXTF){
-    char content[256];
-    printf("Introduce the new text modify: ");
-    fgets(content, sizeof(content), stdin);
-    content[strcspn(content, "\n")] = 0;
-    
-    printf("%s\n",content);
-    TxtStr_freeTextString(&TXTF->content);
-    TxtStr_storeTextString(&TXTF->content,content,strlen(content)+1);
-
-    uint32_t newSize = TXTF->content.size + 1;
-    printf("OLD SIZE: %d\n",FramesV2_getFrameSize(version,TXTF->header));
-    FramesV2_updateFrameSize(version,&TXTF->header,newSize);
-    printf("NEW SIZE: %d\n",FramesV2_getFrameSize(version,TXTF->header));
 }
 
 void FramesV2_storeCOMM(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameType *frame){
@@ -378,12 +323,12 @@ void FramesV2_freePRIV(ID3v2PRIVFrameType** PRIV){
     *PRIV = NULL;
 }
 
-void FramesV2_storeMDCI(FILE *mp3FilePointer, uint32_t frameSize,ID3v2MCDIFrameType** MDCI){
-    *MDCI = (ID3v2MCDIFrameType *)malloc(sizeof(ID3v2MCDIFrameType));
+void FramesV2_storeMDCI(FILE *mp3FilePointer, uint32_t frameSize,ID3v2MCDIFrameType* MDCI){
+    // *MDCI = (ID3v2MCDIFrameType *)malloc(sizeof(ID3v2MCDIFrameType));
     uint8_t *frameContent = (uint8_t *)malloc(frameSize);
     fread(frameContent, frameSize, 1, mp3FilePointer);
     char *ptr = (char *)frameContent;
-    TxtStr_storeTextString(&(*MDCI)->CDTOC,ptr, frameSize);
+    TxtStr_storeTextString(&(MDCI)->CDTOC,ptr, frameSize);
     free(frameContent);
 }
 void FramesV2_printMDCI(ID3v2MCDIFrameType MDCI){
@@ -428,10 +373,9 @@ void FramesV2_freePOPM(ID3v2POPMFrameType **POPM){
     *POPM = NULL;
 }
 
-void FramesV2_storeDefaultFrame(FILE* mp3FilePointer, uint32_t frameSize, ID3v2DefaultFrameType **DefaultFrame){
-    *DefaultFrame = (ID3v2DefaultFrameType *)malloc(sizeof(ID3v2DefaultFrameType));
-    (*DefaultFrame)->frameData = (uint8_t *)malloc(frameSize);
-    fread((*DefaultFrame)->frameData, frameSize, 1, mp3FilePointer);
+void FramesV2_storeDefaultFrame(FILE* mp3FilePointer, uint32_t frameSize, ID3v2DefaultFrameType *DefaultFrame){
+    (DefaultFrame)->frameData = (uint8_t *)malloc(frameSize);
+    fread((DefaultFrame)->frameData, frameSize, 1, mp3FilePointer);
 }
 void FramesV2_printDefaultFrame(ID3v2DefaultFrameType DefaultFrame){
     printf("\n----FRAME----\n");

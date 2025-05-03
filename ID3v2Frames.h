@@ -82,7 +82,6 @@ void FramesV2_saveAPICImage(ID3v2APICFrameType);
 void FramesV2_printAPIC(ID3v2APICFrameType);
 void FramesV2_freeAPIC(ID3v2APICFrameType**);
 ID3v2APICFrameType* FramesV2_getAPIC(int);
-void FramesV2_ModifyAPIC(uint8_t, ID3v2APICFrameType*);
 
 void FramesV2_storeTXTF(FILE*, uint32_t,ID3v2TXTFrameType *);
 ID3v2TXTFrameType* FramesV2_getTXXX(int);
@@ -90,7 +89,6 @@ ID3v2TXTFrameType* FramesV2_getTXTF(char *,int);
 void FramesV2_printTXTF(ID3v2TXTFrameType);
 void FramesV2_freeTXTF(ID3v2TXTFrameType**);
 bool FramesV2_validTextFrameId(char *);
-void FramesV2_ModifyTXTF(uint8_t, ID3v2TXTFrameType *);
 
 void FramesV2_storeCOMM(FILE *, uint32_t , ID3v2COMMFrameType *);
 ID3v2COMMFrameType* FramesV2_getCOMM(int);
@@ -101,7 +99,7 @@ void FramesV2_storePRIV(FILE *, uint32_t , ID3v2PRIVFrameType *);
 void FramesV2_printPRIV(ID3v2PRIVFrameType);
 void FramesV2_freePRIV(ID3v2PRIVFrameType**);
 
-void FramesV2_storeMDCI(FILE*, uint32_t, ID3v2MCDIFrameType**);
+void FramesV2_storeMDCI(FILE*, uint32_t, ID3v2MCDIFrameType*);
 void FramesV2_printMDCI(ID3v2MCDIFrameType);
 void FramesV2_freeMCDI(ID3v2MCDIFrameType**);
 
@@ -109,7 +107,7 @@ void FramesV2_storePOPM(FILE*, uint32_t, ID3v2POPMFrameType*);
 void FramesV2_printPOPM(ID3v2POPMFrameType);
 void FramesV2_freePOPM(ID3v2POPMFrameType**);
 
-void FramesV2_storeDefaultFrame(FILE*, uint32_t, ID3v2DefaultFrameType**);
+void FramesV2_storeDefaultFrame(FILE*, uint32_t, ID3v2DefaultFrameType*);
 void FramesV2_printDefaultFrame(ID3v2DefaultFrameType);
 void FramesV2_freeDefaultFrame(ID3v2DefaultFrameType**);
 
