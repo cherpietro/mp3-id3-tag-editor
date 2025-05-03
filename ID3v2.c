@@ -15,8 +15,17 @@
         freeFrameFunc(&framePtr);\
         ListFramePtr_deleteActive(&ID3Tag->frameList);\
     }
+#define ADD_FRAME_LIST(frameList,addFunction)\
+    incrementedSize = addFunction(&ID3Tag->frameList,ID3Tag->header.version[0]);\
+    oldSize = HeaderV2_getTagSize(ID3Tag->header);\
+    HeaderV2_updateTagSize(&ID3Tag->header,oldSize+incrementedSize);
 
-    void ID3v2_init(ID3TagType *ID3Tag){
+#define ADD_SINGLE_FRAME_LIST(frameList,addFunction,frameID)\
+    incrementedSize = addFunction(&ID3Tag->frameList,frameID,ID3Tag->header.version[0]);\
+    oldSize = HeaderV2_getTagSize(ID3Tag->header);\
+    HeaderV2_updateTagSize(&ID3Tag->header,oldSize+incrementedSize);
+
+void ID3v2_init(ID3TagType *ID3Tag){
     ListFramePtr_init(&ID3Tag->TXTFrameList);
     ListFramePtr_init(&ID3Tag->COMMFrameList);
     ListFramePtr_init(&ID3Tag->PRIVFrameList);
@@ -156,39 +165,27 @@ void ID3v2_addFrame(ID3TagType *ID3Tag, char *frameID){
     int incrementedSize = 0;
     int oldSize = 0;
     if(strncasecmp(frameID,"TXXX",4)==0){ 
-        incrementedSize = AddFrame_addTXXX(&ID3Tag->TXTFrameList,ID3Tag->header.version[0]);
-        oldSize = HeaderV2_getTagSize(ID3Tag->header);
-        HeaderV2_updateTagSize(&ID3Tag->header,oldSize+incrementedSize);
+        ADD_FRAME_LIST(TXTFrameList,AddFrame_addTXXX);
     }    
     else if(strncasecmp(frameID,"T",1)==0){ 
         if(FramesV2_validTextFrameId(frameID)){
-            incrementedSize = AddFrame_addTXTF(&ID3Tag->TXTFrameList,frameID,ID3Tag->header.version[0]);
-            oldSize = HeaderV2_getTagSize(ID3Tag->header);
-            HeaderV2_updateTagSize(&ID3Tag->header,oldSize+incrementedSize);
+            ADD_SINGLE_FRAME_LIST(TXTFrameList, AddFrame_addTXTF, frameID);
         }
         else printf("Not supported tag to include");
     }
     else if(strncasecmp(frameID,"WXXX",4)==0){
-        incrementedSize = AddFrame_addWXXX(&ID3Tag->WXXXFrameList,ID3Tag->header.version[0]);
-        oldSize = HeaderV2_getTagSize(ID3Tag->header);
-        HeaderV2_updateTagSize(&ID3Tag->header,oldSize+incrementedSize);
+        ADD_FRAME_LIST(WXXXFrameList,AddFrame_addWXXX);
     }
     else if(strncasecmp(frameID,"W",1)==0){
         if(FramesV2_validWebFrameId(frameID)){
-            incrementedSize = AddFrame_addWWWF(&ID3Tag->WWWFrameList,frameID,ID3Tag->header.version[0]);
-            oldSize = HeaderV2_getTagSize(ID3Tag->header);
-            HeaderV2_updateTagSize(&ID3Tag->header,oldSize+incrementedSize);
+            ADD_SINGLE_FRAME_LIST(WWWFrameList, AddFrame_addWWWF, frameID);
         }
         else printf("Not supported tag to include");
     }
     else if(strncasecmp(frameID,"APIC",4)==0){
-        incrementedSize = AddFrame_addAPIC(&ID3Tag->APICFrameList,ID3Tag->header.version[0]);
-        oldSize = HeaderV2_getTagSize(ID3Tag->header);
-        HeaderV2_updateTagSize(&ID3Tag->header,oldSize+incrementedSize);
+        ADD_FRAME_LIST(APICFrameList, AddFrame_addAPIC);
     }
     else if(strncasecmp(frameID,"COMM",4)==0){
-        incrementedSize = AddFrame_addCOMM(&ID3Tag->COMMFrameList,ID3Tag->header.version[0]);
-        oldSize = HeaderV2_getTagSize(ID3Tag->header);
-        HeaderV2_updateTagSize(&ID3Tag->header,oldSize+incrementedSize);
+        ADD_FRAME_LIST(COMMFrameList, AddFrame_addCOMM);
     }
 }
