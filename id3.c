@@ -99,6 +99,9 @@ int main(){
         case 5:
             saveChangesInFile(file,ID3Tag);
             break;
+        case 6:
+            printTag(&ID3Tag);
+            break;
         case 0:
             printf("Option 0.\n");
             break;

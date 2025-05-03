@@ -8,64 +8,23 @@
     }\
     printf("\n");
 
-void PrintFrame_PrintTXTFrames(ListFramePtr *TXTFrameList){
-  ID3v2TXTFrameType *TXTFrame;
-  ListFramePtr_setFirstActive(TXTFrameList);
-  while(TXTFrameList->active != NULL){
-    TXTFrame = (ID3v2TXTFrameType *)ListFramePtr_getActiveFramePtr(*TXTFrameList);
-    FramesV2_printTXTF(*TXTFrame);
-    ListFramePtr_setNextActive(TXTFrameList);
+#define PRINT_LIST_FRAME(FrameLst,FramePtr,FrameType,printFunct)\
+FrameType *FramePtr;\
+  ListFramePtr_setFirstActive(&FrameLst);\
+  while(FrameLst.active != NULL){\
+    FramePtr = (FrameType *)ListFramePtr_getActiveFramePtr(FrameLst);\
+    printFunct(*FramePtr);\
+    ListFramePtr_setNextActive(&FrameLst);\
   }
-}
 
-void PrintFrame_PrintCOMMFrames(ListFramePtr *COMMFrameList){
-  ID3v2COMMFrameType *COMMFrame;
-  ListFramePtr_setFirstActive(COMMFrameList);
-  while(COMMFrameList->active != NULL){
-    COMMFrame = (ID3v2COMMFrameType *)ListFramePtr_getActiveFramePtr(*COMMFrameList);
-    FramesV2_printCOMM(*COMMFrame);
-    ListFramePtr_setNextActive(COMMFrameList);
-  }
-}
-
-void PrintFrame_PrintPRIVFrames(ListFramePtr *PRIVFrameList){
-  ID3v2PRIVFrameType *PRIVFrame;
-  ListFramePtr_setFirstActive(PRIVFrameList);
-  while(PRIVFrameList->active != NULL){
-    PRIVFrame = (ID3v2PRIVFrameType *) ListFramePtr_getActiveFramePtr(*PRIVFrameList);
-    FramesV2_printPRIV(*PRIVFrame);
-    ListFramePtr_setNextActive(PRIVFrameList);
-  }
-}
-
-void PrintFrame_PrintAPICFrames(ListFramePtr *APICFrameList){
-  ID3v2APICFrameType *APICFrame;
-  ListFramePtr_setFirstActive(APICFrameList);
-  while(APICFrameList->active != NULL){
-    APICFrame = (ID3v2APICFrameType *) ListFramePtr_getActiveFramePtr(*APICFrameList);
-    FramesV2_printAPIC(*APICFrame);
-    FramesV2_saveAPICImage(*APICFrame);
-    ListFramePtr_setNextActive(APICFrameList);
-  }
-}
-
-void PrintFrame_PrintPOPMFrames(ListFramePtr *POPMFrameList){
-  ID3v2POPMFrameType *POPMFrame;
-  ListFramePtr_setFirstActive(POPMFrameList);
-  while(POPMFrameList->active != NULL){
-    POPMFrame = (ID3v2POPMFrameType *) ListFramePtr_getActiveFramePtr(*POPMFrameList);
-    FramesV2_printPOPM(*POPMFrame);
-    ListFramePtr_setNextActive(POPMFrameList);
-  }
-}
-
+  //Unused
 void printTag(ID3TagType *ID3Tag){
   HeaderV2_printTagHeader(ID3Tag->header);
-  PrintFrame_PrintTXTFrames(&ID3Tag->TXTFrameList);  
-  PrintFrame_PrintCOMMFrames(&ID3Tag->COMMFrameList);
-  PrintFrame_PrintPRIVFrames(&ID3Tag->PRIVFrameList);
-  PrintFrame_PrintAPICFrames(&ID3Tag->APICFrameList);
-  PrintFrame_PrintPOPMFrames(&ID3Tag->POPMFrameList);
+  PRINT_LIST_FRAME(ID3Tag->TXTFrameList,TXTFrame,ID3v2TXTFrameType,FramesV2_printTXTF);  
+  PRINT_LIST_FRAME(ID3Tag->COMMFrameList,COMMFrame,ID3v2COMMFrameType,FramesV2_printCOMM); 
+  PRINT_LIST_FRAME(ID3Tag->PRIVFrameList,PRIVFrame,ID3v2PRIVFrameType,FramesV2_printPRIV); 
+  PRINT_LIST_FRAME(ID3Tag->APICFrameList,APICFrame,ID3v2APICFrameType,FramesV2_printAPIC); 
+  PRINT_LIST_FRAME(ID3Tag->POPMFrameList,POPMFrame,ID3v2POPMFrameType,FramesV2_printPOPM); 
   if(ID3Tag->MCDI != NULL) FramesV2_printMDCI(*ID3Tag->MCDI);
 }
 
