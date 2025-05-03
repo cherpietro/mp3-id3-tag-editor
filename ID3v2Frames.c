@@ -1,13 +1,6 @@
 #include "ID3v2Frames.h"
 #include "SizeReader.h"
 #include <string.h>
-#include <ctype.h>
-
-
-static void cleanInputBuffer(){
-    int ch;
-    while ((ch = getchar()) != '\n' && ch != EOF);
-}
 
 uint32_t FramesV2_getFrameSize(int version, ID3v2FrameHeaderType header){
     if(version == 4) return syncsafeToSize(header.size);
@@ -25,7 +18,7 @@ void FramesV2_freeAPIC(ID3v2APICFrameType** APIC){
     free(*APIC);
     *APIC = NULL;
 }
-ID3v2APICFrameType *FramesV2_getAPIC(int version){
+ID3v2APICFrameType *GetFrame_APIC(int version){
     ID3v2APICFrameType *APICFramePtr = (ID3v2APICFrameType *) malloc(sizeof(ID3v2APICFrameType));
     char description[65]; //max length is 64 characters
     memcpy(APICFramePtr->header.frameId,"APIC",4); 
@@ -65,8 +58,7 @@ ID3v2APICFrameType *FramesV2_getAPIC(int version){
         return NULL;
     }
 }
-
-ID3v2TXTFrameType * FramesV2_getTXXX(int version){
+ID3v2TXTFrameType * GetFrame_TXXX(int version){
     char description[65];
     char value[255];
     char *mergedString;
@@ -92,96 +84,23 @@ ID3v2TXTFrameType * FramesV2_getTXXX(int version){
     FramesV2_updateFrameSize(version,&TXTFramePtr->header,TXTFramePtr->content.size+1);
     return TXTFramePtr;
 }
-ID3v2TXTFrameType * FramesV2_getTXTF(char * frameID, int version){
-    char content[255];
-
-    ID3v2TXTFrameType *TXTFramePtr = (ID3v2TXTFrameType*) malloc(sizeof(ID3v2TXTFrameType));
-    for (int i = 0; i < 4; i++) frameID[i] = toupper(frameID[i]);
-    memcpy(TXTFramePtr->header.frameId,frameID,4); 
-    TXTFramePtr->header.flags[0] = 0;TXTFramePtr->header.flags[1] = 0;
-    // TXTFramePtr->textEncoding = 0;
-    TXTFramePtr->textEncoding = 3;
-    printf("Insert tag content (max. size 254): ");
-    fgets(content, sizeof(content), stdin);
-    content[strcspn(content, "\n")] = 0;
-    printf("\n");
-    TxtStr_storeTextString(&TXTFramePtr->content,content,strlen(content)+1);
-    FramesV2_updateFrameSize(version,&TXTFramePtr->header,TXTFramePtr->content.size + 1);
-    return TXTFramePtr;
-}
 
 void FramesV2_freeTXTF(ID3v2TXTFrameType** TXTF){
     TxtStr_freeTextString(&(*TXTF)->content);
     free(*TXTF);
     *TXTF = NULL;
 }
-bool FramesV2_validTextFrameId(char *str) {
-    const char *frames[] = {
-        "TSSE", "TBPM", "TCOM", "TCON", "TCOP", "TDAT", "TDLY", "TENC", "TEXT", "TFLT", 
-        "TIME", "TIT1", "TIT2", "TIT3", "TKEY", "TLAN", "TLEN", "TMED", "TOAL", "TOFN", 
-        "TOLY", "TOPE", "TORY", "TOWN", "TPE1", "TPE2", "TPE3", "TPE4", "TPOS", "TPUB", 
-        "TRCK", "TRDA", "TRSN", "TRSO", "TSIZ", "TSRC", "TYER", "TALB"
-    };
-    for (int i = 0; i < 38; i++) {
-        if (strncasecmp(str, frames[i],4) == 0) return true;  
-    }
-    return false;
+void FramesV2_freeWXXX(ID3v2WXXXFrameType **WXXX){
+    TxtStr_freeTextString(&(*WXXX)->description);
+    TxtStr_freeTextString(&(*WXXX)->url);
+    free(*WXXX);
+    *WXXX = NULL;
 }
-
-ID3v2COMMFrameType* FramesV2_getCOMM(int version){
-    char description[65];
-    char content[255];
-    char language[4];
-    ID3v2COMMFrameType *COMMFramePtr = (ID3v2COMMFrameType*) malloc(sizeof(ID3v2COMMFrameType));
-    COMMFramePtr->header.flags[0] = 0;COMMFramePtr->header.flags[1] = 0;
-    memcpy(COMMFramePtr->header.frameId,"COMM",4); 
-    COMMFramePtr->textEncoding = 3;
-    printf("Insert tag language (3 characters): ");
-    fgets(language, sizeof(language), stdin);
-    cleanInputBuffer();
-    language[strcspn(language, "\n")] = 0;
-    COMMFramePtr->language[0] = language[0];
-    COMMFramePtr->language[1] = language[1];
-    COMMFramePtr->language[2] = language[2];//Language should not have '\0'
-    printf("\n");
-    printf("Insert tag content description (64 characters): ");
-    fgets(description, sizeof(description), stdin);
-    description[strcspn(description, "\n")] = 0;
-    TxtStr_storeTextString(&COMMFramePtr->contentDescript ,description,strlen(description)+1); 
-    printf("\n");
-    
-    printf("Insert tag content  (254 characters): ");
-    fgets(content, sizeof(content), stdin);
-    content[strcspn(content, "\n")] = 0;
-    TxtStr_storeTextString(&COMMFramePtr->actualText ,content,strlen(content)+1); 
-    printf("\n");
-
-    size_t size = 1 + 3 + COMMFramePtr->contentDescript.size + COMMFramePtr->actualText.size;
-    FramesV2_updateFrameSize(version,&COMMFramePtr->header,size);
-    return COMMFramePtr;
-}
-
 void FramesV2_freeCOMM(ID3v2COMMFrameType** COMM){
     TxtStr_freeTextString(&(*COMM)->actualText);
     TxtStr_freeTextString(&(*COMM)->contentDescript);
     free(*COMM);
     *COMM = NULL;
-}
-
-void StoreFrame_PRIV(FILE *mp3FilePointer, uint32_t frameSize, ID3v2PRIVFrameType *frame){
-    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
-    fread(frameContent, frameSize, 1, mp3FilePointer);
-
-    size_t index = 0;
-    char *ownerPtr = (char *)frameContent;
-    size_t descSize = strlen(ownerPtr)+1; //description ALWAYS has to have \0
-    TxtStr_storeTextString(&frame->owner,ownerPtr, descSize);
-    index += descSize;
-
-    char *privateDataPtr = (char *)frameContent + index ; 
-    size_t contentSize = frameSize - index ; //Check this operation
-    TxtStr_storeTextString(&frame->privateData,privateDataPtr, contentSize);
-    free(frameContent);
 }
 void FramesV2_freePRIV(ID3v2PRIVFrameType** PRIV){
     TxtStr_freeTextString(&(*PRIV)->owner);
@@ -189,83 +108,23 @@ void FramesV2_freePRIV(ID3v2PRIVFrameType** PRIV){
     free(*PRIV);
     *PRIV = NULL;
 }
-
 void FramesV2_freeMCDI(ID3v2MCDIFrameType **MCDI){
     TxtStr_freeTextString(&(*MCDI)->CDTOC);
     free(*MCDI);
     *MCDI = NULL;
 }
-
 void FramesV2_freePOPM(ID3v2POPMFrameType **POPM){
     TxtStr_freeTextString(&(*POPM)->userEmail);
     free(*POPM);
     *POPM = NULL;
 }
-
-void FramesV2_freeDefaultFrame(ID3v2DefaultFrameType **DefaultFrame){
-    free((*DefaultFrame)->frameData);
-    free(*DefaultFrame);
-    *DefaultFrame = NULL;
-}
-
-ID3v2WWWFrameType * FramesV2_getWWWF(char * frameID, int version){
-    char url[255];
-    ID3v2WWWFrameType *WWWFramePtr = (ID3v2WWWFrameType*) malloc(sizeof(ID3v2WWWFrameType));
-    for (int i = 0; i < 4; i++) frameID[i] = toupper(frameID[i]);
-    memcpy(WWWFramePtr->header.frameId,frameID,4); 
-    WWWFramePtr->header.flags[0] = 0;WWWFramePtr->header.flags[1] = 0;
-
-    printf("Insert tag url (max. size 254): ");
-    fgets(url, sizeof(url), stdin);
-    url[strcspn(url, "\n")] = 0;
-    printf("\n");
-    TxtStr_storeTextString(&WWWFramePtr->url,url,strlen(url)+1);
-    FramesV2_updateFrameSize(version,&WWWFramePtr->header,WWWFramePtr->url.size);
-    return WWWFramePtr;
-}
-
 void FramesV2_freeWWWF(ID3v2WWWFrameType **WWWF){
     TxtStr_freeTextString(&(*WWWF)->url);
     free(*WWWF);
     *WWWF = NULL;
 }
-bool FramesV2_validWebFrameId(char *str) {
-    const char *frames[] = {
-        "WCOM", "WCOP", "WOAF", "WOAR", "WOAS", "WORS", "WPAY", "WPUB"
-    };
-    for (int i = 0; i < 8; i++) {
-        if (strncasecmp(str, frames[i],4) == 0) return true;  
-    }
-    return false;
-}
-
-ID3v2WXXXFrameType * FramesV2_getWXXX(int version){
-    ID3v2WXXXFrameType *WXXXFramePtr = (ID3v2WXXXFrameType*) malloc(sizeof(ID3v2WXXXFrameType));
-    char url[255];
-    char description[255];
-
-    WXXXFramePtr->textEncoding = 3;
-    memcpy(WXXXFramePtr->header.frameId,"WXXX",4); 
-    WXXXFramePtr->header.flags[0] = 0;WXXXFramePtr->header.flags[1] = 0;
-
-    printf("Insert tag description (max. size 254): ");
-    fgets(description, sizeof(description), stdin);
-    description[strcspn(description, "\n")] = 0;
-    printf("\n");
-    TxtStr_storeTextString(&WXXXFramePtr->description,description,strlen(description)+1);
-
-    printf("Insert tag url (max. size 254): ");
-    fgets(url, sizeof(url), stdin);
-    url[strcspn(url, "\n")] = 0;
-    TxtStr_storeTextString(&WXXXFramePtr->url,url,strlen(url)+1);
-    printf("\n");
-    FramesV2_updateFrameSize(version,&WXXXFramePtr->header,WXXXFramePtr->url.size+WXXXFramePtr->description.size+1);
-    return WXXXFramePtr;
-}
-
-void FramesV2_freeWXXX(ID3v2WXXXFrameType **WXXX){
-        TxtStr_freeTextString(&(*WXXX)->description);
-        TxtStr_freeTextString(&(*WXXX)->url);
-        free(*WXXX);
-        *WXXX = NULL;
+void FramesV2_freeDefaultFrame(ID3v2DefaultFrameType **DefaultFrame){
+    free((*DefaultFrame)->frameData);
+    free(*DefaultFrame);
+    *DefaultFrame = NULL;
 }

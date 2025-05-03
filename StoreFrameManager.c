@@ -223,6 +223,21 @@ void StoreFrame_WXXX(FILE *mp3FilePointer, uint32_t frameSize,ID3v2WXXXFrameType
     free(frameContent);
 }
 
+void StoreFrame_PRIV(FILE *mp3FilePointer, uint32_t frameSize, ID3v2PRIVFrameType *frame){
+    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+    fread(frameContent, frameSize, 1, mp3FilePointer);
+
+    size_t index = 0;
+    char *ownerPtr = (char *)frameContent;
+    size_t descSize = strlen(ownerPtr)+1; //description ALWAYS has to have \0
+    TxtStr_storeTextString(&frame->owner,ownerPtr, descSize);
+    index += descSize;
+
+    char *privateDataPtr = (char *)frameContent + index ; 
+    size_t contentSize = frameSize - index ; //Check this operation
+    TxtStr_storeTextString(&frame->privateData,privateDataPtr, contentSize);
+    free(frameContent);
+}
 void StoreFrame_DefaultFrame(FILE* mp3FilePointer, uint32_t frameSize, ID3v2DefaultFrameType *DefaultFrame){
     (DefaultFrame)->frameData = (uint8_t *)malloc(frameSize);
     fread((DefaultFrame)->frameData, frameSize, 1, mp3FilePointer);

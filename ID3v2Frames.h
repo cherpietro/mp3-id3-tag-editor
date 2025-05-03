@@ -77,20 +77,18 @@ uint32_t FramesV2_getFrameSize(int ,ID3v2FrameHeaderType);
 void FramesV2_updateFrameSize(int , ID3v2FrameHeaderType *,uint32_t );
 
 void FramesV2_freeAPIC(ID3v2APICFrameType**);
-ID3v2APICFrameType* FramesV2_getAPIC(int);
 
-ID3v2TXTFrameType* FramesV2_getTXXX(int);
-ID3v2TXTFrameType* FramesV2_getTXTF(char *,int);
+
+
+
 void FramesV2_freeTXTF(ID3v2TXTFrameType**);
-bool FramesV2_validTextFrameId(char *);
 
-ID3v2WWWFrameType* FramesV2_getWWWF(char *,int);
+
 void FramesV2_freeWWWF(ID3v2WWWFrameType**);
-bool FramesV2_validWebFrameId(char *);
 void FramesV2_freeWXXX(ID3v2WXXXFrameType**);
-ID3v2WXXXFrameType* FramesV2_getWXXX(int);
 
-ID3v2COMMFrameType* FramesV2_getCOMM(int);
+
+ID3v2COMMFrameType* GetFrame_COMM(int);
 void FramesV2_freeCOMM(ID3v2COMMFrameType**);
 
 void FramesV2_freePRIV(ID3v2PRIVFrameType**);

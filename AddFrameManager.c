@@ -1,8 +1,8 @@
 #include "AddFrameManager.h"
 #include "PrintFrameManager.h"
+#include "GetFrameManager.h"
 #include "ID3v2Frames.h"
 #include <string.h>
-
 
 #define ADD_FRAME(FrameList,FrameType,FramePtr,FrameGetFunct,FramePrintFunct)\
     FrameType *FramePtr = FrameGetFunct(version);\
@@ -17,19 +17,19 @@ static void cleanInputBuffer(){
 }
 
 int AddFrame_addTXXX(ListFramePtr *TXTFrameList,int version){
-    ADD_FRAME(TXTFrameList,ID3v2TXTFrameType,TXTFramePtr,FramesV2_getTXXX,PrintFrame_TXTF);
+    ADD_FRAME(TXTFrameList,ID3v2TXTFrameType,TXTFramePtr,GetFrame_TXXX,PrintFrame_TXTF);
 }
 
 int AddFrame_addWXXX(ListFramePtr *WXXXFrameList,int version){
-    ADD_FRAME(WXXXFrameList,ID3v2WXXXFrameType,WXXXFramePtr,FramesV2_getWXXX,PrintFrame_WXXX);
+    ADD_FRAME(WXXXFrameList,ID3v2WXXXFrameType,WXXXFramePtr,GetFrame_WXXX,PrintFrame_WXXX);
 }
 
 int AddFrame_addAPIC(ListFramePtr *APICFrameList,int version){
-    ADD_FRAME(APICFrameList,ID3v2APICFrameType,APICFramePtr,FramesV2_getAPIC,PrintFrame_APIC);
+    ADD_FRAME(APICFrameList,ID3v2APICFrameType,APICFramePtr,GetFrame_APIC,PrintFrame_APIC);
 }
 
 int AddFrame_addCOMM(ListFramePtr *COMMFrameList,int version){
-    ADD_FRAME(COMMFrameList,ID3v2COMMFrameType,COMMFramePtr,FramesV2_getCOMM,PrintFrame_COMM);
+    ADD_FRAME(COMMFrameList,ID3v2COMMFrameType,COMMFramePtr,GetFrame_COMM,PrintFrame_COMM);
 }
 
 int AddFrame_addTXTF(ListFramePtr *TXTFrameList,char *frameID,int version){
@@ -53,7 +53,7 @@ int AddFrame_addTXTF(ListFramePtr *TXTFrameList,char *frameID,int version){
         ListFramePtr_deleteActive(TXTFrameList);
         incrementedSize -= deletedSize;
     }
-    TXTFramePtr = FramesV2_getTXTF(frameID,version);
+    TXTFramePtr = GetFrame_TXTF(frameID,version);
     ListFramePtr_insertLast(TXTFrameList,TXTFramePtr);
     incrementedSize += FramesV2_getFrameSize(version,TXTFramePtr->header);
     PrintFrame_TXTF(*TXTFramePtr);
@@ -81,7 +81,7 @@ int AddFrame_addWWWF(ListFramePtr *WWWFrameList,char *frameID,int version){
         ListFramePtr_deleteActive(WWWFrameList);
         incrementedSize -= deletedSize;
     }
-    WWWFramePtr = FramesV2_getWWWF(frameID,version);
+    WWWFramePtr = GetFrame_WWWF(frameID,version);
     ListFramePtr_insertLast(WWWFrameList,WWWFramePtr);
     incrementedSize += FramesV2_getFrameSize(version,WWWFramePtr->header);
     PrintFrame_WWWF(*WWWFramePtr);

@@ -7,6 +7,8 @@
 #include "StoreFrameManager.h"
 #include "SizeFrameManager.h"
 #include <string.h>
+#include "GetFrameManager.h"
+
 
 #define FREE_FRAME_LIST(frameList,frameType,freeFrameFunc)\
     ListFramePtr_setFirstActive(&ID3Tag->frameList);\
@@ -164,28 +166,16 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
 void ID3v2_addFrame(ID3TagType *ID3Tag, char *frameID){
     int incrementedSize = 0;
     int oldSize = 0;
-    if(strncasecmp(frameID,"TXXX",4)==0){ 
-        ADD_FRAME_LIST(TXTFrameList,AddFrame_addTXXX);
-    }    
+    if(strncasecmp(frameID,"TXXX",4)==0){ADD_FRAME_LIST(TXTFrameList,AddFrame_addTXXX);}    
     else if(strncasecmp(frameID,"T",1)==0){ 
-        if(FramesV2_validTextFrameId(frameID)){
-            ADD_SINGLE_FRAME_LIST(TXTFrameList, AddFrame_addTXTF, frameID);
-        }
+        if(FramesV2_validTextFrameId(frameID)){ ADD_SINGLE_FRAME_LIST(TXTFrameList, AddFrame_addTXTF, frameID);}
         else printf("Not supported tag to include");
     }
-    else if(strncasecmp(frameID,"WXXX",4)==0){
-        ADD_FRAME_LIST(WXXXFrameList,AddFrame_addWXXX);
-    }
+    else if(strncasecmp(frameID,"WXXX",4)==0){ADD_FRAME_LIST(WXXXFrameList,AddFrame_addWXXX);}
     else if(strncasecmp(frameID,"W",1)==0){
-        if(FramesV2_validWebFrameId(frameID)){
-            ADD_SINGLE_FRAME_LIST(WWWFrameList, AddFrame_addWWWF, frameID);
-        }
+        if(FramesV2_validWebFrameId(frameID)){ADD_SINGLE_FRAME_LIST(WWWFrameList, AddFrame_addWWWF, frameID);}
         else printf("Not supported tag to include");
     }
-    else if(strncasecmp(frameID,"APIC",4)==0){
-        ADD_FRAME_LIST(APICFrameList, AddFrame_addAPIC);
-    }
-    else if(strncasecmp(frameID,"COMM",4)==0){
-        ADD_FRAME_LIST(COMMFrameList, AddFrame_addCOMM);
-    }
+    else if(strncasecmp(frameID,"APIC",4)==0){ADD_FRAME_LIST(APICFrameList, AddFrame_addAPIC);}
+    else if(strncasecmp(frameID,"COMM",4)==0){ADD_FRAME_LIST(COMMFrameList, AddFrame_addCOMM);}
 }
