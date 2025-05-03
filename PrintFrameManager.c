@@ -1,6 +1,13 @@
 #include "PrintFrameManager.h"
 #include <string.h>
 
+#define PRINT_TEXTSTR(frame,txtStr)\
+    for (int i = 0; i < (int)strlen(frame.txtStr.string); i++) {\
+        if(frame.txtStr.string[i] == '\0') printf(" ");\
+        else putchar(frame.txtStr.string[i]);\
+    }\
+    printf("\n");
+
 void PrintFrame_PrintTXTFrames(ListFramePtr *TXTFrameList){
   ID3v2TXTFrameType *TXTFrame;
   ListFramePtr_setFirstActive(TXTFrameList);
@@ -58,7 +65,6 @@ void printTag(ID3TagType *ID3Tag){
   PrintFrame_PrintCOMMFrames(&ID3Tag->COMMFrameList);
   PrintFrame_PrintPRIVFrames(&ID3Tag->PRIVFrameList);
   PrintFrame_PrintAPICFrames(&ID3Tag->APICFrameList);
-  // if(ID3Tag->POPM != NULL) FramesV2_printPOPM(*ID3Tag->POPM);
   PrintFrame_PrintPOPMFrames(&ID3Tag->POPMFrameList);
   if(ID3Tag->MCDI != NULL) FramesV2_printMDCI(*ID3Tag->MCDI);
 }
@@ -224,4 +230,110 @@ void PrintFrame_listFrames(ID3TagType *ID3Tag){
     ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
   }
   if(PRIVCount != 0) printf("FramgeID: PRIV (%d frames)\n",PRIVCount);
+}
+
+void FramesV2_printAPIC(ID3v2APICFrameType APIC){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",APIC.header.frameId);
+  printf("Flags: %u %u\n",APIC.header.flags[0],APIC.header.flags[1]);
+  printf("TextEncoding: %d\n",APIC.textEncoding);
+  printf("MIME type: %s\n",APIC.mimeType.string);
+  printf("apicframe.pictureType: %u\n",APIC.pictureType);
+  printf("apicframe.description: %s\n",APIC.description.string);
+  printf("apicframe.imageSize: %ld\n",APIC.imageDataSize);
+  FramesV2_saveAPICImage(APIC);
+}
+
+void FramesV2_printTXTF(ID3v2TXTFrameType frame){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",frame.header.frameId);
+  printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
+  printf("TextEncoding: %d\n",frame.textEncoding);
+  if(strncasecmp("TXXX",frame.header.frameId,4) == 0){
+      printf("Description: ");
+      for (int i = 0; i < (int)strlen(frame.content.string); i++) {
+          if(frame.content.string[i] == '\0') printf(" ");
+          else putchar(frame.content.string[i]);
+      }
+      printf("\n");
+      printf("Content: ");
+      for (int i = strlen(frame.content.string)+1; i < (int)frame.content.size; i++) {
+          if(frame.content.string[i] == '\0') printf(" ");
+          else putchar(frame.content.string[i]);
+      }
+      printf("\n");
+  }
+  else{
+      printf("Content: ");
+      for (int i = 0; i < (int)frame.content.size; i++) {
+          if(frame.content.string[i] == '\0') printf(" ");
+          else putchar(frame.content.string[i]);
+      }
+      printf("\n");
+  }
+}
+
+void FramesV2_printCOMM(ID3v2COMMFrameType COMM){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",COMM.header.frameId);
+  printf("Flags: %u %u\n",COMM.header.flags[0],COMM.header.flags[1]);
+  printf("TextEncoding: %d\n",COMM.textEncoding);
+  printf("Language: %s\n",COMM.language);
+  printf("Descript: ");
+  PRINT_TEXTSTR(COMM,contentDescript);
+  printf("Text: ");
+  PRINT_TEXTSTR(COMM,actualText);
+}
+
+void FramesV2_printPRIV(ID3v2PRIVFrameType PRIV){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",PRIV.header.frameId);
+  printf("Flags: %u %u\n",PRIV.header.flags[0],PRIV.header.flags[1]);
+  printf("Owner: ");
+  PRINT_TEXTSTR(PRIV,owner);
+}
+
+void FramesV2_printMDCI(ID3v2MCDIFrameType MDCI){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",MDCI.header.frameId);
+  printf("Flags: %u %u\n",MDCI.header.flags[0],MDCI.header.flags[1]);
+}
+
+void FramesV2_printPOPM(ID3v2POPMFrameType POPM){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",POPM.header.frameId);
+  printf("Flags: %u %u\n",POPM.header.flags[0],POPM.header.flags[1]);
+  printf("User email: %s\n",POPM.userEmail.string);
+  printf("Ratin: %d\n",POPM.rating);
+}
+
+void FramesV2_printDefaultFrame(ID3v2DefaultFrameType DefaultFrame){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",DefaultFrame.header.frameId);
+  printf("Flags: %u %u\n",DefaultFrame.header.flags[0],DefaultFrame.header.flags[1]);
+}
+
+void FramesV2_printWWWF(ID3v2WWWFrameType WWWF){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",WWWF.header.frameId);
+  printf("Flags: %u %u\n",WWWF.header.flags[0],WWWF.header.flags[1]);
+  printf("URL: ");
+  PRINT_TEXTSTR(WWWF,url);
+}
+
+void FramesV2_printWXXX(ID3v2WXXXFrameType WXXX){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",WXXX.header.frameId);
+  printf("Flags: %u %u\n",WXXX.header.flags[0],WXXX.header.flags[1]);
+  printf("TextEncoding: %d\n",WXXX.textEncoding);
+  printf("Description: ");
+  PRINT_TEXTSTR(WXXX,description);
+  printf("url: ");
+}
+
+void FramesV2_saveAPICImage(ID3v2APICFrameType APIC){
+  FILE *imageFile = fopen("cover.jpg", "wb");
+  fwrite(APIC.imageData, 1, APIC.imageDataSize, imageFile);
+  fclose(imageFile);
+  printf("File saved in ./cover.jpg\n");
 }

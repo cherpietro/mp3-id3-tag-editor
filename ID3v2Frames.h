@@ -73,51 +73,41 @@ typedef struct {
 } ID3v2DefaultFrameType;
 
 
-void FramesV2_storeHeader(FILE*, ID3v2FrameHeaderType*);
 uint32_t FramesV2_getFrameSize(int ,ID3v2FrameHeaderType);
 void FramesV2_updateFrameSize(int , ID3v2FrameHeaderType *,uint32_t );
 
-void FramesV2_storeAPIC(FILE*, uint32_t, ID3v2APICFrameType*);
 void FramesV2_saveAPICImage(ID3v2APICFrameType);
 void FramesV2_printAPIC(ID3v2APICFrameType);
 void FramesV2_freeAPIC(ID3v2APICFrameType**);
 ID3v2APICFrameType* FramesV2_getAPIC(int);
 
-void FramesV2_storeTXTF(FILE*, uint32_t,ID3v2TXTFrameType *);
 ID3v2TXTFrameType* FramesV2_getTXXX(int);
 ID3v2TXTFrameType* FramesV2_getTXTF(char *,int);
 void FramesV2_printTXTF(ID3v2TXTFrameType);
 void FramesV2_freeTXTF(ID3v2TXTFrameType**);
 bool FramesV2_validTextFrameId(char *);
 
-void FramesV2_storeCOMM(FILE *, uint32_t , ID3v2COMMFrameType *);
 ID3v2COMMFrameType* FramesV2_getCOMM(int);
 void FramesV2_printCOMM(ID3v2COMMFrameType);
 void FramesV2_freeCOMM(ID3v2COMMFrameType**);
 
-void FramesV2_storePRIV(FILE *, uint32_t , ID3v2PRIVFrameType *);
 void FramesV2_printPRIV(ID3v2PRIVFrameType);
 void FramesV2_freePRIV(ID3v2PRIVFrameType**);
 
-void FramesV2_storeMDCI(FILE*, uint32_t, ID3v2MCDIFrameType*);
 void FramesV2_printMDCI(ID3v2MCDIFrameType);
 void FramesV2_freeMCDI(ID3v2MCDIFrameType**);
 
-void FramesV2_storePOPM(FILE*, uint32_t, ID3v2POPMFrameType*);
 void FramesV2_printPOPM(ID3v2POPMFrameType);
 void FramesV2_freePOPM(ID3v2POPMFrameType**);
 
-void FramesV2_storeDefaultFrame(FILE*, uint32_t, ID3v2DefaultFrameType*);
 void FramesV2_printDefaultFrame(ID3v2DefaultFrameType);
 void FramesV2_freeDefaultFrame(ID3v2DefaultFrameType**);
 
-void FramesV2_storeWWWF(FILE*, uint32_t,ID3v2WWWFrameType *);
 void FramesV2_printWWWF(ID3v2WWWFrameType);
 ID3v2WWWFrameType* FramesV2_getWWWF(char *,int);
 void FramesV2_freeWWWF(ID3v2WWWFrameType**);
 bool FramesV2_validWebFrameId(char *);
 
-void FramesV2_storeWXXX(FILE*, uint32_t,ID3v2WXXXFrameType *);
 void FramesV2_printWXXX(ID3v2WXXXFrameType);
 void FramesV2_freeWXXX(ID3v2WXXXFrameType**);
 ID3v2WXXXFrameType* FramesV2_getWXXX(int);

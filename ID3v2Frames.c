@@ -3,27 +3,12 @@
 #include <string.h>
 #include <ctype.h>
 
-#define STORE_TEXTSTR(frame,txtPtr,txtLen,txtStr)\
-    char *txtPtr = (char*) frameContent + index;\
-    size_t txtLen = strlen(txtPtr)+1;\
-    TxtStr_storeTextString(&frame->txtStr,txtPtr,txtLen);\
-    index+=txtLen;
-
-#define PRINT_TEXTSTR(frame,txtStr)\
-    for (int i = 0; i < (int)strlen(frame.txtStr.string); i++) {\
-        if(frame.txtStr.string[i] == '\0') printf(" ");\
-        else putchar(frame.txtStr.string[i]);\
-    }\
-    printf("\n");
 
 static void cleanInputBuffer(){
     int ch;
     while ((ch = getchar()) != '\n' && ch != EOF);
 }
 
-void FramesV2_storeHeader(FILE *mp3FilePointer, ID3v2FrameHeaderType *header){
-    fread(header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer);
-}
 uint32_t FramesV2_getFrameSize(int version, ID3v2FrameHeaderType header){
     if(version == 4) return syncsafeToSize(header.size);
     else return sizeFromID3v23(header.size);
@@ -33,36 +18,6 @@ void FramesV2_updateFrameSize(int version, ID3v2FrameHeaderType *header,uint32_t
     else saveSizeToID3v23(newSize,header->size);
 }
 
-void FramesV2_storeAPIC(FILE *mp3FilePointer, uint32_t frameSize,ID3v2APICFrameType* APIC){
-    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
-    fread(frameContent, frameSize, 1, mp3FilePointer);
-    size_t index = 0;
-    APIC->textEncoding = frameContent[index++];
-    STORE_TEXTSTR(APIC,mimeTypePtr,mimeTypeLen,mimeType);
-    APIC->pictureType = frameContent[index++];
-    STORE_TEXTSTR(APIC,descPtr,descLen,description);
-    APIC->imageDataSize = frameSize - index;
-    APIC->imageData = (uint8_t *)malloc(APIC->imageDataSize);
-    memcpy(APIC->imageData, frameContent + index, APIC->imageDataSize);
-    free(frameContent);
-}
-void FramesV2_saveAPICImage(ID3v2APICFrameType APIC){
-    FILE *imageFile = fopen("cover.jpg", "wb");
-    fwrite(APIC.imageData, 1, APIC.imageDataSize, imageFile);
-    fclose(imageFile);
-    printf("File saved in ./cover.jpg\n");
-}
-void FramesV2_printAPIC(ID3v2APICFrameType APIC){
-    printf("\n----FRAME----\n");
-    printf("Frame ID: %s\n",APIC.header.frameId);
-    printf("Flags: %u %u\n",APIC.header.flags[0],APIC.header.flags[1]);
-    printf("TextEncoding: %d\n",APIC.textEncoding);
-    printf("MIME type: %s\n",APIC.mimeType.string);
-    printf("apicframe.pictureType: %u\n",APIC.pictureType);
-    printf("apicframe.description: %s\n",APIC.description.string);
-    printf("apicframe.imageSize: %ld\n",APIC.imageDataSize);
-    FramesV2_saveAPICImage(APIC);
-}
 void FramesV2_freeAPIC(ID3v2APICFrameType** APIC){
     TxtStr_freeTextString(&(*APIC)->mimeType);
     TxtStr_freeTextString(&(*APIC)->description);
@@ -111,14 +66,6 @@ ID3v2APICFrameType *FramesV2_getAPIC(int version){
     }
 }
 
-void FramesV2_storeTXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TXTFrameType *TXTF){
-    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
-    fread(frameContent, frameSize, 1, mp3FilePointer);
-    TXTF->textEncoding = frameContent[0];
-    char *contentPtr = (char *)frameContent + 1;
-    TxtStr_storeTextString(&TXTF->content,contentPtr, frameSize-1);
-    free(frameContent);
-}
 ID3v2TXTFrameType * FramesV2_getTXXX(int version){
     char description[65];
     char value[255];
@@ -162,35 +109,7 @@ ID3v2TXTFrameType * FramesV2_getTXTF(char * frameID, int version){
     FramesV2_updateFrameSize(version,&TXTFramePtr->header,TXTFramePtr->content.size + 1);
     return TXTFramePtr;
 }
-void FramesV2_printTXTF(ID3v2TXTFrameType frame){
-    printf("\n----FRAME----\n");
-    printf("Frame ID: %s\n",frame.header.frameId);
-    printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
-    printf("TextEncoding: %d\n",frame.textEncoding);
-    if(strncasecmp("TXXX",frame.header.frameId,4) == 0){
-        printf("Description: ");
-        for (int i = 0; i < (int)strlen(frame.content.string); i++) {
-            if(frame.content.string[i] == '\0') printf(" ");
-            else putchar(frame.content.string[i]);
-        }
-        printf("\n");
-        printf("Content: ");
-        for (int i = strlen(frame.content.string)+1; i < (int)frame.content.size; i++) {
-            if(frame.content.string[i] == '\0') printf(" ");
-            else putchar(frame.content.string[i]);
-        }
-        printf("\n");
-    }
-    else{
-        printf("Content: ");
-        for (int i = 0; i < (int)frame.content.size; i++) {
-            if(frame.content.string[i] == '\0') printf(" ");
-            else putchar(frame.content.string[i]);
-        }
-        printf("\n");
-    }
 
-}
 void FramesV2_freeTXTF(ID3v2TXTFrameType** TXTF){
     TxtStr_freeTextString(&(*TXTF)->content);
     free(*TXTF);
@@ -209,20 +128,6 @@ bool FramesV2_validTextFrameId(char *str) {
     return false;
 }
 
-void FramesV2_storeCOMM(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameType *COMM){
-    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
-    fread(frameContent, frameSize, 1, mp3FilePointer);
-    size_t index = 0;
-    COMM->textEncoding = frameContent[index++];
-    COMM->language[0] = frameContent[index++];
-    COMM->language[1] = frameContent[index++];
-    COMM->language[2] = frameContent[index++];
-    if(frameContent[index] == '\0') index ++;
-    STORE_TEXTSTR(COMM,descPtr,descSize,contentDescript);
-    
-    STORE_TEXTSTR(COMM,contentPtr,contentSize,actualText);
-    free(frameContent);
-}
 ID3v2COMMFrameType* FramesV2_getCOMM(int version){
     char description[65];
     char content[255];
@@ -255,18 +160,7 @@ ID3v2COMMFrameType* FramesV2_getCOMM(int version){
     FramesV2_updateFrameSize(version,&COMMFramePtr->header,size);
     return COMMFramePtr;
 }
-void FramesV2_printCOMM(ID3v2COMMFrameType COMM){
-    printf("\n----FRAME----\n");
-    printf("Frame ID: %s\n",COMM.header.frameId);
-    printf("Flags: %u %u\n",COMM.header.flags[0],COMM.header.flags[1]);
-    printf("TextEncoding: %d\n",COMM.textEncoding);
-    printf("Language: %s\n",COMM.language);
-    printf("Descript: ");
-    PRINT_TEXTSTR(COMM,contentDescript);
-    printf("Text: ");
-    PRINT_TEXTSTR(COMM,actualText);
-    
-}
+
 void FramesV2_freeCOMM(ID3v2COMMFrameType** COMM){
     TxtStr_freeTextString(&(*COMM)->actualText);
     TxtStr_freeTextString(&(*COMM)->contentDescript);
@@ -274,14 +168,7 @@ void FramesV2_freeCOMM(ID3v2COMMFrameType** COMM){
     *COMM = NULL;
 }
 
-void FramesV2_printPRIV(ID3v2PRIVFrameType PRIV){
-    printf("\n----FRAME----\n");
-    printf("Frame ID: %s\n",PRIV.header.frameId);
-    printf("Flags: %u %u\n",PRIV.header.flags[0],PRIV.header.flags[1]);
-    printf("Owner: ");
-    PRINT_TEXTSTR(PRIV,owner);
-}
-void FramesV2_storePRIV(FILE *mp3FilePointer, uint32_t frameSize, ID3v2PRIVFrameType *frame){
+void StoreFrame_PRIV(FILE *mp3FilePointer, uint32_t frameSize, ID3v2PRIVFrameType *frame){
     uint8_t *frameContent = (uint8_t *)malloc(frameSize);
     fread(frameContent, frameSize, 1, mp3FilePointer);
 
@@ -303,77 +190,24 @@ void FramesV2_freePRIV(ID3v2PRIVFrameType** PRIV){
     *PRIV = NULL;
 }
 
-void FramesV2_storeMDCI(FILE *mp3FilePointer, uint32_t frameSize,ID3v2MCDIFrameType* MDCI){
-    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
-    fread(frameContent, frameSize, 1, mp3FilePointer);
-    char *ptr = (char *)frameContent;
-    TxtStr_storeTextString(&(MDCI)->CDTOC,ptr, frameSize);
-    free(frameContent);
-}
-void FramesV2_printMDCI(ID3v2MCDIFrameType MDCI){
-    printf("\n----FRAME----\n");
-    printf("Frame ID: %s\n",MDCI.header.frameId);
-    printf("Flags: %u %u\n",MDCI.header.flags[0],MDCI.header.flags[1]);
-}
 void FramesV2_freeMCDI(ID3v2MCDIFrameType **MCDI){
     TxtStr_freeTextString(&(*MCDI)->CDTOC);
     free(*MCDI);
     *MCDI = NULL;
 }
 
-void FramesV2_storePOPM(FILE *mp3FilePointer, uint32_t frameSize,ID3v2POPMFrameType* POPM){
-    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
-    fread(frameContent, frameSize, 1, mp3FilePointer);
-
-    size_t index = 0;
-    char *emailPtr = (char *)frameContent;
-    size_t emailSize = strlen(emailPtr) + 1;
-    TxtStr_storeTextString(&(POPM)->userEmail,emailPtr,emailSize);
-    index += emailSize;
-    char *ratingPtr = (char *)frameContent + index ; 
-    (POPM)->rating = ratingPtr[0];
-    char *counterPtr = (char *)frameContent + index +1; 
-    (POPM)->counter[0] = counterPtr[0];
-    (POPM)->counter[1] = counterPtr[1];
-    (POPM)->counter[2] = counterPtr[2];
-    (POPM)->counter[3] = counterPtr[3];
-    free(frameContent);
-}
-void FramesV2_printPOPM(ID3v2POPMFrameType POPM){
-    printf("\n----FRAME----\n");
-    printf("Frame ID: %s\n",POPM.header.frameId);
-    printf("Flags: %u %u\n",POPM.header.flags[0],POPM.header.flags[1]);
-    printf("User email: %s\n",POPM.userEmail.string);
-    printf("Ratin: %d\n",POPM.rating);
-}
 void FramesV2_freePOPM(ID3v2POPMFrameType **POPM){
     TxtStr_freeTextString(&(*POPM)->userEmail);
     free(*POPM);
     *POPM = NULL;
 }
 
-void FramesV2_storeDefaultFrame(FILE* mp3FilePointer, uint32_t frameSize, ID3v2DefaultFrameType *DefaultFrame){
-    (DefaultFrame)->frameData = (uint8_t *)malloc(frameSize);
-    fread((DefaultFrame)->frameData, frameSize, 1, mp3FilePointer);
-}
-void FramesV2_printDefaultFrame(ID3v2DefaultFrameType DefaultFrame){
-    printf("\n----FRAME----\n");
-    printf("Frame ID: %s\n",DefaultFrame.header.frameId);
-    printf("Flags: %u %u\n",DefaultFrame.header.flags[0],DefaultFrame.header.flags[1]);
-}
 void FramesV2_freeDefaultFrame(ID3v2DefaultFrameType **DefaultFrame){
     free((*DefaultFrame)->frameData);
     free(*DefaultFrame);
     *DefaultFrame = NULL;
 }
 
-void FramesV2_storeWWWF(FILE* mp3FilePointer, uint32_t frameSize,ID3v2WWWFrameType *WWWF){
-    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
-    fread(frameContent, frameSize, 1, mp3FilePointer);
-    char *urlPtr = (char *)frameContent;
-    TxtStr_storeTextString(&(WWWF)->url,urlPtr,frameSize);
-    free(frameContent);
-}
 ID3v2WWWFrameType * FramesV2_getWWWF(char * frameID, int version){
     char url[255];
     ID3v2WWWFrameType *WWWFramePtr = (ID3v2WWWFrameType*) malloc(sizeof(ID3v2WWWFrameType));
@@ -389,13 +223,7 @@ ID3v2WWWFrameType * FramesV2_getWWWF(char * frameID, int version){
     FramesV2_updateFrameSize(version,&WWWFramePtr->header,WWWFramePtr->url.size);
     return WWWFramePtr;
 }
-void FramesV2_printWWWF(ID3v2WWWFrameType WWWF){
-    printf("\n----FRAME----\n");
-    printf("Frame ID: %s\n",WWWF.header.frameId);
-    printf("Flags: %u %u\n",WWWF.header.flags[0],WWWF.header.flags[1]);
-    printf("URL: ");
-    PRINT_TEXTSTR(WWWF,url);
-}
+
 void FramesV2_freeWWWF(ID3v2WWWFrameType **WWWF){
     TxtStr_freeTextString(&(*WWWF)->url);
     free(*WWWF);
@@ -411,15 +239,6 @@ bool FramesV2_validWebFrameId(char *str) {
     return false;
 }
 
-void FramesV2_storeWXXX(FILE *mp3FilePointer, uint32_t frameSize,ID3v2WXXXFrameType *WXXX){
-    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
-    fread(frameContent, frameSize, 1, mp3FilePointer);
-    size_t index = 0;
-    WXXX->textEncoding = frameContent[index++];
-    STORE_TEXTSTR(WXXX,descPtr,descSize,description);
-    STORE_TEXTSTR(WXXX,urlPtr,urlSize,url);
-    free(frameContent);
-}
 ID3v2WXXXFrameType * FramesV2_getWXXX(int version){
     ID3v2WXXXFrameType *WXXXFramePtr = (ID3v2WXXXFrameType*) malloc(sizeof(ID3v2WXXXFrameType));
     char url[255];
@@ -443,15 +262,7 @@ ID3v2WXXXFrameType * FramesV2_getWXXX(int version){
     FramesV2_updateFrameSize(version,&WXXXFramePtr->header,WXXXFramePtr->url.size+WXXXFramePtr->description.size+1);
     return WXXXFramePtr;
 }
-void FramesV2_printWXXX(ID3v2WXXXFrameType WXXX){
-    printf("\n----FRAME----\n");
-    printf("Frame ID: %s\n",WXXX.header.frameId);
-    printf("Flags: %u %u\n",WXXX.header.flags[0],WXXX.header.flags[1]);
-    printf("TextEncoding: %d\n",WXXX.textEncoding);
-    printf("Description: ");
-    PRINT_TEXTSTR(WXXX,description);
-    printf("url: ");
-}
+
 void FramesV2_freeWXXX(ID3v2WXXXFrameType **WXXX){
         TxtStr_freeTextString(&(*WXXX)->description);
         TxtStr_freeTextString(&(*WXXX)->url);

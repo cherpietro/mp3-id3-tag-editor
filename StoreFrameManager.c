@@ -1,6 +1,14 @@
 #include "StoreFrameManager.h"
 #include <string.h>
 
+
+#define STORE_TEXTSTR(frame,txtPtr,txtLen,txtStr)\
+    char *txtPtr = (char*) frameContent + index;\
+    size_t txtLen = strlen(txtPtr)+1;\
+    TxtStr_storeTextString(&frame->txtStr,txtPtr,txtLen);\
+    index+=txtLen;
+
+
 #define STORE_LIST(frameList,frameType,storeFunct)\
     frameType *framePtr = (frameType *)malloc(sizeof(frameType));\
     framePtr->header = header;\
@@ -12,111 +20,115 @@
     storeFunct(mp3FilePointer,frameSize, ID3Tag->frame);\
     ID3Tag->frame->header = header;
 
+void StoreFrame_Header(FILE *mp3FilePointer, ID3v2FrameHeaderType *header){
+    fread(header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer);
+}
+
 bool StoreFrame_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     ID3v2FrameHeaderType header;
-    FramesV2_storeHeader(mp3FilePointer,&header);
+    StoreFrame_Header(mp3FilePointer,&header);
     uint32_t frameSize = FramesV2_getFrameSize(ID3Tag->header.version[0],header); 
     printf("FrameID: %s\n",header.frameId);
     if (memcmp(header.frameId, "\0\0\0\0", 4) == 0) return true;
     else if(strncmp(header.frameId,"T",1)==0){
-        STORE_LIST(TXTFrameList,ID3v2TXTFrameType,FramesV2_storeTXTF);
+        STORE_LIST(TXTFrameList,ID3v2TXTFrameType,StoreFrame_TXTF);
     }
-    else if(strncmp(header.frameId,"COMM",4)==0){ STORE_LIST(COMMFrameList,ID3v2COMMFrameType,FramesV2_storeCOMM);}
-    else if(strncmp(header.frameId,"PRIV",4)==0){ STORE_LIST(PRIVFrameList,ID3v2PRIVFrameType,FramesV2_storePRIV);}
-    else if(strncmp(header.frameId,"APIC",4)==0){ STORE_LIST(APICFrameList,ID3v2APICFrameType,FramesV2_storeAPIC);}
-    else if(strncmp(header.frameId,"POPM",4)==0){ STORE_LIST(POPMFrameList,ID3v2POPMFrameType,FramesV2_storePOPM);}
+    else if(strncmp(header.frameId,"COMM",4)==0){ STORE_LIST(COMMFrameList,ID3v2COMMFrameType,StoreFrame_COMM);}
+    else if(strncmp(header.frameId,"PRIV",4)==0){ STORE_LIST(PRIVFrameList,ID3v2PRIVFrameType,StoreFrame_PRIV);}
+    else if(strncmp(header.frameId,"APIC",4)==0){ STORE_LIST(APICFrameList,ID3v2APICFrameType,StoreFrame_APIC);}
+    else if(strncmp(header.frameId,"POPM",4)==0){ STORE_LIST(POPMFrameList,ID3v2POPMFrameType,StoreFrame_POPM);}
     else if(strncmp(header.frameId,"WXXX",4)==0){
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-        STORE_LIST(WXXXFrameList,ID3v2WXXXFrameType,FramesV2_storeWXXX);
+        STORE_LIST(WXXXFrameList,ID3v2WXXXFrameType,StoreFrame_WXXX);
     }
     else if(strncmp(header.frameId,"W",1)==0){
-        STORE_LIST(WWWFrameList,ID3v2WWWFrameType,FramesV2_storeWWWF);
+        STORE_LIST(WWWFrameList,ID3v2WWWFrameType,StoreFrame_WWWF);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"MCDI",4)==0){
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-        STORE_FRAME(MCDI,ID3v2MCDIFrameType,FramesV2_storeMDCI);
+        STORE_FRAME(MCDI,ID3v2MCDIFrameType,StoreFrame_MDCI);
     }
     //DEFAULT FRAMES
     else if(strncmp(header.frameId,"IPLS",4)==0){
-        STORE_FRAME(IPLS,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_FRAME(IPLS,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"SYTC",4)==0){
-        STORE_FRAME(SYTC,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_FRAME(SYTC,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"USER",4)==0){
-        STORE_FRAME(USER,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_FRAME(USER,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"OWNE",4)==0){
-        STORE_FRAME(OWNE,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_FRAME(OWNE,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"PCNT",4)==0){
-        STORE_FRAME(PCNT,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_FRAME(PCNT,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"RVRB",4)==0){
-        STORE_FRAME(RVRB,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_FRAME(RVRB,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"EQUA",4)==0){
-        STORE_FRAME(EQUA,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_FRAME(EQUA,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"MLLT",4)==0){
-        STORE_FRAME(MLLT,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_FRAME(MLLT,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"ETCO",4)==0){
-        STORE_FRAME(ETCO,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_FRAME(ETCO,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"RVAD",4)==0){
-        STORE_FRAME(RVAD,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_FRAME(RVAD,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"POSS",4)==0){
-        STORE_FRAME(POSS,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_FRAME(POSS,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"COMR",4)==0){
-        STORE_FRAME(COMR,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_FRAME(COMR,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     //default Lists
     else if(strncmp(header.frameId,"UFID",4)==0){
-        STORE_LIST(UFIDFrameList,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_LIST(UFIDFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"USLT",4)==0){
-        STORE_LIST(USLTFrameList,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_LIST(USLTFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"SYLT",4)==0){
-        STORE_LIST(SYLTFrameList,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_LIST(SYLTFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"GEOB",4)==0){
-        STORE_LIST(GEOBFrameList,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_LIST(GEOBFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"LINK",4)==0){
-        STORE_LIST(LINKFrameList,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_LIST(LINKFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"AENC",4)==0){
-        STORE_LIST(AENCFrameList,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_LIST(AENCFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"ENCR",4)==0){
-        STORE_LIST(ENCRFrameList,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_LIST(ENCRFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"GRID",4)==0){
-        STORE_LIST(GRIDFrameList,ID3v2DefaultFrameType,FramesV2_storeDefaultFrame);
+        STORE_LIST(GRIDFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else{
@@ -126,4 +138,92 @@ bool StoreFrame_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag)
         free(buffer);
     }
     return 0;
+}
+
+void StoreFrame_APIC(FILE *mp3FilePointer, uint32_t frameSize,ID3v2APICFrameType* APIC){
+    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+    fread(frameContent, frameSize, 1, mp3FilePointer);
+    size_t index = 0;
+    APIC->textEncoding = frameContent[index++];
+    STORE_TEXTSTR(APIC,mimeTypePtr,mimeTypeLen,mimeType);
+    APIC->pictureType = frameContent[index++];
+    STORE_TEXTSTR(APIC,descPtr,descLen,description);
+    APIC->imageDataSize = frameSize - index;
+    APIC->imageData = (uint8_t *)malloc(APIC->imageDataSize);
+    memcpy(APIC->imageData, frameContent + index, APIC->imageDataSize);
+    free(frameContent);
+}
+
+void StoreFrame_TXTF(FILE *mp3FilePointer, uint32_t frameSize, ID3v2TXTFrameType *TXTF){
+    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+    fread(frameContent, frameSize, 1, mp3FilePointer);
+    TXTF->textEncoding = frameContent[0];
+    char *contentPtr = (char *)frameContent + 1;
+    TxtStr_storeTextString(&TXTF->content,contentPtr, frameSize-1);
+    free(frameContent);
+}
+
+void StoreFrame_COMM(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameType *COMM){
+    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+    fread(frameContent, frameSize, 1, mp3FilePointer);
+    size_t index = 0;
+    COMM->textEncoding = frameContent[index++];
+    COMM->language[0] = frameContent[index++];
+    COMM->language[1] = frameContent[index++];
+    COMM->language[2] = frameContent[index++];
+    if(frameContent[index] == '\0') index ++;
+    STORE_TEXTSTR(COMM,descPtr,descSize,contentDescript);
+    
+    STORE_TEXTSTR(COMM,contentPtr,contentSize,actualText);
+    free(frameContent);
+}
+
+void StoreFrame_MDCI(FILE *mp3FilePointer, uint32_t frameSize,ID3v2MCDIFrameType* MDCI){
+    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+    fread(frameContent, frameSize, 1, mp3FilePointer);
+    char *ptr = (char *)frameContent;
+    TxtStr_storeTextString(&(MDCI)->CDTOC,ptr, frameSize);
+    free(frameContent);
+}
+
+void StoreFrame_POPM(FILE *mp3FilePointer, uint32_t frameSize,ID3v2POPMFrameType* POPM){
+    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+    fread(frameContent, frameSize, 1, mp3FilePointer);
+
+    size_t index = 0;
+    char *emailPtr = (char *)frameContent;
+    size_t emailSize = strlen(emailPtr) + 1;
+    TxtStr_storeTextString(&(POPM)->userEmail,emailPtr,emailSize);
+    index += emailSize;
+    char *ratingPtr = (char *)frameContent + index ; 
+    (POPM)->rating = ratingPtr[0];
+    char *counterPtr = (char *)frameContent + index +1; 
+    (POPM)->counter[0] = counterPtr[0];
+    (POPM)->counter[1] = counterPtr[1];
+    (POPM)->counter[2] = counterPtr[2];
+    (POPM)->counter[3] = counterPtr[3];
+    free(frameContent);
+}
+
+void StoreFrame_WWWF(FILE* mp3FilePointer, uint32_t frameSize,ID3v2WWWFrameType *WWWF){
+    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+    fread(frameContent, frameSize, 1, mp3FilePointer);
+    char *urlPtr = (char *)frameContent;
+    TxtStr_storeTextString(&(WWWF)->url,urlPtr,frameSize);
+    free(frameContent);
+}
+
+void StoreFrame_WXXX(FILE *mp3FilePointer, uint32_t frameSize,ID3v2WXXXFrameType *WXXX){
+    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+    fread(frameContent, frameSize, 1, mp3FilePointer);
+    size_t index = 0;
+    WXXX->textEncoding = frameContent[index++];
+    STORE_TEXTSTR(WXXX,descPtr,descSize,description);
+    STORE_TEXTSTR(WXXX,urlPtr,urlSize,url);
+    free(frameContent);
+}
+
+void StoreFrame_DefaultFrame(FILE* mp3FilePointer, uint32_t frameSize, ID3v2DefaultFrameType *DefaultFrame){
+    (DefaultFrame)->frameData = (uint8_t *)malloc(frameSize);
+    fread((DefaultFrame)->frameData, frameSize, 1, mp3FilePointer);
 }
