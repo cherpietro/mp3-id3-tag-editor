@@ -18,12 +18,11 @@ typedef struct {
     ListFramePtr COMMFrameList;
     //Not supported addition
     ListFramePtr PRIVFrameList;
-    //Pending to include addition
     ID3v2MCDIFrameType *MCDI;
-    /*NotTested*/
+    //Pending to include addition
     ListFramePtr POPMFrameList; //LIST
     /**/
-
+    
     /*TO IMPLEMENT*/
     ListFramePtr UFIDFrameList; //LIST
     ListFramePtr USLTFrameList; //LIST
