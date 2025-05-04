@@ -70,7 +70,6 @@ void ID3v2_free(ID3TagType *ID3Tag){
     FREE_FRAME_LIST(COMMFrameList,ID3v2COMMFrameType,FramesV2_freeCOMM);
     FREE_FRAME_LIST(PRIVFrameList,ID3v2PRIVFrameType,FramesV2_freePRIV);
     FREE_FRAME_LIST(POPMFrameList,ID3v2POPMFrameType,FramesV2_freePOPM);
-    // if(ID3Tag->MCDI != NULL) FramesV2_freeMCDI(&ID3Tag->MCDI);
     if(ID3Tag->MCDI != NULL) FramesV2_freeDefaultFrame(&ID3Tag->MCDI);
 
     FREE_FRAME_LIST(UFIDFrameList,ID3v2DefaultFrameType,FramesV2_freeDefaultFrame);

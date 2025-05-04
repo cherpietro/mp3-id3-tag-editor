@@ -9,7 +9,7 @@
     printf("\n");
 
 #define PRINT_LIST_FRAME(FrameLst,FramePtr,FrameType,printFunct)\
-FrameType *FramePtr;\
+  FrameType *FramePtr;\
   ListFramePtr_setFirstActive(&FrameLst);\
   while(FrameLst.active != NULL){\
     FramePtr = (FrameType *)ListFramePtr_getActiveFramePtr(FrameLst);\
@@ -17,10 +17,29 @@ FrameType *FramePtr;\
     ListFramePtr_setNextActive(&FrameLst);\
   }
 
+#define ENUMERATE_LIST_FRAME(ListFramePtr,frameID)\
+  Count = 0;\
+  ListFramePtr_setFirstActive(&(*ID3Tag).ListFramePtr);\
+  while(ID3Tag->ListFramePtr.active != NULL){\
+      Count += 1;\
+      ListFramePtr_setNextActive(&ID3Tag->ListFramePtr);\
+    }\
+  if(Count != 0) {sprintf(buffer,"FramgeID: %s (%d frames)\n",frameID,Count);printf(buffer);}
+
+#define ENUMERATE_LIST_SINGLE_FRAME(ListFramePtr,framePtr,frameType)\
+  ListFramePtr_setFirstActive(&ID3Tag->ListFramePtr);\
+  frameType * framePtr = ListFramePtr_getActiveFramePtr(ID3Tag->ListFramePtr);\
+  while (framePtr != NULL){\
+    printf("FramgeID: %s\n",framePtr->header.frameId);\
+    ListFramePtr_setNextActive(&ID3Tag->ListFramePtr);\
+    framePtr = ListFramePtr_getActiveFramePtr(ID3Tag->ListFramePtr);\
+  }
+
 void printTag(ID3TagType *ID3Tag){
   int version = ID3Tag->header.version[0];
   HeaderV2_printTagHeader(ID3Tag->header);
   PRINT_LIST_FRAME(ID3Tag->TXTFrameList,TXTFrame,ID3v2TXTFrameType,PrintFrame_TXTF);  
+  PRINT_LIST_FRAME(ID3Tag->TXXXFrameList,TXXXFrame,ID3v2TXXXFrameType,PrintFrame_TXXX);  
   PRINT_LIST_FRAME(ID3Tag->COMMFrameList,COMMFrame,ID3v2COMMFrameType,PrintFrame_COMM); 
   PRINT_LIST_FRAME(ID3Tag->PRIVFrameList,PRIVFrame,ID3v2PRIVFrameType,PrintFrame_PRIV); 
   PRINT_LIST_FRAME(ID3Tag->APICFrameList,APICFrame,ID3v2APICFrameType,PrintFrame_APIC); 
@@ -28,38 +47,37 @@ void printTag(ID3TagType *ID3Tag){
   PRINT_LIST_FRAME(ID3Tag->WWWFrameList,WWWFrame,ID3v2WWWFrameType,PrintFrame_WWWF); 
   PRINT_LIST_FRAME(ID3Tag->WXXXFrameList,WXXXFrame,ID3v2WXXXFrameType,PrintFrame_WXXX); 
   if(ID3Tag->MCDI != NULL) PrintFrame_DefaultFrame(*ID3Tag->MCDI,version);
+  if(ID3Tag->PCNT != NULL) PrintFrame_PCNT(*ID3Tag->PCNT,version);
+
+  PRINT_LIST_FRAME(ID3Tag->UFIDFrameList,UFIDFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame); 
+  PRINT_LIST_FRAME(ID3Tag->SYLTFrameList,SYLTFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame); 
+  PRINT_LIST_FRAME(ID3Tag->GEOBFrameList,GEOBFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame); 
+  PRINT_LIST_FRAME(ID3Tag->LINKFrameList,LINKFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame); 
+  PRINT_LIST_FRAME(ID3Tag->AENCFrameList,AENCFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame); 
+  PRINT_LIST_FRAME(ID3Tag->ENCRFrameList,ENCRFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame); 
+  PRINT_LIST_FRAME(ID3Tag->GRIDFrameList,GRIDFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame); 
+  
+  if(ID3Tag->IPLS != NULL) PrintFrame_DefaultFrame(*ID3Tag->IPLS,version);
+  if(ID3Tag->SYTC != NULL) PrintFrame_DefaultFrame(*ID3Tag->SYTC,version);
+  if(ID3Tag->USER != NULL) PrintFrame_DefaultFrame(*ID3Tag->USER,version);
+  if(ID3Tag->OWNE != NULL) PrintFrame_DefaultFrame(*ID3Tag->OWNE,version);
+  
+  if(ID3Tag->COMR != NULL) PrintFrame_DefaultFrame(*ID3Tag->COMR,version);
+  if(ID3Tag->POSS != NULL) PrintFrame_DefaultFrame(*ID3Tag->POSS,version);
+  if(ID3Tag->RVRB != NULL) PrintFrame_DefaultFrame(*ID3Tag->RVRB,version);
+  if(ID3Tag->EQUA != NULL) PrintFrame_DefaultFrame(*ID3Tag->EQUA,version);
+  if(ID3Tag->MLLT != NULL) PrintFrame_DefaultFrame(*ID3Tag->MLLT,version);
+  if(ID3Tag->ETCO != NULL) PrintFrame_DefaultFrame(*ID3Tag->ETCO,version);
+  if(ID3Tag->RVAD != NULL) PrintFrame_DefaultFrame(*ID3Tag->RVAD,version);
 }
 
 void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
   int version = ID3Tag->header.version[0];
-  if(strncasecmp(frameID,"MCDI",4)==0){ if(ID3Tag->MCDI != NULL) PrintFrame_DefaultFrame(*ID3Tag->MCDI,version);}
-  // else if(strncasecmp(frameID,"SYTC",4)==0){ if(ID3Tag->SYTC != NULL) PrintFrame_SYTC(*ID3Tag->SYTC);}
-  // else if(strncasecmp(frameID,"IPLS",4)==0){ if(ID3Tag->IPLS != NULL) PrintFrame_IPLS(*ID3Tag->IPLS);}
-  // else if(strncasecmp(frameID,"USER",4)==0){ if(ID3Tag->USER != NULL) PrintFrame_USER(*ID3Tag->USER);}
-  // else if(strncasecmp(frameID,"OWNE",4)==0){ if(ID3Tag->OWNE != NULL) PrintFrame_OWNE(*ID3Tag->OWNE);}
-  else if(strncasecmp(frameID,"PCNT",4)==0){ if(ID3Tag->PCNT != NULL) PrintFrame_PCNT(*ID3Tag->PCNT,version);}
-
-  else if(strncasecmp(frameID,"RVRB",4)==0);
-  else if(strncasecmp(frameID,"EQUA",4)==0);
-  else if(strncasecmp(frameID,"MLLT",4)==0);
-  else if(strncasecmp(frameID,"ETCO",4)==0);
-  else if(strncasecmp(frameID,"RVAD",4)==0);
-
-  //LISTS
-  else if(strncasecmp(frameID,"TXXX",4)==0){
+  if(strncasecmp(frameID,"TXXX",4)==0){
     ListFramePtr_setFirstActive(&ID3Tag->TXXXFrameList);
     ID3v2TXXXFrameType * TXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXXXFrameList);
     while (TXXXFramePtr != NULL){
       if(strncasecmp(frameID,TXXXFramePtr->header.frameId,4) == 0) PrintFrame_TXXX(*TXXXFramePtr,version);
-      ListFramePtr_setNextActive(&ID3Tag->TXXXFrameList);
-      TXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXXXFrameList);
-    }
-  }
-  else if(strncasecmp(frameID,"TXXX",4)==0){
-    ListFramePtr_setFirstActive(&ID3Tag->TXXXFrameList);
-    ID3v2TXXXFrameType * TXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXXXFrameList);
-    while (TXXXFramePtr != NULL){
-      PrintFrame_TXXX(*TXXXFramePtr,version);
       ListFramePtr_setNextActive(&ID3Tag->TXXXFrameList);
       TXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXXXFrameList);
     }
@@ -73,7 +91,16 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
     }
     if(TXTFramePtr != NULL) PrintFrame_TXTF(*TXTFramePtr,version);
   }
-  
+  else if(strncasecmp(frameID,"APIC",4)==0){ PRINT_LIST_FRAME(ID3Tag->APICFrameList,APICFrame,ID3v2APICFrameType,PrintFrame_APIC);}
+  else if(strncasecmp(frameID,"W",1)==0){
+    ListFramePtr_setFirstActive(&ID3Tag->WWWFrameList);
+    ID3v2WWWFrameType * WWWFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WWWFrameList);
+    while (WWWFramePtr != NULL && strncasecmp(frameID,WWWFramePtr->header.frameId,4) != 0){
+      ListFramePtr_setNextActive(&ID3Tag->WWWFrameList);
+      WWWFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WWWFrameList);
+    }
+    if(WWWFramePtr != NULL) PrintFrame_WWWF(*WWWFramePtr,version);
+  }
   else if(strncasecmp(frameID,"WXXX",4)==0){
     ListFramePtr_setFirstActive(&ID3Tag->WXXXFrameList);
     ID3v2WXXXFrameType * WXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WXXXFrameList);
@@ -83,108 +110,79 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
       WXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WXXXFrameList);
     }
   }
-  else if(strncasecmp(frameID,"w",1)==0){
-    ListFramePtr_setFirstActive(&ID3Tag->WWWFrameList);
-    ID3v2WWWFrameType * WWWFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WWWFrameList);
-    while (WWWFramePtr != NULL && strncasecmp(frameID,WWWFramePtr->header.frameId,4) != 0){
-      ListFramePtr_setNextActive(&ID3Tag->WWWFrameList);
-      WWWFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WWWFrameList);
-    }
-    if(WWWFramePtr != NULL) PrintFrame_WWWF(*WWWFramePtr,version);
-  }
-  else if(strncasecmp(frameID,"PRIV",4)==0){
-    PRINT_LIST_FRAME(ID3Tag->PRIVFrameList,PRIVFrame,ID3v2PRIVFrameType,PrintFrame_PRIV);
-  }
-  else if(strncasecmp(frameID,"COMM",4)==0){
-    PRINT_LIST_FRAME(ID3Tag->COMMFrameList,COMMFrame,ID3v2COMMFrameType,PrintFrame_COMM); 
-  }
-  else if(strncasecmp(frameID,"APIC",4)==0){
-    PRINT_LIST_FRAME(ID3Tag->APICFrameList,APICFrame,ID3v2APICFrameType,PrintFrame_APIC); 
+  else if(strncasecmp(frameID,"COMM",4)==0){ PRINT_LIST_FRAME(ID3Tag->COMMFrameList,COMMFrame,ID3v2COMMFrameType,PrintFrame_COMM);}
+  else if(strncasecmp(frameID,"POPM",4)==0){ PRINT_LIST_FRAME(ID3Tag->POPMFrameList,POPMFrame,ID3v2POPMFrameType,PrintFrame_POPM);}
+  else if(strncasecmp(frameID,"PCNT",4)==0){ if(ID3Tag->PCNT != NULL) PrintFrame_PCNT(*ID3Tag->PCNT,version);}
+  else if(strncasecmp(frameID,"PRIV",4)==0){ PRINT_LIST_FRAME(ID3Tag->PRIVFrameList,PRIVFrame,ID3v2PRIVFrameType,PrintFrame_PRIV);}
+  else if(strncasecmp(frameID,"MCDI",4)==0){ if(ID3Tag->MCDI != NULL) PrintFrame_DefaultFrame(*ID3Tag->MCDI,version);}
   
+  else if(strncasecmp(frameID,"UFID",4)==0){ PRINT_LIST_FRAME(ID3Tag->UFIDFrameList,UFIDFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame);}
+  else if(strncasecmp(frameID,"USLT",4)==0){ PRINT_LIST_FRAME(ID3Tag->USLTFrameList,USLTFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame);}
+  else if(strncasecmp(frameID,"SYLT",4)==0){ PRINT_LIST_FRAME(ID3Tag->SYLTFrameList,SYLTFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame);}
+  else if(strncasecmp(frameID,"GEOB",4)==0){ PRINT_LIST_FRAME(ID3Tag->GEOBFrameList,GEOBFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame);}
+  else if(strncasecmp(frameID,"LINK",4)==0){ PRINT_LIST_FRAME(ID3Tag->LINKFrameList,LINKFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame);}
+  else if(strncasecmp(frameID,"AENC",4)==0){ PRINT_LIST_FRAME(ID3Tag->AENCFrameList,AENCFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame);}
+  else if(strncasecmp(frameID,"ENCR",4)==0){ PRINT_LIST_FRAME(ID3Tag->ENCRFrameList,ENCRFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame);}
+  else if(strncasecmp(frameID,"GRID",4)==0){ PRINT_LIST_FRAME(ID3Tag->GRIDFrameList,GRIDFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame);}
+
+
+  else if(strncasecmp(frameID,"IPLS",4)==0){ if(ID3Tag->IPLS != NULL) PrintFrame_DefaultFrame(*ID3Tag->IPLS,version);}
+  else if(strncasecmp(frameID,"SYTC",4)==0){ if(ID3Tag->SYTC != NULL) PrintFrame_DefaultFrame(*ID3Tag->SYTC,version);}
+  else if(strncasecmp(frameID,"USER",4)==0){ if(ID3Tag->USER != NULL) PrintFrame_DefaultFrame(*ID3Tag->USER,version);}
+  else if(strncasecmp(frameID,"OWNE",4)==0){ if(ID3Tag->OWNE != NULL) PrintFrame_DefaultFrame(*ID3Tag->OWNE,version);}
+  // else if(strncasecmp(frameID,"IPLS",4)==0){ if(ID3Tag->IPLS != NULL) PrintFrame_IPLS(*ID3Tag->IPLS);}
+  // else if(strncasecmp(frameID,"SYTC",4)==0){ if(ID3Tag->SYTC != NULL) PrintFrame_SYTC(*ID3Tag->SYTC);}
+  // else if(strncasecmp(frameID,"USER",4)==0){ if(ID3Tag->USER != NULL) PrintFrame_USER(*ID3Tag->USER);}
+  // else if(strncasecmp(frameID,"OWNE",4)==0){ if(ID3Tag->OWNE != NULL) PrintFrame_OWNE(*ID3Tag->OWNE);}
+  
+  else if(strncasecmp(frameID,"COMR",4)==0){ if(ID3Tag->COMR != NULL) PrintFrame_DefaultFrame(*ID3Tag->COMR,version);}
+  else if(strncasecmp(frameID,"POSS",4)==0){ if(ID3Tag->POSS != NULL) PrintFrame_DefaultFrame(*ID3Tag->POSS,version);}
+  else if(strncasecmp(frameID,"RVRB",4)==0){ if(ID3Tag->RVRB != NULL) PrintFrame_DefaultFrame(*ID3Tag->RVRB,version);}
+  else if(strncasecmp(frameID,"EQUA",4)==0){ if(ID3Tag->EQUA != NULL) PrintFrame_DefaultFrame(*ID3Tag->EQUA,version);}
+  else if(strncasecmp(frameID,"MLLT",4)==0){ if(ID3Tag->MLLT != NULL) PrintFrame_DefaultFrame(*ID3Tag->MLLT,version);}
+  else if(strncasecmp(frameID,"ETCO",4)==0){ if(ID3Tag->ETCO != NULL) PrintFrame_DefaultFrame(*ID3Tag->ETCO,version);}
+  else if(strncasecmp(frameID,"RVAD",4)==0){ if(ID3Tag->RVAD != NULL) PrintFrame_DefaultFrame(*ID3Tag->RVAD,version);}
+  else{
+    printf("\nNot supported tag\n");
   }
-  else if(strncasecmp(frameID,"POPM",4)==0){ 
-    PRINT_LIST_FRAME(ID3Tag->POPMFrameList,POPMFrame,ID3v2POPMFrameType,PrintFrame_POPM); 
-  }
-  else printf("No frame in tag"); //Because of if anidation doesn't work in all tags
 }
 
 void PrintFrame_listFrames(ID3TagType *ID3Tag){
+  int Count;
+  char buffer[50];
+  ENUMERATE_LIST_SINGLE_FRAME(TXTFrameList,TXTFramePtr,ID3v2TXTFrameType);
+  ENUMERATE_LIST_FRAME(TXXXFrameList,"TXXX");
+  ENUMERATE_LIST_FRAME(APICFrameList,"APIC");
+  ENUMERATE_LIST_SINGLE_FRAME(WWWFrameList,WWWFramePtr,ID3v2WWWFrameType);
+  ENUMERATE_LIST_FRAME(WXXXFrameList,"WXXX");
+  ENUMERATE_LIST_FRAME(COMMFrameList,"COMM");
+  ENUMERATE_LIST_FRAME(POPMFrameList,"POPM");
+  if(ID3Tag->PCNT != NULL) printf("FramgeID: PCNT\n");
+  ENUMERATE_LIST_FRAME(PRIVFrameList,"PRIV");
   if(ID3Tag->MCDI != NULL) printf("FramgeID: MCDI\n");
-  // if(ID3Tag->IPLS != NULL) printf("FramgeID: IPLS\n");
-  // if(ID3Tag->SYTC != NULL) printf("FramgeID: SYTC\n");
-  // if(ID3Tag->USER != NULL) printf("FramgeID: USER\n");
-  // if(ID3Tag->OWNE != NULL) printf("FramgeID: OWNE\n");
-  // if(ID3Tag->PCNT != NULL) printf("FramgeID: PCNT\n");
 
-  ListFramePtr_setFirstActive(&(*ID3Tag).POPMFrameList);
-  int POPMCount = 0;
-  while(ID3Tag->APICFrameList.active != NULL){
-    POPMCount += 1;
-    ListFramePtr_setNextActive(&ID3Tag->POPMFrameList);
-  }
-  if(POPMCount != 0) printf("FramgeID: POPM (%d frames)\n",POPMCount);
+  ENUMERATE_LIST_FRAME(UFIDFrameList,"UFID");
+  ENUMERATE_LIST_FRAME(USLTFrameList,"USLT");
+  ENUMERATE_LIST_FRAME(SYLTFrameList,"SYLT");
+  ENUMERATE_LIST_FRAME(GEOBFrameList,"GEOB");
+  ENUMERATE_LIST_FRAME(LINKFrameList,"LINK");
+  ENUMERATE_LIST_FRAME(AENCFrameList,"AENC");
+  ENUMERATE_LIST_FRAME(ENCRFrameList,"ENCR");
+  ENUMERATE_LIST_FRAME(GRIDFrameList,"GRID");
 
+  if(ID3Tag->IPLS != NULL) printf("FramgeID: IPLS\n");
+  if(ID3Tag->SYTC != NULL) printf("FramgeID: SYTC\n");
+  if(ID3Tag->USER != NULL) printf("FramgeID: USER\n");
+  if(ID3Tag->OWNE != NULL) printf("FramgeID: OWNE\n");
 
-  ListFramePtr_setFirstActive(&(*ID3Tag).APICFrameList);
-  int APICCount = 0;
-  while(ID3Tag->APICFrameList.active != NULL){
-    APICCount += 1;
-    ListFramePtr_setNextActive(&ID3Tag->APICFrameList);
-  }
-  if(APICCount != 0) printf("FramgeID: APIC (%d frames)\n",APICCount);
-
-  ListFramePtr_setFirstActive(&(*ID3Tag).COMMFrameList);
-  int COMMCount = 0;
-  while(ID3Tag->COMMFrameList.active != NULL){
-    COMMCount += 1;
-    ListFramePtr_setNextActive(&ID3Tag->COMMFrameList);
-  }
-  if(COMMCount != 0) printf("FramgeID: COMM (%d frames)\n",COMMCount);
-
-  ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
-  ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
-  while (TXTFramePtr != NULL){
-    printf("FramgeID: %s\n",TXTFramePtr->header.frameId);
-    ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
-    TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
-  }
-
-  int TXTFCount = 0;
-  ListFramePtr_setFirstActive(&ID3Tag->TXXXFrameList);
-  ID3v2TXXXFrameType * TXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXXXFrameList);
-  while (TXXXFramePtr != NULL){
-    if(strncasecmp("TXXX",TXXXFramePtr->header.frameId,4) == 0) TXTFCount += 1;
-    else printf("FramgeID: %s\n",TXXXFramePtr->header.frameId);
-    ListFramePtr_setNextActive(&ID3Tag->TXXXFrameList);
-    TXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXXXFrameList);
-  }
-  if(TXTFCount != 0) printf("FramgeID: TXXX (%d frames)\n",TXTFCount);
+  if(ID3Tag->COMR != NULL) printf("FramgeID: COMR\n");
+  if(ID3Tag->POSS != NULL) printf("FramgeID: POSS\n");
+  if(ID3Tag->RVRB != NULL) printf("FramgeID: RVRB\n");
+  if(ID3Tag->EQUA != NULL) printf("FramgeID: EQUA\n");
+  if(ID3Tag->MLLT != NULL) printf("FramgeID: MLLT\n");
+  if(ID3Tag->ETCO != NULL) printf("FramgeID: ETCO\n");
+  if(ID3Tag->RVAD != NULL) printf("FramgeID: RVAD\n");
   
-  int WXXXCount = 0;
-  ListFramePtr_setFirstActive(&ID3Tag->WXXXFrameList);
-  ID3v2WXXXFrameType * WXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WXXXFrameList);
-  while (WXXXFramePtr != NULL){
-    if(strncasecmp("WXXX",WXXXFramePtr->header.frameId,4) == 0) WXXXCount += 1;
-    ListFramePtr_setNextActive(&ID3Tag->WXXXFrameList);
-    WXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WXXXFrameList);
-  }
-  if(WXXXCount != 0) printf("FramgeID: WXXX (%d frames)\n",WXXXCount);
-
-  ListFramePtr_setFirstActive(&ID3Tag->WWWFrameList);
-  ID3v2WWWFrameType * WWWFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WWWFrameList);
-  while (WWWFramePtr != NULL){
-    printf("FramgeID: %s\n",WWWFramePtr->header.frameId);
-    ListFramePtr_setNextActive(&ID3Tag->WWWFrameList);
-    WWWFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WWWFrameList);
-  }
-  
-  int PRIVCount = 0;
-  ListFramePtr_setFirstActive(&(*ID3Tag).PRIVFrameList);
-  while(ID3Tag->PRIVFrameList.active != NULL){
-    PRIVCount += 1;
-    ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
-  }
-  if(PRIVCount != 0) printf("FramgeID: PRIV (%d frames)\n",PRIVCount);
 }
 
 void PrintFrame_APIC(ID3v2APICFrameType APIC, int version){

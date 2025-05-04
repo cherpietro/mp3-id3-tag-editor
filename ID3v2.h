@@ -11,17 +11,17 @@
 
 typedef struct {
     ID3v2HeaderType header;
-    ListFramePtr TXTFrameList;
     ListFramePtr TXXXFrameList; 
+    ListFramePtr TXTFrameList;
     ListFramePtr APICFrameList; 
     ListFramePtr WWWFrameList; 
     ListFramePtr WXXXFrameList; 
     ListFramePtr COMMFrameList;
     ListFramePtr POPMFrameList; 
+    ID3v2PCNTFrameType *PCNT; //test
     //Not supported addition
     ListFramePtr PRIVFrameList;
-    ID3v2DefaultFrameType *MCDI; // SAVE AS DEFAULT
-    // ID3v2MCDIFrameType *MCDI; // SAVE AS DEFAULT
+    ID3v2DefaultFrameType *MCDI;
     //Pending to include addition
     /**/
     
@@ -39,7 +39,6 @@ typedef struct {
     ID3v2DefaultFrameType *SYTC; 
     ID3v2DefaultFrameType *USER; 
     ID3v2DefaultFrameType *OWNE; 
-    ID3v2PCNTFrameType *PCNT; 
     //
     ID3v2DefaultFrameType *COMR; //???
     ID3v2DefaultFrameType *POSS;
