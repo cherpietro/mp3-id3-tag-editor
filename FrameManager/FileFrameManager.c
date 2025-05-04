@@ -160,7 +160,8 @@ void FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     FileManager_writteCOMMFramesInFile(temp,&ID3Tag->COMMFrameList);
     FileManager_writtePRIVFramesInFile(temp,&ID3Tag->PRIVFrameList);
     FileManager_writteAPICFramesInFile(temp,&ID3Tag->APICFrameList);
-    if(ID3Tag->MCDI != NULL) FileManager_writteMCDIFrameInFile(temp,*ID3Tag->MCDI);
+    // if(ID3Tag->MCDI != NULL) FileManager_writteMCDIFrameInFile(temp,*ID3Tag->MCDI);
+    // if(ID3Tag->MCDI != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->MCDI);
     FileManager_writtePOPMFramesInFile(temp,&ID3Tag->POPMFrameList);
     // if(ID3Tag->POPM != NULL) FileManager_writtePOPMFrameInFile(temp,*ID3Tag->POPM);
     FileManager_writtePadding(temp,ID3Tag->paddingSize);

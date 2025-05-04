@@ -17,7 +17,6 @@ FrameType *FramePtr;\
     ListFramePtr_setNextActive(&FrameLst);\
   }
 
-  //Unused
 void printTag(ID3TagType *ID3Tag){
   int version = ID3Tag->header.version[0];
   HeaderV2_printTagHeader(ID3Tag->header);
@@ -28,12 +27,12 @@ void printTag(ID3TagType *ID3Tag){
   PRINT_LIST_FRAME(ID3Tag->POPMFrameList,POPMFrame,ID3v2POPMFrameType,PrintFrame_POPM); 
   PRINT_LIST_FRAME(ID3Tag->WWWFrameList,WWWFrame,ID3v2WWWFrameType,PrintFrame_WWWF); 
   PRINT_LIST_FRAME(ID3Tag->WXXXFrameList,WXXXFrame,ID3v2WXXXFrameType,PrintFrame_WXXX); 
-  if(ID3Tag->MCDI != NULL) PrintFrame_MDCI(*ID3Tag->MCDI,version);
+  if(ID3Tag->MCDI != NULL) PrintFrame_DefaultFrame(*ID3Tag->MCDI,version);
 }
 
 void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
   int version = ID3Tag->header.version[0];
-  if(strncasecmp(frameID,"MCDI",4)==0){ if(ID3Tag->MCDI != NULL) PrintFrame_MDCI(*ID3Tag->MCDI,version);}
+  if(strncasecmp(frameID,"MCDI",4)==0){ if(ID3Tag->MCDI != NULL) PrintFrame_DefaultFrame(*ID3Tag->MCDI,version);}
   // else if(strncasecmp(frameID,"SYTC",4)==0){ if(ID3Tag->SYTC != NULL) PrintFrame_SYTC(*ID3Tag->SYTC);}
   // else if(strncasecmp(frameID,"IPLS",4)==0){ if(ID3Tag->IPLS != NULL) PrintFrame_IPLS(*ID3Tag->IPLS);}
   // else if(strncasecmp(frameID,"USER",4)==0){ if(ID3Tag->USER != NULL) PrintFrame_USER(*ID3Tag->USER);}

@@ -70,7 +70,8 @@ void ID3v2_free(ID3TagType *ID3Tag){
     FREE_FRAME_LIST(COMMFrameList,ID3v2COMMFrameType,FramesV2_freeCOMM);
     FREE_FRAME_LIST(PRIVFrameList,ID3v2PRIVFrameType,FramesV2_freePRIV);
     FREE_FRAME_LIST(POPMFrameList,ID3v2POPMFrameType,FramesV2_freePOPM);
-    if(ID3Tag->MCDI != NULL) FramesV2_freeMCDI(&ID3Tag->MCDI);
+    // if(ID3Tag->MCDI != NULL) FramesV2_freeMCDI(&ID3Tag->MCDI);
+    if(ID3Tag->MCDI != NULL) FramesV2_freeDefaultFrame(&ID3Tag->MCDI);
 
     FREE_FRAME_LIST(UFIDFrameList,ID3v2DefaultFrameType,FramesV2_freeDefaultFrame);
     FREE_FRAME_LIST(USLTFrameList,ID3v2DefaultFrameType,FramesV2_freeDefaultFrame);
@@ -147,7 +148,7 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
     else if(strncasecmp(frameID,"COMM",4)==0) deletedSize = DeleteFrame_deleteCOMM(&ID3Tag->COMMFrameList,ID3Tag->header.version[0]);
     else if(strncasecmp(frameID,"APIC",4)==0) deletedSize = DeleteFrame_deleteAPIC(&ID3Tag->APICFrameList,ID3Tag->header.version[0]);
     else if(strncasecmp(frameID,"POPM",4)==0) deletedSize = DeleteFrame_deletePOPM(&ID3Tag->POPMFrameList,ID3Tag->header.version[0]);
-    else if(strncasecmp(frameID,"MDCI",4)==0) deletedSize = DeleteFrame_deleteMDCI(&ID3Tag->MCDI,ID3Tag->header.version[0]);
+    else if(strncasecmp(frameID,"MDCI",4)==0) deletedSize = DeleteFrame_default(&ID3Tag->MCDI,ID3Tag->header.version[0]);
     //NOT TESTED
     else if(strncasecmp(frameID,"RVRB",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->RVRB,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"EQUA",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->EQUA,ID3Tag->header.version[0]);}

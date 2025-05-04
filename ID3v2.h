@@ -20,7 +20,8 @@ typedef struct {
     ListFramePtr POPMFrameList; 
     //Not supported addition
     ListFramePtr PRIVFrameList;
-    ID3v2MCDIFrameType *MCDI; // SAVE AS DEFAULT
+    ID3v2DefaultFrameType *MCDI; // SAVE AS DEFAULT
+    // ID3v2MCDIFrameType *MCDI; // SAVE AS DEFAULT
     //Pending to include addition
     /**/
     

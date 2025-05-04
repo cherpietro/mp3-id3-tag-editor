@@ -50,7 +50,7 @@ bool StoreFrame_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag)
     }
     else if(strncmp(header.frameId,"MCDI",4)==0){
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-        STORE_FRAME(MCDI,ID3v2MCDIFrameType,StoreFrame_MDCI);
+        STORE_FRAME(MCDI,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
     }
     //DEFAULT FRAMES
     else if(strncmp(header.frameId,"IPLS",4)==0){
