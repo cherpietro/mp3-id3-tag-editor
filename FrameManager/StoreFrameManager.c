@@ -24,12 +24,12 @@ void StoreFrame_Header(FILE *mp3FilePointer, ID3v2FrameHeaderType *header){
     fread(header, sizeof(ID3v2FrameHeaderType), 1, mp3FilePointer);
 }
 
-bool StoreFrame_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
+int StoreFrame_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     ID3v2FrameHeaderType header;
     StoreFrame_Header(mp3FilePointer,&header);
     uint32_t frameSize = FramesV2_getFrameSize(ID3Tag->header.version[0],header); 
     // printf("FrameID: %s\n",header.frameId);
-    if (memcmp(header.frameId, "\0\0\0\0", 4) == 0) return true;
+    if (memcmp(header.frameId, "\0\0\0\0", 4) == 0) return 1;
     else if(strncmp(header.frameId,"TXXX",4)==0){
         STORE_LIST(TXXXFrameList,ID3v2TXXXFrameType,StoreFrame_TXXX);
     }
@@ -139,6 +139,7 @@ bool StoreFrame_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag)
         uint8_t *buffer = (uint8_t *)malloc(frameSize);
         fread(buffer, frameSize, 1, mp3FilePointer);
         free(buffer);
+        return -1;
     }
     return 0;
 }

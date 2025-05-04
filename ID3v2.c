@@ -109,10 +109,11 @@ int ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
         if(HeaderV2_isID3v2Tag(ID3Tag->header)){
                 HeaderV2_printTagHeader(ID3Tag->header);
                 uint32_t tagSize = HeaderV2_getTagSize(ID3Tag->header);
-                while(!paddingReached && ftell(mp3FilePointer) < tagSize + 10){
+                while(paddingReached == 0 && ftell(mp3FilePointer) < tagSize + 10){
                     paddingReached = StoreFrame_storeNextFrameInStruct(mp3FilePointer,ID3Tag);
                 }
-                if (paddingReached) ID3Tag->paddingSize = (HeaderV2_getTagSize(ID3Tag->header))+10 - (ftell(mp3FilePointer))+10; //ID3Tag size doesn't include header 
+                if (paddingReached == -1) return -2; 
+                ID3Tag->paddingSize = (HeaderV2_getTagSize(ID3Tag->header))+10 - (ftell(mp3FilePointer))+10; //ID3Tag size doesn't include header 
                 return 0;
         }
         else if(!HeaderV2_isID3(ID3Tag->header)){
