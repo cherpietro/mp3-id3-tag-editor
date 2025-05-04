@@ -44,6 +44,7 @@ void FileManager_writteMCDIFrameInFile(FILE *destFilePtr, ID3v2MCDIFrameType MCD
   fwrite(MCDI.CDTOC.string,1, TxtStr_getStringLen(MCDI.CDTOC),destFilePtr);  
 }
 
+//UNUSED
 void FileManager_writtePOPMFrameInFile(FILE *destFilePtr, ID3v2POPMFrameType POPM){
   fwrite(&POPM.header,1, sizeof(POPM.header),destFilePtr);
   fwrite(POPM.userEmail.string,1, TxtStr_getStringLen(POPM.userEmail),destFilePtr);

@@ -52,7 +52,8 @@ typedef struct {
     ID3v2FrameHeaderType header;
     TextStringType userEmail;
     uint8_t rating;
-    char counter[4]; //MAYBE COUNTER CAN INCREASE
+    uint32_t counter; //MAYBE COUNTER CAN INCREASE
+    // char counter[4]; //MAYBE COUNTER CAN INCREASE
 } ID3v2POPMFrameType;
 
 typedef struct {
@@ -88,7 +89,6 @@ void FramesV2_freeWWWF(ID3v2WWWFrameType**);
 void FramesV2_freeWXXX(ID3v2WXXXFrameType**);
 
 
-ID3v2COMMFrameType* GetFrame_COMM(int);
 void FramesV2_freeCOMM(ID3v2COMMFrameType**);
 
 void FramesV2_freePRIV(ID3v2PRIVFrameType**);

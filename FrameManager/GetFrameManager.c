@@ -4,7 +4,6 @@
 
 #define GET_TXTSTR(framePtr,buffer,txtStr)\
     fgets(buffer, sizeof(buffer), stdin);\
-    cleanInputBuffer();\
     buffer[strcspn(buffer, "\n")] = 0;\
     TxtStr_storeTextString(&framePtr->txtStr ,buffer,strlen(buffer)+1); \
 
@@ -114,6 +113,41 @@ ID3v2COMMFrameType* GetFrame_COMM(int version){
     size_t size = 1 + 3 + COMMFramePtr->contentDescript.size + COMMFramePtr->actualText.size;
     FramesV2_updateFrameSize(version,&COMMFramePtr->header,size);
     return COMMFramePtr;
+}
+
+ID3v2POPMFrameType* GetFrame_POPM(int version){
+    char email[65];
+    int rating;  
+    long counter;  
+
+    ID3v2POPMFrameType *POPMFramePtr = (ID3v2POPMFrameType*) malloc(sizeof(ID3v2POPMFrameType));
+    memcpy(POPMFramePtr->header.frameId,"POPM",4); 
+    POPMFramePtr->header.flags[0] = 0;POPMFramePtr->header.flags[1] = 0;
+    printf("Insert user email (64 characters): ");
+    GET_TXTSTR(POPMFramePtr,email,userEmail);
+    printf("\n");
+    do {
+        printf("Insert rating (0-255): ");
+        if (scanf("%d", &rating) != 1) {
+            cleanInputBuffer();
+            free(POPMFramePtr);
+            return NULL;
+        }
+    }while(rating < 0 || rating > 255);  
+    POPMFramePtr->rating = (uint8_t) rating;  
+    do{
+        printf("Insert counter (0 - 4294967295): ");
+        if (scanf("%ld", &counter) != 1) {
+            free(POPMFramePtr);
+            cleanInputBuffer();
+            return NULL;
+        }
+    }while(counter < 0 || counter > 4294967295);
+    POPMFramePtr->counter = (uint32_t) counter;  
+
+    size_t size = POPMFramePtr->userEmail.size + 5;
+    FramesV2_updateFrameSize(version,&POPMFramePtr->header,size);
+    return POPMFramePtr;
 }
 
 ID3v2APICFrameType *GetFrame_APIC(int version){

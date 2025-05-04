@@ -16,11 +16,11 @@ typedef struct {
     ListFramePtr WWWFrameList; 
     ListFramePtr WXXXFrameList; 
     ListFramePtr COMMFrameList;
+    ListFramePtr POPMFrameList; 
     //Not supported addition
     ListFramePtr PRIVFrameList;
     ID3v2MCDIFrameType *MCDI; // SAVE AS DEFAULT
     //Pending to include addition
-    ListFramePtr POPMFrameList; //LIST
     /**/
     
     /*TO IMPLEMENT*/
@@ -33,11 +33,11 @@ typedef struct {
     ListFramePtr ENCRFrameList; //LIST
     ListFramePtr GRIDFrameList; //LIST
     
-    ID3v2DefaultFrameType *IPLS;
-    ID3v2DefaultFrameType *SYTC;
-    ID3v2DefaultFrameType *USER;
-    ID3v2DefaultFrameType *OWNE;
-    ID3v2DefaultFrameType *PCNT;
+    ID3v2DefaultFrameType *IPLS; 
+    ID3v2DefaultFrameType *SYTC; 
+    ID3v2DefaultFrameType *USER; 
+    ID3v2DefaultFrameType *OWNE; 
+    ID3v2DefaultFrameType *PCNT; 
     //
     ID3v2DefaultFrameType *COMR; //???
     ID3v2DefaultFrameType *POSS;

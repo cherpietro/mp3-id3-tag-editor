@@ -188,4 +188,5 @@ void ID3v2_addFrame(ID3TagType *ID3Tag, char *frameID){
     }
     else if(strncasecmp(frameID,"APIC",4)==0){ADD_FRAME_LIST(APICFrameList, AddFrame_addAPIC);}
     else if(strncasecmp(frameID,"COMM",4)==0){ADD_FRAME_LIST(COMMFrameList, AddFrame_addCOMM);}
+    else if(strncasecmp(frameID,"POPM",4)==0){ADD_FRAME_LIST(POPMFrameList, AddFrame_addPOPM);}
 }

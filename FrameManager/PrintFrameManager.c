@@ -255,6 +255,7 @@ void PrintFrame_POPM(ID3v2POPMFrameType POPM,int version){
   printf("Size: %ld\n",size);
   printf("User email: %s\n",POPM.userEmail.string);
   printf("Ratin: %d\n",POPM.rating);
+  printf("Counter: %d\n",POPM.counter);
 }
 
 void PrintFrame_DefaultFrame(ID3v2DefaultFrameType DefaultFrame,int version){

@@ -31,6 +31,9 @@ int AddFrame_addAPIC(ListFramePtr *APICFrameList,int version){
 int AddFrame_addCOMM(ListFramePtr *COMMFrameList,int version){
     ADD_FRAME(COMMFrameList,ID3v2COMMFrameType,COMMFramePtr,GetFrame_COMM,PrintFrame_COMM);
 }
+int AddFrame_addPOPM(ListFramePtr *POPMFrameList,int version){
+    ADD_FRAME(POPMFrameList,ID3v2POPMFrameType,POPMFramePtr,GetFrame_POPM,PrintFrame_POPM);
+}
 
 int AddFrame_addTXTF(ListFramePtr *TXTFrameList,char *frameID,int version){
     char option;
