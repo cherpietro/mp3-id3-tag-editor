@@ -202,11 +202,11 @@ void StoreFrame_POPM(FILE *mp3FilePointer, uint32_t frameSize,ID3v2POPMFrameType
     char *ratingPtr = (char *)frameContent + index ; 
     (POPM)->rating = ratingPtr[0];
     char *counterPtr = (char *)frameContent + index +1; 
-    memcpy(&(POPM)->counter,counterPtr,4);
-    // (POPM)->counter[0] = counterPtr[0];
-    // (POPM)->counter[1] = counterPtr[1];
-    // (POPM)->counter[2] = counterPtr[2];
-    // (POPM)->counter[3] = counterPtr[3];
+    // memcpy(&(POPM)->counter,counterPtr,4);
+    (POPM)->counter[0] = counterPtr[0];
+    (POPM)->counter[1] = counterPtr[1];
+    (POPM)->counter[2] = counterPtr[2];
+    (POPM)->counter[3] = counterPtr[3];
     free(frameContent);
 }
 

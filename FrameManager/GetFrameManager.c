@@ -114,7 +114,12 @@ ID3v2COMMFrameType* GetFrame_COMM(int version){
     FramesV2_updateFrameSize(version,&COMMFramePtr->header,size);
     return COMMFramePtr;
 }
-
+static void uint32_to_char_array(uint32_t num, char arr[4]) {
+    arr[0] = (num >> 24) & 0xFF;
+    arr[1] = (num >> 16) & 0xFF;
+    arr[2] = (num >> 8)  & 0xFF;
+    arr[3] = num & 0xFF;
+}
 ID3v2POPMFrameType* GetFrame_POPM(int version){
     char email[65];
     int rating;  
@@ -143,7 +148,8 @@ ID3v2POPMFrameType* GetFrame_POPM(int version){
             return NULL;
         }
     }while(counter < 0 || counter > 4294967295);
-    POPMFramePtr->counter = (uint32_t) counter;  
+    
+    uint32_to_char_array(counter,POPMFramePtr->counter);  
 
     size_t size = POPMFramePtr->userEmail.size + 5;
     FramesV2_updateFrameSize(version,&POPMFramePtr->header,size);

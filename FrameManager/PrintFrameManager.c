@@ -247,6 +247,12 @@ void PrintFrame_MDCI(ID3v2MCDIFrameType MDCI,int version){
   printf("Size: %ld\n",size);
 }
 
+static uint32_t char_array_to_uint32(const char arr[4]) {
+  return ((uint32_t)(unsigned char)arr[0] << 24) |
+         ((uint32_t)(unsigned char)arr[1] << 16) |
+         ((uint32_t)(unsigned char)arr[2] << 8)  |
+         ((uint32_t)(unsigned char)arr[3]);
+}
 void PrintFrame_POPM(ID3v2POPMFrameType POPM,int version){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",POPM.header.frameId);
@@ -255,7 +261,7 @@ void PrintFrame_POPM(ID3v2POPMFrameType POPM,int version){
   printf("Size: %ld\n",size);
   printf("User email: %s\n",POPM.userEmail.string);
   printf("Ratin: %d\n",POPM.rating);
-  printf("Counter: %d\n",POPM.counter);
+  printf("Counter: %d\n",char_array_to_uint32(POPM.counter));
 }
 
 void PrintFrame_DefaultFrame(ID3v2DefaultFrameType DefaultFrame,int version){
