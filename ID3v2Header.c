@@ -19,6 +19,10 @@ int HeaderV2_isID3v2Tag(ID3v2HeaderType header){
     return ( header.tag[0] == 'I' && header.tag[1] == 'D' && header.tag[2] == '3' && (HeaderV2_getTagVersion(header) == 3 || HeaderV2_getTagVersion(header) == 4));
 }
 
+int HeaderV2_isID3(ID3v2HeaderType header){
+    return ( header.tag[0] == 'I' && header.tag[1] == 'D' && header.tag[2] == '3' );
+}
+
 int HeaderV2_getTagVersion(ID3v2HeaderType header){
     return header.version[0];
 }
@@ -29,4 +33,13 @@ int HeaderV2_getTagSize(ID3v2HeaderType header){
 
 void HeaderV2_updateTagSize(ID3v2HeaderType *header,uint32_t newSize){
     saveSizeToSyncsafe(newSize,header->size);
+}
+
+void HeaderV2_init(ID3v2HeaderType *header){
+    header->tag[0] = 'I';
+    header->tag[1] = 'D';
+    header->tag[2] = '3';
+    header->version[0] = 4;
+    header->version[1] = 0;
+    header->flags = 0;
 }
