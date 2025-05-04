@@ -29,4 +29,9 @@ bool FileManager_removeTagFromFile(char*);
 
 void FileManager_writteTagIntoFile(char *, ID3TagType *);
 
+void FileManager_writteDefaultFramesInFile(FILE *, ListFramePtr *);
+
+void FileManager_writteDefaultFrameInFile(FILE *, ID3v2DefaultFrameType );
+
+
 #endif // FILEFRAMEMANAGER_H

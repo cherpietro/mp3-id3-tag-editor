@@ -44,7 +44,6 @@ void FileManager_writteMCDIFrameInFile(FILE *destFilePtr, ID3v2MCDIFrameType MCD
   fwrite(MCDI.CDTOC.string,1, TxtStr_getStringLen(MCDI.CDTOC),destFilePtr);  
 }
 
-//UNUSED
 void FileManager_writtePOPMFrameInFile(FILE *destFilePtr, ID3v2POPMFrameType POPM){
   fwrite(&POPM.header,1, sizeof(POPM.header),destFilePtr);
   fwrite(POPM.userEmail.string,1, TxtStr_getStringLen(POPM.userEmail),destFilePtr);
@@ -85,6 +84,20 @@ void FileManager_writtePOPMFramesInFile(FILE *destFilePtr, ListFramePtr *POPMFra
     fwrite(&POPMFrame->counter,1, 4,destFilePtr);
     ListFramePtr_setNextActive(POPMFrameList);
   }
+}
+void FileManager_writteDefaultFramesInFile(FILE *destFilePtr, ListFramePtr *DefaultFrameList){
+  ID3v2DefaultFrameType *Defaultrame;
+  ListFramePtr_setFirstActive(DefaultFrameList);
+  while(DefaultFrameList->active != NULL){
+    Defaultrame = (ID3v2DefaultFrameType *)ListFramePtr_getActiveFramePtr(*DefaultFrameList);
+    fwrite(&Defaultrame->header,1, sizeof(Defaultrame->header),destFilePtr);
+    fwrite(&Defaultrame->frameData,1, Defaultrame->size,destFilePtr);
+    ListFramePtr_setNextActive(DefaultFrameList);
+  }
+}
+void FileManager_writteDefaultFrameInFile(FILE *destFilePtr, ID3v2DefaultFrameType Defaultrame){
+    fwrite(&Defaultrame.header,1, sizeof(Defaultrame.header),destFilePtr);
+    fwrite(&Defaultrame.frameData,1, Defaultrame.size,destFilePtr);
 }
 
 void FileManager_writtePadding(FILE *destFilePtr, int paddingSize){
@@ -160,7 +173,7 @@ void FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     FileManager_writteCOMMFramesInFile(temp,&ID3Tag->COMMFrameList);
     FileManager_writtePRIVFramesInFile(temp,&ID3Tag->PRIVFrameList);
     FileManager_writteAPICFramesInFile(temp,&ID3Tag->APICFrameList);
-    // if(ID3Tag->MCDI != NULL) FileManager_writteMCDIFrameInFile(temp,*ID3Tag->MCDI);
+    if(ID3Tag->MCDI != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->MCDI);
     // if(ID3Tag->MCDI != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->MCDI);
     FileManager_writtePOPMFramesInFile(temp,&ID3Tag->POPMFrameList);
     // if(ID3Tag->POPM != NULL) FileManager_writtePOPMFrameInFile(temp,*ID3Tag->POPM);

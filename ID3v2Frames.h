@@ -84,6 +84,7 @@ typedef struct {
 typedef struct {
     ID3v2FrameHeaderType header;
     uint8_t *frameData;
+    size_t size;
 } ID3v2DefaultFrameType;
 
 
