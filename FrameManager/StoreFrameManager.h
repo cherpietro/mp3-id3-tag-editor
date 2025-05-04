@@ -22,6 +22,8 @@ void StoreFrame_POPM(FILE*, uint32_t, ID3v2POPMFrameType*);
 
 void StoreFrame_WWWF(FILE*, uint32_t,ID3v2WWWFrameType *);
 
+void StoreFrame_TXXX(FILE *, uint32_t ,ID3v2TXXXFrameType *);
+
 void StoreFrame_WXXX(FILE*, uint32_t,ID3v2WXXXFrameType *);
 
 void StoreFrame_DefaultFrame(FILE*, uint32_t, ID3v2DefaultFrameType*);

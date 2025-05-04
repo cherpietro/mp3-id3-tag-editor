@@ -30,6 +30,9 @@ bool StoreFrame_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag)
     uint32_t frameSize = FramesV2_getFrameSize(ID3Tag->header.version[0],header); 
     // printf("FrameID: %s\n",header.frameId);
     if (memcmp(header.frameId, "\0\0\0\0", 4) == 0) return true;
+    else if(strncmp(header.frameId,"TXXX",4)==0){
+        STORE_LIST(TXXXFrameList,ID3v2TXXXFrameType,StoreFrame_TXXX);
+    }
     else if(strncmp(header.frameId,"T",1)==0){
         STORE_LIST(TXTFrameList,ID3v2TXTFrameType,StoreFrame_TXTF);
     }
@@ -227,6 +230,15 @@ void StoreFrame_WWWF(FILE* mp3FilePointer, uint32_t frameSize,ID3v2WWWFrameType 
     free(frameContent);
 }
 
+void StoreFrame_TXXX(FILE *mp3FilePointer, uint32_t frameSize,ID3v2TXXXFrameType *TXXX){
+    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+    fread(frameContent, frameSize, 1, mp3FilePointer);
+    size_t index = 0;
+    TXXX->textEncoding = frameContent[index++];
+    STORE_TEXTSTR(TXXX,descPtr,descSize,description);
+    STORE_TEXTSTR(TXXX,valuePtr,valueSize,value);
+    free(frameContent);
+}
 void StoreFrame_WXXX(FILE *mp3FilePointer, uint32_t frameSize,ID3v2WXXXFrameType *WXXX){
     uint8_t *frameContent = (uint8_t *)malloc(frameSize);
     fread(frameContent, frameSize, 1, mp3FilePointer);

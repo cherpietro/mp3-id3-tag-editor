@@ -24,6 +24,12 @@ void FramesV2_freeTXTF(ID3v2TXTFrameType** TXTF){
     free(*TXTF);
     *TXTF = NULL;
 }
+void FramesV2_freeTXXX(ID3v2TXXXFrameType **TWXXX){
+    TxtStr_freeTextString(&(*TWXXX)->description);
+    TxtStr_freeTextString(&(*TWXXX)->value);
+    free(*TWXXX);
+    *TWXXX = NULL;
+}
 void FramesV2_freeWXXX(ID3v2WXXXFrameType **WXXX){
     TxtStr_freeTextString(&(*WXXX)->description);
     TxtStr_freeTextString(&(*WXXX)->url);

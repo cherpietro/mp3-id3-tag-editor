@@ -48,12 +48,21 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
 
   //LISTS
   else if(strncasecmp(frameID,"TXXX",4)==0){
-    ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
-    ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
-    while (TXTFramePtr != NULL){
-      if(strncasecmp(frameID,TXTFramePtr->header.frameId,4) == 0) PrintFrame_TXTF(*TXTFramePtr,version);
-      ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
-      TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+    ListFramePtr_setFirstActive(&ID3Tag->TXXXFrameList);
+    ID3v2TXXXFrameType * TXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXXXFrameList);
+    while (TXXXFramePtr != NULL){
+      if(strncasecmp(frameID,TXXXFramePtr->header.frameId,4) == 0) PrintFrame_TXXX(*TXXXFramePtr,version);
+      ListFramePtr_setNextActive(&ID3Tag->TXXXFrameList);
+      TXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXXXFrameList);
+    }
+  }
+  else if(strncasecmp(frameID,"TXXX",4)==0){
+    ListFramePtr_setFirstActive(&ID3Tag->TXXXFrameList);
+    ID3v2TXXXFrameType * TXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXXXFrameList);
+    while (TXXXFramePtr != NULL){
+      PrintFrame_TXXX(*TXXXFramePtr,version);
+      ListFramePtr_setNextActive(&ID3Tag->TXXXFrameList);
+      TXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXXXFrameList);
     }
   }
   else if(strncasecmp(frameID,"T",1)==0){
@@ -65,11 +74,12 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
     }
     if(TXTFramePtr != NULL) PrintFrame_TXTF(*TXTFramePtr,version);
   }
+  
   else if(strncasecmp(frameID,"WXXX",4)==0){
     ListFramePtr_setFirstActive(&ID3Tag->WXXXFrameList);
     ID3v2WXXXFrameType * WXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WXXXFrameList);
     while (WXXXFramePtr != NULL){
-      if(strncasecmp(frameID,WXXXFramePtr->header.frameId,4) == 0) PrintFrame_WXXX(*WXXXFramePtr,version);
+      PrintFrame_WXXX(*WXXXFramePtr,version);
       ListFramePtr_setNextActive(&ID3Tag->WXXXFrameList);
       WXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WXXXFrameList);
     }
@@ -132,14 +142,22 @@ void PrintFrame_listFrames(ID3TagType *ID3Tag){
   }
   if(COMMCount != 0) printf("FramgeID: COMM (%d frames)\n",COMMCount);
 
-  int TXTFCount = 0;
   ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
   ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
   while (TXTFramePtr != NULL){
-    if(strncasecmp("TXXX",TXTFramePtr->header.frameId,4) == 0) TXTFCount += 1;
-    else printf("FramgeID: %s\n",TXTFramePtr->header.frameId);
+    printf("FramgeID: %s\n",TXTFramePtr->header.frameId);
     ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
     TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+  }
+
+  int TXTFCount = 0;
+  ListFramePtr_setFirstActive(&ID3Tag->TXXXFrameList);
+  ID3v2TXXXFrameType * TXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXXXFrameList);
+  while (TXXXFramePtr != NULL){
+    if(strncasecmp("TXXX",TXXXFramePtr->header.frameId,4) == 0) TXTFCount += 1;
+    else printf("FramgeID: %s\n",TXXXFramePtr->header.frameId);
+    ListFramePtr_setNextActive(&ID3Tag->TXXXFrameList);
+    TXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXXXFrameList);
   }
   if(TXTFCount != 0) printf("FramgeID: TXXX (%d frames)\n",TXTFCount);
   
@@ -191,28 +209,9 @@ void PrintFrame_TXTF(ID3v2TXTFrameType frame,int version){
   size_t size = FramesV2_getFrameSize(version,frame.header);
   printf("Size: %ld\n",size);
   printf("TextEncoding: %d\n",frame.textEncoding);
-  if(strncasecmp("TXXX",frame.header.frameId,4) == 0){
-      printf("Description: ");
-      for (int i = 0; i < (int)strlen(frame.content.string); i++) {
-          if(frame.content.string[i] == '\0') printf(" ");
-          else putchar(frame.content.string[i]);
-      }
-      printf("\n");
-      printf("Content: ");
-      for (int i = strlen(frame.content.string)+1; i < (int)frame.content.size; i++) {
-          if(frame.content.string[i] == '\0') printf(" ");
-          else putchar(frame.content.string[i]);
-      }
-      printf("\n");
-  }
-  else{
-      printf("Content: ");
-      for (int i = 0; i < (int)frame.content.size; i++) {
-          if(frame.content.string[i] == '\0') printf(" ");
-          else putchar(frame.content.string[i]);
-      }
-      printf("\n");
-  }
+  printf("Content: ");
+  PRINT_TEXTSTR(frame,content);
+
 }
 
 void PrintFrame_COMM(ID3v2COMMFrameType COMM,int version){
@@ -280,6 +279,19 @@ void PrintFrame_WWWF(ID3v2WWWFrameType WWWF,int version){
   printf("Size: %ld\n",size);
   printf("URL: ");
   PRINT_TEXTSTR(WWWF,url);
+}
+
+void PrintFrame_TXXX(ID3v2TXXXFrameType TXXX,int version){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",TXXX.header.frameId);
+  printf("Flags: %u %u\n",TXXX.header.flags[0],TXXX.header.flags[1]);
+  size_t size = FramesV2_getFrameSize(version,TXXX.header);
+  printf("Size: %ld\n",size);
+  printf("TextEncoding: %d\n",TXXX.textEncoding);
+  printf("Description: ");
+  PRINT_TEXTSTR(TXXX,description);
+  printf("Value: ");
+  PRINT_TEXTSTR(TXXX,value);
 }
 
 void PrintFrame_WXXX(ID3v2WXXXFrameType WXXX,int version){

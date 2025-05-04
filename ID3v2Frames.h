@@ -33,6 +33,13 @@ typedef struct {
     // char *content;
     TextStringType content;
 } ID3v2TXTFrameType;
+typedef struct {
+    ID3v2FrameHeaderType header;
+    uint8_t textEncoding;
+    // char *content;
+    TextStringType description;
+    TextStringType value;
+} ID3v2TXXXFrameType;
 
 typedef struct {
     ID3v2FrameHeaderType header;
@@ -89,6 +96,7 @@ void FramesV2_freeAPIC(ID3v2APICFrameType**);
 
 
 void FramesV2_freeTXTF(ID3v2TXTFrameType**);
+void FramesV2_freeTXXX(ID3v2TXXXFrameType **);
 
 
 void FramesV2_freeWWWF(ID3v2WWWFrameType**);

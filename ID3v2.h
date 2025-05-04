@@ -12,6 +12,7 @@
 typedef struct {
     ID3v2HeaderType header;
     ListFramePtr TXTFrameList;
+    ListFramePtr TXXXFrameList; 
     ListFramePtr APICFrameList; 
     ListFramePtr WWWFrameList; 
     ListFramePtr WXXXFrameList; 
