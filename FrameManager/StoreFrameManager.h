@@ -6,7 +6,7 @@
 
 void StoreFrame_Header(FILE*, ID3v2FrameHeaderType*);
 
-bool StoreFrame_storeNextFrameInStruct(FILE*, ID3TagType*);
+int StoreFrame_storeNextFrameInStruct(FILE*, ID3TagType*);
 
 void StoreFrame_APIC(FILE*, uint32_t, ID3v2APICFrameType*);
 

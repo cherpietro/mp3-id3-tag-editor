@@ -82,7 +82,7 @@ int main(){
     ID3TagType ID3Tag;
     ID3v2_init(&ID3Tag);
     int status = ID3v2_storeTagInStruct(file,&ID3Tag);
-    if(status == -1) return 0;
+    if(status == -1 || status == -2) return 0;
     char frameID[5];
     int option;
     do {
