@@ -93,6 +93,11 @@ void ID3v2_free(ID3TagType *ID3Tag){
 }
 
 int ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
+    char *extension = strrchr(file, '.');
+    if (extension == NULL || strcmp(extension, ".mp3") != 0) {
+        printf("Not .mp3 file!\n");
+        return -1;
+    }
     FILE *mp3FilePointer = fopen(file,"r");
     if (mp3FilePointer) {
         int paddingReached = 0;

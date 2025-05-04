@@ -1,12 +1,16 @@
 OBJ= ID3v2.o ID3v2Header.o ID3v2Frames.o SizeReader.o  TextString.o FileFrameManager.o PrintFrameManager.o ListFramePtr.o DeleteFrameManager.o AddFrameManager.o StoreFrameManager.o SizeFrameManager.o GetFrameManager.o
 CFLAGS=-g -Wall -Wextra -pedantic 
 CC=gcc
+DIRS=files savedFiles
 
-all: compile clear
+all:create_dirs compile clear
 	./a.out
 
-compile: clean $(OBJ)
+compile: create_dirs clean $(OBJ)
 	$(CC) $(CFLAGS) id3.c $(OBJ)
+
+create_dirs:
+	mkdir -p $(DIRS)
 
 test: clean $(OBJ)
 	$(CC) $(CFLAGS) test.c $(OBJ)
