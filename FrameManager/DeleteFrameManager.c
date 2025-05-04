@@ -3,37 +3,63 @@
 #include "../ID3v2Header.h"
 #include <string.h>
 
+#define DELETE_FRAME(FrameList,FramePtr,FrameType,FreeFunct,PrintFunct)\
+    char option;\
+    int deletedSize = 0;\
+    ListFramePtr_setFirstActive(FrameList);\
+    FrameType * FramePtr = ListFramePtr_getActiveFramePtr(*FrameList);\
+    do{\
+        fflush(stdout);\
+        system("clear");\
+        PrintFunct(*FramePtr,version);\
+        printf("\n\nWant to delete this frame? (y/n): ");\
+        do{\
+            option = getchar();\
+            cleanInputBuffer();\
+        }while(option != 'y' && option != 'Y' && option != 'n' && option != 'N');\
+        if(option == 'y' || option == 'Y') { \
+            deletedSize += FramesV2_getFrameSize(version,FramePtr->header)+10;\
+            FreeFunct(&FramePtr);\
+            ListFramePtr_deleteActive(FrameList);\
+        } \
+        else ListFramePtr_setNextActive(FrameList);\
+        FramePtr = ListFramePtr_getActiveFramePtr(*FrameList);\
+    }while (FramePtr != NULL);\
+    return deletedSize;
+
 static void cleanInputBuffer(){
     int ch;
     while ((ch = getchar()) != '\n' && ch != EOF);
 }
 
 int DeleteFrame_deleteTXXX(ListFramePtr *TXXXFrameList,int version){
-    char option;
-    int deletedSize = 0;
-    ListFramePtr_setFirstActive(TXXXFrameList);
-        ID3v2TXXXFrameType * TXXXFramePtr = ListFramePtr_getActiveFramePtr(*TXXXFrameList);
-        do{
-            if(strncasecmp(TXXXFramePtr->header.frameId,"TXXX",4)==0){
-                fflush(stdout);
-                system("clear");
-                PrintFrame_TXXX(*TXXXFramePtr,version);
-                printf("\n\nWant to delete this frame? (y/n): ");
-                do{
-                    option = getchar();
-                    cleanInputBuffer();
-                }while(option != 'y' && option != 'Y' && option != 'n' && option != 'N');
-                if(option == 'y' || option == 'Y') { 
-                    deletedSize += FramesV2_getFrameSize(version,TXXXFramePtr->header)+10;
-                    FramesV2_freeTXXX(&TXXXFramePtr);
-                    ListFramePtr_deleteActive(TXXXFrameList);
-                } 
-                else ListFramePtr_setNextActive(TXXXFrameList);
-            }
-            else ListFramePtr_setNextActive(TXXXFrameList);
-            TXXXFramePtr = ListFramePtr_getActiveFramePtr(*TXXXFrameList);
-        }while (TXXXFramePtr != NULL);
-        return deletedSize;
+    DELETE_FRAME(TXXXFrameList,TXXXFramePtr,ID3v2TXXXFrameType,FramesV2_freeTXXX,PrintFrame_TXXX);
+
+    // char option;
+    // int deletedSize = 0;
+    // ListFramePtr_setFirstActive(TXXXFrameList);
+    //     ID3v2TXXXFrameType * TXXXFramePtr = ListFramePtr_getActiveFramePtr(*TXXXFrameList);
+    //     do{
+    //         if(strncasecmp(TXXXFramePtr->header.frameId,"TXXX",4)==0){
+    //             fflush(stdout);
+    //             system("clear");
+    //             PrintFrame_TXXX(*TXXXFramePtr,version);
+    //             printf("\n\nWant to delete this frame? (y/n): ");
+    //             do{
+    //                 option = getchar();
+    //                 cleanInputBuffer();
+    //             }while(option != 'y' && option != 'Y' && option != 'n' && option != 'N');
+    //             if(option == 'y' || option == 'Y') { 
+    //                 deletedSize += FramesV2_getFrameSize(version,TXXXFramePtr->header)+10;
+    //                 FramesV2_freeTXXX(&TXXXFramePtr);
+    //                 ListFramePtr_deleteActive(TXXXFrameList);
+    //             } 
+    //             else ListFramePtr_setNextActive(TXXXFrameList);
+    //         }
+    //         else ListFramePtr_setNextActive(TXXXFrameList);
+    //         TXXXFramePtr = ListFramePtr_getActiveFramePtr(*TXXXFrameList);
+    //     }while (TXXXFramePtr != NULL);
+    //     return deletedSize;
 }
 
 int DeleteFrame_deleteTXTF(ListFramePtr *TXTFrameList, char *frameID, int version){

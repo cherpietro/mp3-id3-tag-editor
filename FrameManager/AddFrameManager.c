@@ -23,6 +23,57 @@ static void cleanInputBuffer(){
     while ((ch = getchar()) != '\n' && ch != EOF);
 }
 
+static bool hasRepeatWXXX(ListFramePtr *WXXXrameList,ID3v2WXXXFrameType *WXXXFramePtr){
+    ID3v2WXXXFrameType *checkPtr;
+    ListFramePtr_setFirstActive(WXXXrameList);
+    while(WXXXrameList->active != NULL){
+        checkPtr= ListFramePtr_getActiveFramePtr(*WXXXrameList);
+        if(strcmp(checkPtr->description.string,WXXXFramePtr->description.string) == 0){printf("repeated frame\n"); return true;}
+        ListFramePtr_setNextActive(WXXXrameList);
+    }
+    return false;
+}
+static bool hasRepeatAPIC(ListFramePtr *APICFrameList,ID3v2APICFrameType *APICFramePtr){
+    ID3v2APICFrameType *checkPtr;
+    ListFramePtr_setFirstActive(APICFrameList);
+    while(APICFrameList->active != NULL){
+        checkPtr= ListFramePtr_getActiveFramePtr(*APICFrameList);
+        if(strcmp(checkPtr->description.string,APICFramePtr->description.string) == 0) return true;
+        ListFramePtr_setNextActive(APICFrameList);
+    }
+    return false;
+}
+static bool hasRepeatCOMM(ListFramePtr *COMMFrameList,ID3v2COMMFrameType *COMMFramePtr){
+    ID3v2COMMFrameType *checkPtr;
+    ListFramePtr_setFirstActive(COMMFrameList);
+    while(COMMFrameList->active != NULL){
+        checkPtr= ListFramePtr_getActiveFramePtr(*COMMFrameList);
+        if(strcmp(checkPtr->contentDescript.string,COMMFramePtr->contentDescript.string) == 0) return true;
+        ListFramePtr_setNextActive(COMMFrameList);
+    }
+    return false;
+}
+static bool hasRepeatPOPM(ListFramePtr *POPMFrameList,ID3v2POPMFrameType *POPMFramePtr){
+    ID3v2POPMFrameType *checkPtr;
+    ListFramePtr_setFirstActive(POPMFrameList);
+    while(POPMFrameList->active != NULL){
+        checkPtr= ListFramePtr_getActiveFramePtr(*POPMFrameList);
+        if(strcmp(checkPtr->userEmail.string,POPMFramePtr->userEmail.string) == 0) return true;
+        ListFramePtr_setNextActive(POPMFrameList);
+    }
+    return false;
+}
+static bool hasRepeatTXXX(ListFramePtr *TWXXXrameList,ID3v2TXXXFrameType *TXXXFramePtr){
+    ID3v2TXXXFrameType *checkPtr;
+    ListFramePtr_setFirstActive(TWXXXrameList);
+    while(TWXXXrameList->active != NULL){
+        checkPtr= ListFramePtr_getActiveFramePtr(*TWXXXrameList);
+        if(strcmp(checkPtr->description.string,TXXXFramePtr->description.string) == 0) return true;
+        ListFramePtr_setNextActive(TWXXXrameList);
+    }
+    return false;
+}
+
 int AddFrame_addTXXX(ListFramePtr *TXXXFrameList,int version){
     ADD_FRAME_LIST(TXXXFrameList,ID3v2TXXXFrameType,TXXXFramePtr,GetFrame_TXXX,PrintFrame_TXXX,hasRepeatTXXX);
 }
@@ -106,55 +157,4 @@ int AddFrame_addWWWF(ListFramePtr *WWWFrameList,char *frameID,int version){
     incrementedSize += FramesV2_getFrameSize(version,WWWFramePtr->header);
     PrintFrame_WWWF(*WWWFramePtr,version);
     return (incrementedSize + 10);
-}
-
-static bool hasRepeatWXXX(ListFramePtr *WXXXrameList,ID3v2WXXXFrameType *WXXXFramePtr){
-    ID3v2WXXXFrameType *checkPtr;
-    ListFramePtr_setFirstActive(WXXXrameList);
-    while(WXXXrameList->active != NULL){
-        checkPtr= ListFramePtr_getActiveFramePtr(*WXXXrameList);
-        if(strcmp(checkPtr->description.string,WXXXFramePtr->description.string) == 0){printf("repeated frame\n"); return true;}
-        ListFramePtr_setNextActive(WXXXrameList);
-    }
-    return false;
-}
-static bool hasRepeatAPIC(ListFramePtr *APICFrameList,ID3v2APICFrameType *APICFramePtr){
-    ID3v2APICFrameType *checkPtr;
-    ListFramePtr_setFirstActive(APICFrameList);
-    while(APICFrameList->active != NULL){
-        checkPtr= ListFramePtr_getActiveFramePtr(*APICFrameList);
-        if(strcmp(checkPtr->description.string,APICFramePtr->description.string) == 0) return true;
-        ListFramePtr_setNextActive(APICFrameList);
-    }
-    return false;
-}
-static bool hasRepeatCOMM(ListFramePtr *COMMFrameList,ID3v2COMMFrameType *COMMFramePtr){
-    ID3v2COMMFrameType *checkPtr;
-    ListFramePtr_setFirstActive(COMMFrameList);
-    while(COMMFrameList->active != NULL){
-        checkPtr= ListFramePtr_getActiveFramePtr(*COMMFrameList);
-        if(strcmp(checkPtr->contentDescript.string,COMMFramePtr->contentDescript.string) == 0) return true;
-        ListFramePtr_setNextActive(COMMFrameList);
-    }
-    return false;
-}
-static bool hasRepeatPOPM(ListFramePtr *POPMFrameList,ID3v2POPMFrameType *POPMFramePtr){
-    ID3v2POPMFrameType *checkPtr;
-    ListFramePtr_setFirstActive(POPMFrameList);
-    while(POPMFrameList->active != NULL){
-        checkPtr= ListFramePtr_getActiveFramePtr(*POPMFrameList);
-        if(strcmp(checkPtr->userEmail.string,POPMFramePtr->userEmail.string) == 0) return true;
-        ListFramePtr_setNextActive(POPMFrameList);
-    }
-    return false;
-}
-static bool hasRepeatTXXX(ListFramePtr *TWXXXrameList,ID3v2TXXXFrameType *TXXXFramePtr){
-    ID3v2TXXXFrameType *checkPtr;
-    ListFramePtr_setFirstActive(TWXXXrameList);
-    while(TWXXXrameList->active != NULL){
-        checkPtr= ListFramePtr_getActiveFramePtr(*TWXXXrameList);
-        if(strcmp(checkPtr->description.string,TXXXFramePtr->description.string) == 0) return true;
-        ListFramePtr_setNextActive(TWXXXrameList);
-    }
-    return false;
 }
