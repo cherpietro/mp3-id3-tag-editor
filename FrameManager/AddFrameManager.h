@@ -17,4 +17,6 @@ int AddFrame_addCOMM(ListFramePtr *,int );
 
 int AddFrame_addPOPM(ListFramePtr *,int );
 
+int AddFrame_addPCNT(ID3v2PCNTFrameType **,int );
+
 #endif // ADDFRAMEMANAGER_H

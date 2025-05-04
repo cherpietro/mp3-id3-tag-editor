@@ -155,6 +155,27 @@ ID3v2POPMFrameType* GetFrame_POPM(int version){
     FramesV2_updateFrameSize(version,&POPMFramePtr->header,size);
     return POPMFramePtr;
 }
+ID3v2PCNTFrameType* GetFrame_PCNT(int version){
+    long counter;  
+
+    ID3v2PCNTFrameType *PCNTFramePtr = (ID3v2PCNTFrameType*) malloc(sizeof(ID3v2PCNTFrameType));
+    memcpy(PCNTFramePtr->header.frameId,"PCNT",4); 
+    PCNTFramePtr->header.flags[0] = 0;PCNTFramePtr->header.flags[1] = 0;  
+    do{
+        printf("Insert counter (0 - 4294967295): ");
+        if (scanf("%ld", &counter) != 1) {
+            free(PCNTFramePtr);
+            cleanInputBuffer();
+            return NULL;
+        }
+    }while(counter < 0 || counter > 4294967295);
+    
+    uint32_to_char_array(counter,PCNTFramePtr->counter);  
+
+    size_t size = 4;
+    FramesV2_updateFrameSize(version,&PCNTFramePtr->header,size);
+    return PCNTFramePtr;
+}
 
 ID3v2APICFrameType *GetFrame_APIC(int version){
     ID3v2APICFrameType *APICFramePtr = (ID3v2APICFrameType *) malloc(sizeof(ID3v2APICFrameType));

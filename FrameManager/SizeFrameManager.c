@@ -24,6 +24,7 @@ size_t SizeFrame_getFrameListSize(ID3TagType *ID3Tag){
     ADD_FRAME_SIZE_LIST(WXXXFrameList, ID3v2WXXXFrameType);
     ADD_FRAME_SIZE_LIST(POPMFrameList, ID3v2POPMFrameType);
     ADD_FRAME_SIZE(MCDI);
+    ADD_FRAME_SIZE(PCNT);
     
     ADD_FRAME_SIZE_LIST(UFIDFrameList, ID3v2DefaultFrameType);
     ADD_FRAME_SIZE_LIST(USLTFrameList, ID3v2DefaultFrameType);

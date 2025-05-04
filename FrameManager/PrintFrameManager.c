@@ -38,7 +38,7 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
   // else if(strncasecmp(frameID,"IPLS",4)==0){ if(ID3Tag->IPLS != NULL) PrintFrame_IPLS(*ID3Tag->IPLS);}
   // else if(strncasecmp(frameID,"USER",4)==0){ if(ID3Tag->USER != NULL) PrintFrame_USER(*ID3Tag->USER);}
   // else if(strncasecmp(frameID,"OWNE",4)==0){ if(ID3Tag->OWNE != NULL) PrintFrame_OWNE(*ID3Tag->OWNE);}
-  // else if(strncasecmp(frameID,"PCNT",4)==0){ if(ID3Tag->PCNT != NULL) PrintFrame_PCNT(*ID3Tag->PCNT);}
+  else if(strncasecmp(frameID,"PCNT",4)==0){ if(ID3Tag->PCNT != NULL) PrintFrame_PCNT(*ID3Tag->PCNT,version);}
 
   else if(strncasecmp(frameID,"RVRB",4)==0);
   else if(strncasecmp(frameID,"EQUA",4)==0);

@@ -4,12 +4,18 @@
 #include "../ID3v2Frames.h"
 #include <string.h>
 
-#define ADD_FRAME(FrameList,FrameType,FramePtr,FrameGetFunct,FramePrintFunct)\
+#define ADD_FRAME_LIST(FrameList,FrameType,FramePtr,FrameGetFunct,FramePrintFunct)\
     FrameType *FramePtr = FrameGetFunct(version);\
     if(FramePtr == NULL)return 0;\
     ListFramePtr_insertLast(FrameList,FramePtr);\
     FramePrintFunct(*FramePtr,version);\
     return (FramesV2_getFrameSize(version,FramePtr->header) +10);
+
+#define ADD_FRAME(FramePtr,FrameGetFunct,FramePrintFunct)\
+    *FramePtr = FrameGetFunct(version);\
+    if(*FramePtr == NULL)return 0;\
+    FramePrintFunct(**FramePtr,version);\
+    return (FramesV2_getFrameSize(version,(*FramePtr)->header) +10);
 
 static void cleanInputBuffer(){
     int ch;
@@ -17,22 +23,25 @@ static void cleanInputBuffer(){
 }
 
 int AddFrame_addTXXX(ListFramePtr *TXTFrameList,int version){
-    ADD_FRAME(TXTFrameList,ID3v2TXTFrameType,TXTFramePtr,GetFrame_TXXX,PrintFrame_TXTF);
+    ADD_FRAME_LIST(TXTFrameList,ID3v2TXTFrameType,TXTFramePtr,GetFrame_TXXX,PrintFrame_TXTF);
 }
 
 int AddFrame_addWXXX(ListFramePtr *WXXXFrameList,int version){
-    ADD_FRAME(WXXXFrameList,ID3v2WXXXFrameType,WXXXFramePtr,GetFrame_WXXX,PrintFrame_WXXX);
+    ADD_FRAME_LIST(WXXXFrameList,ID3v2WXXXFrameType,WXXXFramePtr,GetFrame_WXXX,PrintFrame_WXXX);
 }
 
 int AddFrame_addAPIC(ListFramePtr *APICFrameList,int version){
-    ADD_FRAME(APICFrameList,ID3v2APICFrameType,APICFramePtr,GetFrame_APIC,PrintFrame_APIC);
+    ADD_FRAME_LIST(APICFrameList,ID3v2APICFrameType,APICFramePtr,GetFrame_APIC,PrintFrame_APIC);
 }
 
 int AddFrame_addCOMM(ListFramePtr *COMMFrameList,int version){
-    ADD_FRAME(COMMFrameList,ID3v2COMMFrameType,COMMFramePtr,GetFrame_COMM,PrintFrame_COMM);
+    ADD_FRAME_LIST(COMMFrameList,ID3v2COMMFrameType,COMMFramePtr,GetFrame_COMM,PrintFrame_COMM);
 }
 int AddFrame_addPOPM(ListFramePtr *POPMFrameList,int version){
-    ADD_FRAME(POPMFrameList,ID3v2POPMFrameType,POPMFramePtr,GetFrame_POPM,PrintFrame_POPM);
+    ADD_FRAME_LIST(POPMFrameList,ID3v2POPMFrameType,POPMFramePtr,GetFrame_POPM,PrintFrame_POPM);
+}
+int AddFrame_addPCNT(ID3v2PCNTFrameType **PCNT,int version){
+    ADD_FRAME(PCNT,GetFrame_PCNT,PrintFrame_PCNT);
 }
 
 int AddFrame_addTXTF(ListFramePtr *TXTFrameList,char *frameID,int version){

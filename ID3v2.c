@@ -122,15 +122,15 @@ int ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
 //IMPLEMENT REMAINING TAGS
 bool ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
     size_t tagSizeOfStruct;
-    // printf("\nsize in ID3Tag: %d bytes\n",HeaderV2_getTagSize(ID3Tag->header));
+    printf("\nsize in ID3Tag: %d bytes\n",HeaderV2_getTagSize(ID3Tag->header));
     tagSizeOfStruct = SizeFrame_getFrameListSize(ID3Tag);    
     if((HeaderV2_getTagSize(ID3Tag->header) +10 - ID3Tag->paddingSize ) == tagSizeOfStruct ){
         return true;
         // printf("size is okay\n");
     }
     else{
+        printf("size is NOT okay %ld\n",(tagSizeOfStruct+10 - (int) ID3Tag->paddingSize ));
         return false;
-        // printf("size is NOT okay %ld\n",(tagSizeOfStruct+10 - (int) ID3Tag->paddingSize ));
     }
 }
 
@@ -189,4 +189,5 @@ void ID3v2_addFrame(ID3TagType *ID3Tag, char *frameID){
     else if(strncasecmp(frameID,"APIC",4)==0){ADD_FRAME_LIST(APICFrameList, AddFrame_addAPIC);}
     else if(strncasecmp(frameID,"COMM",4)==0){ADD_FRAME_LIST(COMMFrameList, AddFrame_addCOMM);}
     else if(strncasecmp(frameID,"POPM",4)==0){ADD_FRAME_LIST(POPMFrameList, AddFrame_addPOPM);}
+    else if(strncasecmp(frameID,"PCNT",4)==0){ADD_FRAME_LIST(PCNT, AddFrame_addPCNT);}
 }
