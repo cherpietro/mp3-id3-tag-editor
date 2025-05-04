@@ -43,6 +43,7 @@ void ID3v2_init(ID3TagType *ID3Tag){
     ListFramePtr_init(&ID3Tag->AENCFrameList);
     ListFramePtr_init(&ID3Tag->ENCRFrameList);
     ListFramePtr_init(&ID3Tag->GRIDFrameList);
+    ListFramePtr_init(&ID3Tag->TXXXFrameList);
 
     ID3Tag->MCDI = NULL;
     ID3Tag->RVRB = NULL;
@@ -62,6 +63,7 @@ void ID3v2_init(ID3TagType *ID3Tag){
 
 void ID3v2_free(ID3TagType *ID3Tag){
     FREE_FRAME_LIST(TXTFrameList,ID3v2TXTFrameType,FramesV2_freeTXTF);
+    FREE_FRAME_LIST(TXXXFrameList,ID3v2TXXXFrameType,FramesV2_freeTXXX);
     FREE_FRAME_LIST(APICFrameList,ID3v2APICFrameType,FramesV2_freeAPIC);
     FREE_FRAME_LIST(WWWFrameList,ID3v2WWWFrameType,FramesV2_freeWWWF);
     FREE_FRAME_LIST(WXXXFrameList,ID3v2WXXXFrameType,FramesV2_freeWXXX);
