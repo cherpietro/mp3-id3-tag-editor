@@ -46,7 +46,7 @@ int StoreFrame_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     else if(strncmp(header.frameId,"W",1)==0){ STORE_LIST(WWWFrameList,ID3v2WWWFrameType,StoreFrame_WWWF);}
     else if(strncmp(header.frameId,"MCDI",4)==0){ STORE_FRAME(MCDI,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
     //DEFAULT FRAMES
-    else if(strncmp(header.frameId,"IPLS",4)==0){ STORE_FRAME(IPLS,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"IPLS",4)==0){ STORE_FRAME(IPLS,ID3v2IPLSFrameType,StoreFrame_storeIPLS);}
     else if(strncmp(header.frameId,"SYTC",4)==0){ STORE_FRAME(SYTC,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
     else if(strncmp(header.frameId,"USER",4)==0){ STORE_FRAME(USER,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
     else if(strncmp(header.frameId,"OWNE",4)==0){ STORE_FRAME(OWNE,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
@@ -201,4 +201,15 @@ void StoreFrame_PRIV(FILE *mp3FilePointer, uint32_t frameSize, ID3v2PRIVFrameTyp
 void StoreFrame_DefaultFrame(FILE* mp3FilePointer, uint32_t frameSize, ID3v2DefaultFrameType *DefaultFrame){
     (DefaultFrame)->frameData = (uint8_t *)malloc(frameSize);
     fread((DefaultFrame)->frameData, frameSize, 1, mp3FilePointer);
+}
+
+void StoreFrame_storeIPLS(FILE* mp3FilePointer, uint32_t frameSize, ID3v2IPLSFrameType *IPLS){
+    IPLS = (ID3v2IPLSFrameType *)malloc(sizeof(ID3v2IPLSFrameType));
+    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+    fread(frameContent, frameSize, 1, mp3FilePointer);
+
+    (IPLS)->textEncoding = frameContent[0];
+    char *peopleLstPtr = (char *)frameContent + 1;
+    TxtStr_storeTextString(&(IPLS)->peopeList,peopleLstPtr,frameSize -1);
+    free(frameContent);
 }

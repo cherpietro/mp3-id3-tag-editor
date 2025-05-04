@@ -248,6 +248,24 @@ int DeleteFrame_deleteWWWF(ListFramePtr *WWWFrameList, char *frameID, int versio
         return deletedSize;
 }
 
+int DeleteFrame_IPLS(ID3v2IPLSFrameType **IPLSptr, int version){
+    char option;
+    int deletedSize = 0;
+    fflush(stdout);
+    system("clear");
+    PrintFrame_IPLS(**IPLSptr,version);
+    printf("\n\nWant to delete this frame? (y/n): ");
+    do{
+        option = getchar();
+        cleanInputBuffer();
+    }while(option != 'y' && option != 'Y' && option != 'n' && option != 'N');
+    if(option == 'y' || option == 'Y') { 
+        deletedSize += FramesV2_getFrameSize(version,(*IPLSptr)->header)+10;
+        FramesV2_freeIPLS(IPLSptr);
+    } 
+    return deletedSize;
+}
+
 int DeleteFrame_default(ID3v2DefaultFrameType **DefaultFramePtr,int version){
     char option;
     int deletedSize = 0;

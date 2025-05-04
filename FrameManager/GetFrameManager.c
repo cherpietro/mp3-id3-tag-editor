@@ -243,3 +243,17 @@ ID3v2TXTFrameType * GetFrame_TXXX(int version){
     FramesV2_updateFrameSize(version,&TXTFramePtr->header,TXTFramePtr->content.size+1);
     return TXTFramePtr;
 }
+
+ID3v2IPLSFrameType * GetFrame_IPLS(int version){
+    char list[1501];
+    
+    ID3v2IPLSFrameType *IPLSFramePtr = (ID3v2IPLSFrameType*) malloc(sizeof(ID3v2IPLSFrameType));
+    IPLSFramePtr->header.flags[0] = 0;IPLSFramePtr->header.flags[1] = 0;
+    memcpy(IPLSFramePtr->header.frameId,"IPLS",4); 
+    IPLSFramePtr->textEncoding = 3;
+    printf("Insert people list in one line (1500 characters): ");
+    GET_TXTSTR(IPLSFramePtr,list,peopeList);
+    printf("\n");
+    FramesV2_updateFrameSize(version,&IPLSFramePtr->header,IPLSFramePtr->peopeList.size+1);
+    return IPLSFramePtr;
+}

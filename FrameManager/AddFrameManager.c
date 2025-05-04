@@ -90,6 +90,9 @@ int AddFrame_addPOPM(ListFramePtr *POPMFrameList,int version){
 int AddFrame_addPCNT(ID3v2PCNTFrameType **PCNT,int version){
     ADD_FRAME(PCNT,GetFrame_PCNT,PrintFrame_PCNT);
 }
+int AddFrame_addIPLS(ID3v2IPLSFrameType **IPLS,int version){
+    ADD_FRAME(IPLS,GetFrame_IPLS,PrintFrame_IPLS);
+}
 
 int AddFrame_addTXTF(ListFramePtr *TXTFrameList,char *frameID,int version){
     char option;

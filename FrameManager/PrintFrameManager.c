@@ -57,7 +57,7 @@ void printTag(ID3TagType *ID3Tag){
   PRINT_LIST_FRAME(ID3Tag->ENCRFrameList,ENCRFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame); 
   PRINT_LIST_FRAME(ID3Tag->GRIDFrameList,GRIDFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame); 
   
-  if(ID3Tag->IPLS != NULL) PrintFrame_DefaultFrame(*ID3Tag->IPLS,version);
+  if(ID3Tag->IPLS != NULL) PrintFrame_IPLS(*ID3Tag->IPLS,version);
   if(ID3Tag->SYTC != NULL) PrintFrame_DefaultFrame(*ID3Tag->SYTC,version);
   if(ID3Tag->USER != NULL) PrintFrame_DefaultFrame(*ID3Tag->USER,version);
   if(ID3Tag->OWNE != NULL) PrintFrame_DefaultFrame(*ID3Tag->OWNE,version);
@@ -126,7 +126,7 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
   else if(strncasecmp(frameID,"GRID",4)==0){ PRINT_LIST_FRAME(ID3Tag->GRIDFrameList,GRIDFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame);}
 
 
-  else if(strncasecmp(frameID,"IPLS",4)==0){ if(ID3Tag->IPLS != NULL) PrintFrame_DefaultFrame(*ID3Tag->IPLS,version);}
+  else if(strncasecmp(frameID,"IPLS",4)==0){ if(ID3Tag->IPLS != NULL) PrintFrame_IPLS(*ID3Tag->IPLS,version);}
   else if(strncasecmp(frameID,"SYTC",4)==0){ if(ID3Tag->SYTC != NULL) PrintFrame_DefaultFrame(*ID3Tag->SYTC,version);}
   else if(strncasecmp(frameID,"USER",4)==0){ if(ID3Tag->USER != NULL) PrintFrame_DefaultFrame(*ID3Tag->USER,version);}
   else if(strncasecmp(frameID,"OWNE",4)==0){ if(ID3Tag->OWNE != NULL) PrintFrame_DefaultFrame(*ID3Tag->OWNE,version);}
@@ -266,6 +266,17 @@ void PrintFrame_DefaultFrame(ID3v2DefaultFrameType DefaultFrame,int version){
   printf("Flags: %u %u\n",DefaultFrame.header.flags[0],DefaultFrame.header.flags[1]);
   size_t size = FramesV2_getFrameSize(version,DefaultFrame.header);
   printf("Size: %ld\n",size);
+}
+
+void PrintFrame_IPLS(ID3v2IPLSFrameType IPLS, int version){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",IPLS.header.frameId);
+  printf("Flags: %u %u\n",IPLS.header.flags[0],IPLS.header.flags[1]);
+  size_t size = FramesV2_getFrameSize(version,IPLS.header);
+  printf("Size: %ld\n",size);
+  printf("TextEncoding: %d\n",IPLS.textEncoding);
+  printf("People List: ");
+  PRINT_TEXTSTR(IPLS,peopeList);
 }
 
 void PrintFrame_WWWF(ID3v2WWWFrameType WWWF,int version){

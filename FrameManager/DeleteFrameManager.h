@@ -15,5 +15,5 @@ int DeleteFrame_deleteWWWF(ListFramePtr *,char *,int);
 
 int DeleteFrame_default(ID3v2DefaultFrameType **,int);
 int DeleteFrame_defaultList(ListFramePtr *,int);
-
+int DeleteFrame_IPLS(ID3v2IPLSFrameType **, int);
 #endif // DELETEFRAMEMANAGER_H

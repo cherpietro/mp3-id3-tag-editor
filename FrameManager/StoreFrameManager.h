@@ -30,4 +30,7 @@ void StoreFrame_DefaultFrame(FILE*, uint32_t, ID3v2DefaultFrameType*);
 
 void StoreFrame_PCNT(FILE*, uint32_t, ID3v2PCNTFrameType*);
 
+void StoreFrame_storeIPLS(FILE* , uint32_t , ID3v2IPLSFrameType *);
+
+
 #endif //STOREfRAMEMANAGER_H

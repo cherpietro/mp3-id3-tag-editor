@@ -9,5 +9,7 @@ ID3v2POPMFrameType* GetFrame_POPM(int);
 ID3v2PCNTFrameType* GetFrame_PCNT(int);
 ID3v2COMMFrameType* GetFrame_COMM(int);
 
+ID3v2IPLSFrameType* GetFrame_IPLS(int);
+
 bool FramesV2_validTextFrameId(char *);
 bool FramesV2_validWebFrameId(char *);

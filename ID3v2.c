@@ -89,7 +89,7 @@ void ID3v2_free(ID3TagType *ID3Tag){
     if(ID3Tag->MLLT != NULL) FramesV2_freeDefaultFrame(&ID3Tag->MLLT);
     if(ID3Tag->ETCO != NULL) FramesV2_freeDefaultFrame(&ID3Tag->ETCO);
     if(ID3Tag->RVAD != NULL) FramesV2_freeDefaultFrame(&ID3Tag->RVAD);
-    if(ID3Tag->IPLS != NULL) FramesV2_freeDefaultFrame(&ID3Tag->IPLS);
+    if(ID3Tag->IPLS != NULL) FramesV2_freeIPLS(&ID3Tag->IPLS);
     if(ID3Tag->SYTC != NULL) FramesV2_freeDefaultFrame(&ID3Tag->SYTC);
     if(ID3Tag->USER != NULL) FramesV2_freeDefaultFrame(&ID3Tag->USER);
     if(ID3Tag->OWNE != NULL) FramesV2_freeDefaultFrame(&ID3Tag->OWNE);
@@ -175,7 +175,7 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
     else if(strncasecmp(frameID,"AENC",4)==0){deletedSize = DeleteFrame_defaultList(&ID3Tag->AENCFrameList,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"ENCR",4)==0){deletedSize = DeleteFrame_defaultList(&ID3Tag->ENCRFrameList,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"GRID",4)==0){deletedSize = DeleteFrame_defaultList(&ID3Tag->GRIDFrameList,ID3Tag->header.version[0]);}
-    else if(strncasecmp(frameID,"IPLS",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->IPLS,ID3Tag->header.version[0]);}
+    else if(strncasecmp(frameID,"IPLS",4)==0){deletedSize = DeleteFrame_IPLS(&ID3Tag->IPLS,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"SYTC",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->SYTC,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"USER",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->USER,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"OWNE",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->OWNE,ID3Tag->header.version[0]);}
@@ -203,4 +203,5 @@ void ID3v2_addFrame(ID3TagType *ID3Tag, char *frameID){
     else if(strncasecmp(frameID,"COMM",4)==0){ADD_FRAME_LIST(COMMFrameList, AddFrame_addCOMM);}
     else if(strncasecmp(frameID,"POPM",4)==0){ADD_FRAME_LIST(POPMFrameList, AddFrame_addPOPM);}
     else if(strncasecmp(frameID,"PCNT",4)==0){ADD_FRAME_LIST(PCNT, AddFrame_addPCNT);}
+    else if(strncasecmp(frameID,"IPLS",4)==0){ADD_FRAME_LIST(IPLS, AddFrame_addIPLS);}
 }

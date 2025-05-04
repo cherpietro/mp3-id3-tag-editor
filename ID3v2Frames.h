@@ -30,6 +30,12 @@ typedef struct {
 typedef struct {
     ID3v2FrameHeaderType header;
     uint8_t textEncoding;
+    TextStringType peopeList;
+} ID3v2IPLSFrameType;
+
+typedef struct {
+    ID3v2FrameHeaderType header;
+    uint8_t textEncoding;
     // char *content;
     TextStringType content;
 } ID3v2TXTFrameType;
@@ -111,5 +117,6 @@ void FramesV2_freeMCDI(ID3v2MCDIFrameType**);
 void FramesV2_freePOPM(ID3v2POPMFrameType**);
 void FramesV2_freeDefaultFrame(ID3v2DefaultFrameType**);
 void FramesV2_freePCNT(ID3v2PCNTFrameType**);
+void FramesV2_freeIPLS(ID3v2IPLSFrameType**);
 
 #endif // ID3V2FRAMES_H
