@@ -189,7 +189,7 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
 void ID3v2_addFrame(ID3TagType *ID3Tag, char *frameID){
     int incrementedSize = 0;
     int oldSize = 0;
-    if(strncasecmp(frameID,"TXXX",4)==0){ADD_FRAME_LIST(TXTFrameList,AddFrame_addTXXX);}    
+    if(strncasecmp(frameID,"TXXX",4)==0){ADD_FRAME_LIST(TXXXFrameList,AddFrame_addTXXX);}    
     else if(strncasecmp(frameID,"T",1)==0){ 
         if(FramesV2_validTextFrameId(frameID)){ ADD_SINGLE_FRAME_LIST(TXTFrameList, AddFrame_addTXTF, frameID);}
         else printf("Not supported tag to include");

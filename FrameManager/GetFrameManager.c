@@ -217,31 +217,21 @@ ID3v2APICFrameType *GetFrame_APIC(int version){
         return NULL;
     }
 }
-ID3v2TXTFrameType * GetFrame_TXXX(int version){
+ID3v2TXXXFrameType * GetFrame_TXXX(int version){
     char description[65];
     char value[255];
-    char *mergedString;
-
-    ID3v2TXTFrameType *TXTFramePtr = (ID3v2TXTFrameType*) malloc(sizeof(ID3v2TXTFrameType));
-    memcpy(TXTFramePtr->header.frameId,"TXXX",4); 
-    TXTFramePtr->header.flags[0] = 0;TXTFramePtr->header.flags[1] = 0;
-    TXTFramePtr->textEncoding = 3;
-    printf("Insert tag description (max. size 64): ");
-    fgets(description, sizeof(description), stdin);
-    description[strcspn(description, "\n")] = 0;
-    printf("\n");
+    ID3v2TXXXFrameType *TXXXFramePtr = (ID3v2TXXXFrameType*) malloc(sizeof(ID3v2TXXXFrameType));
+    memcpy(TXXXFramePtr->header.frameId,"TXXX",4); 
+    TXXXFramePtr->header.flags[0] = 0;TXXXFramePtr->header.flags[1] = 0;
+    TXXXFramePtr->textEncoding = 3;
+    printf("Insert tag description (64 characters): ");
+    GET_TXTSTR(TXXXFramePtr,description,description);
+    printf("\n");    
     printf("Insert tag content (max. size 254): ");
-    fgets(value, sizeof(value), stdin);
-    printf("\n");
-    value[strcspn(value, "\n")] = 0;
-    int totalLen = strlen(value)+strlen(description)+2;
-    mergedString = (char *) malloc(totalLen);
-    memcpy(mergedString, description, strlen(description)+1);
-    memcpy(mergedString + strlen(description)+1, value, strlen(value)+1);
-    TxtStr_storeTextString(&TXTFramePtr->content,mergedString,totalLen);
-    free(mergedString);
-    FramesV2_updateFrameSize(version,&TXTFramePtr->header,TXTFramePtr->content.size+1);
-    return TXTFramePtr;
+    GET_TXTSTR(TXXXFramePtr,value,value);
+
+    FramesV2_updateFrameSize(version,&TXXXFramePtr->header,TXXXFramePtr->description.size+TXXXFramePtr->value.size+1);
+    return TXXXFramePtr;
 }
 
 ID3v2IPLSFrameType * GetFrame_IPLS(int version){

@@ -30,8 +30,18 @@ static void cleanInputBuffer(){
     while ((ch = getchar()) != '\n' && ch != EOF);
 }
 
-int AddFrame_addTXXX(ListFramePtr *TXTFrameList,int version){
-    OLD_ADD_FRAME_LIST(TXTFrameList,ID3v2TXTFrameType,TXTFramePtr,GetFrame_TXXX,PrintFrame_TXTF);
+static bool hasRepeatTXXX(ListFramePtr *TWXXXrameList,ID3v2TXXXFrameType *TXXXFramePtr){
+    ID3v2TXXXFrameType *checkPtr;
+    ListFramePtr_setFirstActive(TWXXXrameList);
+    while(TWXXXrameList->active != NULL){
+        checkPtr= ListFramePtr_getActiveFramePtr(*TWXXXrameList);
+        if(strcmp(checkPtr->description.string,TXXXFramePtr->description.string) == 0) return true;
+        ListFramePtr_setNextActive(TWXXXrameList);
+    }
+    return false;
+}
+int AddFrame_addTXXX(ListFramePtr *TXXXFrameList,int version){
+    ADD_FRAME_LIST(TXXXFrameList,ID3v2TXXXFrameType,TXXXFramePtr,GetFrame_TXXX,PrintFrame_TXXX,hasRepeatTXXX);
 }
 static bool hasRepeatWXXX(ListFramePtr *WXXXrameList,ID3v2WXXXFrameType *WXXXFramePtr){
     ID3v2WXXXFrameType *checkPtr;
