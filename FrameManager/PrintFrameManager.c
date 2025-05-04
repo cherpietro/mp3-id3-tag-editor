@@ -300,3 +300,12 @@ void PrintFrame_saveAPICImage(ID3v2APICFrameType APIC){
   fclose(imageFile);
   printf("File saved in ./cover.jpg\n");
 }
+
+void PrintFrame_PCNT(ID3v2PCNTFrameType PCNT,int version){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",PCNT.header.frameId);
+  printf("Flags: %u %u\n",PCNT.header.flags[0],PCNT.header.flags[1]);
+  size_t size = FramesV2_getFrameSize(version,PCNT.header);
+  printf("Size: %ld\n",size);
+  printf("Counter: %d\n",char_array_to_uint32(PCNT.counter));
+}

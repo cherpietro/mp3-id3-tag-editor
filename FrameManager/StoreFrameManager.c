@@ -33,7 +33,7 @@ bool StoreFrame_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag)
     else if(strncmp(header.frameId,"T",1)==0){
         STORE_LIST(TXTFrameList,ID3v2TXTFrameType,StoreFrame_TXTF);
     }
-    else if(strncmp(header.frameId,"COMM",4)==0){ STORE_LIST(COMMFrameList,ID3v2COMMFrameType,StoreFrame_COMM);}
+    else if(strncmp(header.frameId,"COMM",4)==0){ printf("pipo: %ld\n", ftell(mp3FilePointer));STORE_LIST(COMMFrameList,ID3v2COMMFrameType,StoreFrame_COMM);}
     else if(strncmp(header.frameId,"PRIV",4)==0){ STORE_LIST(PRIVFrameList,ID3v2PRIVFrameType,StoreFrame_PRIV);}
     else if(strncmp(header.frameId,"APIC",4)==0){ STORE_LIST(APICFrameList,ID3v2APICFrameType,StoreFrame_APIC);}
     else if(strncmp(header.frameId,"POPM",4)==0){ STORE_LIST(POPMFrameList,ID3v2POPMFrameType,StoreFrame_POPM);}
@@ -67,7 +67,7 @@ bool StoreFrame_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag)
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"PCNT",4)==0){
-        STORE_FRAME(PCNT,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
+        STORE_FRAME(PCNT,ID3v2PCNTFrameType,StoreFrame_PCNT);
         printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
     }
     else if(strncmp(header.frameId,"RVRB",4)==0){
@@ -171,9 +171,6 @@ void StoreFrame_COMM(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameTyp
     COMM->language[0] = frameContent[index++];
     COMM->language[1] = frameContent[index++];
     COMM->language[2] = frameContent[index++];
-    if(frameContent[index] == '\0'){
-        index ++;//Language should not have '\0'    
-    } 
     STORE_TEXTSTR(COMM,descPtr,descSize,contentDescript);
 
     char *contentPtr = (char*) frameContent + index;
@@ -207,6 +204,18 @@ void StoreFrame_POPM(FILE *mp3FilePointer, uint32_t frameSize,ID3v2POPMFrameType
     (POPM)->counter[1] = counterPtr[1];
     (POPM)->counter[2] = counterPtr[2];
     (POPM)->counter[3] = counterPtr[3];
+    free(frameContent);
+}
+
+void StoreFrame_PCNT(FILE* mp3FilePointer, uint32_t frameSize, ID3v2PCNTFrameType *PCNT){
+    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+    fread(frameContent, frameSize, 1, mp3FilePointer);
+
+    char *counterPtr = (char *)frameContent;
+    (PCNT)->counter[0] = counterPtr[0];
+    (PCNT)->counter[1] = counterPtr[1];
+    (PCNT)->counter[2] = counterPtr[2];
+    (PCNT)->counter[3] = counterPtr[3];
     free(frameContent);
 }
 

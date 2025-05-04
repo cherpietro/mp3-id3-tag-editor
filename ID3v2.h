@@ -37,7 +37,7 @@ typedef struct {
     ID3v2DefaultFrameType *SYTC; 
     ID3v2DefaultFrameType *USER; 
     ID3v2DefaultFrameType *OWNE; 
-    ID3v2DefaultFrameType *PCNT; 
+    ID3v2PCNTFrameType *PCNT; 
     //
     ID3v2DefaultFrameType *COMR; //???
     ID3v2DefaultFrameType *POSS;
@@ -61,5 +61,6 @@ bool ID3v2_getTagSizeOfTheStruct(ID3TagType *);
 void ID3v2_deleteFrame(ID3TagType *, char *);
 
 void ID3v2_addFrame(ID3TagType *, char *);
+
 
 #endif // ID3V2_H

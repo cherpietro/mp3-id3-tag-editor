@@ -52,6 +52,10 @@ void FramesV2_freePOPM(ID3v2POPMFrameType **POPM){
     free(*POPM);
     *POPM = NULL;
 }
+void FramesV2_freePCNT(ID3v2PCNTFrameType **PCNT){
+    free(*PCNT);
+    *PCNT = NULL;
+}
 void FramesV2_freeWWWF(ID3v2WWWFrameType **WWWF){
     TxtStr_freeTextString(&(*WWWF)->url);
     free(*WWWF);

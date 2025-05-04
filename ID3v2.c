@@ -89,7 +89,7 @@ void ID3v2_free(ID3TagType *ID3Tag){
     if(ID3Tag->SYTC != NULL) FramesV2_freeDefaultFrame(&ID3Tag->SYTC);
     if(ID3Tag->USER != NULL) FramesV2_freeDefaultFrame(&ID3Tag->USER);
     if(ID3Tag->OWNE != NULL) FramesV2_freeDefaultFrame(&ID3Tag->OWNE);
-    if(ID3Tag->PCNT != NULL) FramesV2_freeDefaultFrame(&ID3Tag->PCNT);
+    if(ID3Tag->PCNT != NULL) FramesV2_freePCNT(&ID3Tag->PCNT);
 }
 
 int ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
@@ -166,7 +166,7 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
     else if(strncasecmp(frameID,"SYTC",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->SYTC,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"USER",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->USER,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"OWNE",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->OWNE,ID3Tag->header.version[0]);}
-    else if(strncasecmp(frameID,"PCNT",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->PCNT,ID3Tag->header.version[0]);}
+    else if(strncasecmp(frameID,"PCNT",4)==0){deletedSize = DeleteFrame_deletePCNT(&ID3Tag->PCNT,ID3Tag->header.version[0]);}
     else return; //NOT SUPPORTED TAG
     oldSize = HeaderV2_getTagSize(ID3Tag->header);
     HeaderV2_updateTagSize(&ID3Tag->header,oldSize-deletedSize);

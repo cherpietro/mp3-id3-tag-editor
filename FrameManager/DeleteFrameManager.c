@@ -164,6 +164,21 @@ int DeleteFrame_deleteMDCI(ID3v2MCDIFrameType **MDCIptr, int version){
     } 
     return deletedSize;
 }
+int DeleteFrame_deletePCNT(ID3v2PCNTFrameType **PCNTptr, int version){
+    char option;
+    int deletedSize = 0;
+    fflush(stdout);
+    system("clear");
+    PrintFrame_PCNT(**PCNTptr,version);
+    printf("\n\nWant to delete this frame? (y/n): ");
+    option = getchar();
+    cleanInputBuffer();
+    if(option == 'y') {
+        deletedSize += FramesV2_getFrameSize(version,(*PCNTptr)->header)+10;
+        FramesV2_freePCNT(PCNTptr);
+    } 
+    return deletedSize;
+}
 
 int DeleteFrame_deleteWXXX(ListFramePtr *WXXXFrameList,int version){
     char option;

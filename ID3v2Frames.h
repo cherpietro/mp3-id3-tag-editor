@@ -58,6 +58,12 @@ typedef struct {
 
 typedef struct {
     ID3v2FrameHeaderType header;
+    char *counter;
+} ID3v2PCNTFrameType;
+
+
+typedef struct {
+    ID3v2FrameHeaderType header;
     TextStringType url;
 } ID3v2WWWFrameType;
 
@@ -95,4 +101,6 @@ void FramesV2_freePRIV(ID3v2PRIVFrameType**);
 void FramesV2_freeMCDI(ID3v2MCDIFrameType**);
 void FramesV2_freePOPM(ID3v2POPMFrameType**);
 void FramesV2_freeDefaultFrame(ID3v2DefaultFrameType**);
+void FramesV2_freePCNT(ID3v2PCNTFrameType**);
+
 #endif // ID3V2FRAMES_H

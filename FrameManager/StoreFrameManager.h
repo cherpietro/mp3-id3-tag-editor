@@ -26,4 +26,6 @@ void StoreFrame_WXXX(FILE*, uint32_t,ID3v2WXXXFrameType *);
 
 void StoreFrame_DefaultFrame(FILE*, uint32_t, ID3v2DefaultFrameType*);
 
+void StoreFrame_PCNT(FILE*, uint32_t, ID3v2PCNTFrameType*);
+
 #endif //STOREfRAMEMANAGER_H
