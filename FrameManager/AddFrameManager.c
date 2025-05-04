@@ -8,7 +8,7 @@
     FrameType *FramePtr = FrameGetFunct(version);\
     if(FramePtr == NULL)return 0;\
     ListFramePtr_insertLast(FrameList,FramePtr);\
-    FramePrintFunct(*FramePtr);\
+    FramePrintFunct(*FramePtr,version);\
     return (FramesV2_getFrameSize(version,FramePtr->header) +10);
 
 static void cleanInputBuffer(){
@@ -43,7 +43,7 @@ int AddFrame_addTXTF(ListFramePtr *TXTFrameList,char *frameID,int version){
         TXTFramePtr = ListFramePtr_getActiveFramePtr(*TXTFrameList);
     }
     if(TXTFramePtr != NULL) {
-        PrintFrame_TXTF(*TXTFramePtr);
+        PrintFrame_TXTF(*TXTFramePtr,version);
         printf("\n\nFRAME ALREADY EXIST. Want to delete this frame? (y/n): ");
         option = getchar();
         cleanInputBuffer();
@@ -56,7 +56,7 @@ int AddFrame_addTXTF(ListFramePtr *TXTFrameList,char *frameID,int version){
     TXTFramePtr = GetFrame_TXTF(frameID,version);
     ListFramePtr_insertLast(TXTFrameList,TXTFramePtr);
     incrementedSize += FramesV2_getFrameSize(version,TXTFramePtr->header);
-    PrintFrame_TXTF(*TXTFramePtr);
+    PrintFrame_TXTF(*TXTFramePtr,version);
     return (incrementedSize + 10);
 }
 
@@ -71,7 +71,7 @@ int AddFrame_addWWWF(ListFramePtr *WWWFrameList,char *frameID,int version){
         WWWFramePtr = ListFramePtr_getActiveFramePtr(*WWWFrameList);
     }
     if(WWWFramePtr != NULL) {
-        PrintFrame_WWWF(*WWWFramePtr);
+        PrintFrame_WWWF(*WWWFramePtr,version);
         printf("\n\nFRAME ALREADY EXIST. Want to delete this frame? (y/n): ");
         option = getchar();
         cleanInputBuffer();
@@ -84,6 +84,6 @@ int AddFrame_addWWWF(ListFramePtr *WWWFrameList,char *frameID,int version){
     WWWFramePtr = GetFrame_WWWF(frameID,version);
     ListFramePtr_insertLast(WWWFrameList,WWWFramePtr);
     incrementedSize += FramesV2_getFrameSize(version,WWWFramePtr->header);
-    PrintFrame_WWWF(*WWWFramePtr);
+    PrintFrame_WWWF(*WWWFramePtr,version);
     return (incrementedSize + 10);
 }

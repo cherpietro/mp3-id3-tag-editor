@@ -13,23 +13,27 @@ FrameType *FramePtr;\
   ListFramePtr_setFirstActive(&FrameLst);\
   while(FrameLst.active != NULL){\
     FramePtr = (FrameType *)ListFramePtr_getActiveFramePtr(FrameLst);\
-    printFunct(*FramePtr);\
+    printFunct(*FramePtr,version);\
     ListFramePtr_setNextActive(&FrameLst);\
   }
 
   //Unused
 void printTag(ID3TagType *ID3Tag){
+  int version = ID3Tag->header.version[0];
   HeaderV2_printTagHeader(ID3Tag->header);
   PRINT_LIST_FRAME(ID3Tag->TXTFrameList,TXTFrame,ID3v2TXTFrameType,PrintFrame_TXTF);  
   PRINT_LIST_FRAME(ID3Tag->COMMFrameList,COMMFrame,ID3v2COMMFrameType,PrintFrame_COMM); 
   PRINT_LIST_FRAME(ID3Tag->PRIVFrameList,PRIVFrame,ID3v2PRIVFrameType,PrintFrame_PRIV); 
   PRINT_LIST_FRAME(ID3Tag->APICFrameList,APICFrame,ID3v2APICFrameType,PrintFrame_APIC); 
   PRINT_LIST_FRAME(ID3Tag->POPMFrameList,POPMFrame,ID3v2POPMFrameType,PrintFrame_POPM); 
-  if(ID3Tag->MCDI != NULL) PrintFrame_MDCI(*ID3Tag->MCDI);
+  PRINT_LIST_FRAME(ID3Tag->WWWFrameList,WWWFrame,ID3v2WWWFrameType,PrintFrame_WWWF); 
+  PRINT_LIST_FRAME(ID3Tag->WXXXFrameList,WXXXFrame,ID3v2WXXXFrameType,PrintFrame_WXXX); 
+  if(ID3Tag->MCDI != NULL) PrintFrame_MDCI(*ID3Tag->MCDI,version);
 }
 
 void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
-  if(strncasecmp(frameID,"MCDI",4)==0){ if(ID3Tag->MCDI != NULL) PrintFrame_MDCI(*ID3Tag->MCDI);}
+  int version = ID3Tag->header.version[0];
+  if(strncasecmp(frameID,"MCDI",4)==0){ if(ID3Tag->MCDI != NULL) PrintFrame_MDCI(*ID3Tag->MCDI,version);}
   // else if(strncasecmp(frameID,"SYTC",4)==0){ if(ID3Tag->SYTC != NULL) PrintFrame_SYTC(*ID3Tag->SYTC);}
   // else if(strncasecmp(frameID,"IPLS",4)==0){ if(ID3Tag->IPLS != NULL) PrintFrame_IPLS(*ID3Tag->IPLS);}
   // else if(strncasecmp(frameID,"USER",4)==0){ if(ID3Tag->USER != NULL) PrintFrame_USER(*ID3Tag->USER);}
@@ -47,7 +51,7 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
     ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
     ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
     while (TXTFramePtr != NULL){
-      if(strncasecmp(frameID,TXTFramePtr->header.frameId,4) == 0) PrintFrame_TXTF(*TXTFramePtr);
+      if(strncasecmp(frameID,TXTFramePtr->header.frameId,4) == 0) PrintFrame_TXTF(*TXTFramePtr,version);
       ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
       TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
     }
@@ -59,13 +63,13 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
       ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
       TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
     }
-    if(TXTFramePtr != NULL) PrintFrame_TXTF(*TXTFramePtr);
+    if(TXTFramePtr != NULL) PrintFrame_TXTF(*TXTFramePtr,version);
   }
   else if(strncasecmp(frameID,"WXXX",4)==0){
     ListFramePtr_setFirstActive(&ID3Tag->WXXXFrameList);
     ID3v2WXXXFrameType * WXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WXXXFrameList);
     while (WXXXFramePtr != NULL){
-      if(strncasecmp(frameID,WXXXFramePtr->header.frameId,4) == 0) PrintFrame_WXXX(*WXXXFramePtr);
+      if(strncasecmp(frameID,WXXXFramePtr->header.frameId,4) == 0) PrintFrame_WXXX(*WXXXFramePtr,version);
       ListFramePtr_setNextActive(&ID3Tag->WXXXFrameList);
       WXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WXXXFrameList);
     }
@@ -77,44 +81,20 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
       ListFramePtr_setNextActive(&ID3Tag->WWWFrameList);
       WWWFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WWWFrameList);
     }
-    if(WWWFramePtr != NULL) PrintFrame_WWWF(*WWWFramePtr);
+    if(WWWFramePtr != NULL) PrintFrame_WWWF(*WWWFramePtr,version);
   }
   else if(strncasecmp(frameID,"PRIV",4)==0){
-    ListFramePtr_setFirstActive(&ID3Tag->PRIVFrameList);
-    ID3v2PRIVFrameType * PRIVFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
-    while (PRIVFramePtr != NULL){
-      PrintFrame_PRIV(*PRIVFramePtr);
-      ListFramePtr_setNextActive(&ID3Tag->PRIVFrameList);
-      PRIVFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->PRIVFrameList);
-    }
+    PRINT_LIST_FRAME(ID3Tag->PRIVFrameList,PRIVFrame,ID3v2PRIVFrameType,PrintFrame_PRIV);
   }
   else if(strncasecmp(frameID,"COMM",4)==0){
-    ListFramePtr_setFirstActive(&ID3Tag->COMMFrameList);
-    ID3v2COMMFrameType * COMMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
-    while (COMMFramePtr != NULL){
-      PrintFrame_COMM(*COMMFramePtr);
-      ListFramePtr_setNextActive(&ID3Tag->COMMFrameList);
-      COMMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->COMMFrameList);
-    }
+    PRINT_LIST_FRAME(ID3Tag->COMMFrameList,COMMFrame,ID3v2COMMFrameType,PrintFrame_COMM); 
   }
   else if(strncasecmp(frameID,"APIC",4)==0){
-    ListFramePtr_setFirstActive(&ID3Tag->APICFrameList);
-    ID3v2APICFrameType * APICFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
-    while (APICFramePtr != NULL){
-      PrintFrame_APIC(*APICFramePtr);
-      ListFramePtr_setNextActive(&ID3Tag->APICFrameList);
-      APICFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->APICFrameList);
-    }
+    PRINT_LIST_FRAME(ID3Tag->APICFrameList,APICFrame,ID3v2APICFrameType,PrintFrame_APIC); 
+  
   }
   else if(strncasecmp(frameID,"POPM",4)==0){ 
-    ListFramePtr_setFirstActive(&ID3Tag->POPMFrameList);
-    ID3v2POPMFrameType * POPMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->POPMFrameList);
-    while (POPMFramePtr != NULL){
-      PrintFrame_POPM(*POPMFramePtr);
-      ListFramePtr_setNextActive(&ID3Tag->POPMFrameList);
-      POPMFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->POPMFrameList);
-    }
-    // if(ID3Tag->POPM != NULL) PrintFrame_POPM(*ID3Tag->POPM);
+    PRINT_LIST_FRAME(ID3Tag->POPMFrameList,POPMFrame,ID3v2POPMFrameType,PrintFrame_POPM); 
   }
   else printf("No frame in tag"); //Because of if anidation doesn't work in all tags
 }
@@ -127,7 +107,6 @@ void PrintFrame_listFrames(ID3TagType *ID3Tag){
   // if(ID3Tag->OWNE != NULL) printf("FramgeID: OWNE\n");
   // if(ID3Tag->PCNT != NULL) printf("FramgeID: PCNT\n");
 
-  // if(ID3Tag->POPM != NULL) printf("FramgeID: POPM\n");
   ListFramePtr_setFirstActive(&(*ID3Tag).POPMFrameList);
   int POPMCount = 0;
   while(ID3Tag->APICFrameList.active != NULL){
@@ -191,10 +170,12 @@ void PrintFrame_listFrames(ID3TagType *ID3Tag){
   if(PRIVCount != 0) printf("FramgeID: PRIV (%d frames)\n",PRIVCount);
 }
 
-void PrintFrame_APIC(ID3v2APICFrameType APIC){
+void PrintFrame_APIC(ID3v2APICFrameType APIC, int version){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",APIC.header.frameId);
   printf("Flags: %u %u\n",APIC.header.flags[0],APIC.header.flags[1]);
+  size_t size = FramesV2_getFrameSize(version,APIC.header);
+  printf("Size: %ld\n",size);
   printf("TextEncoding: %d\n",APIC.textEncoding);
   printf("MIME type: %s\n",APIC.mimeType.string);
   printf("apicframe.pictureType: %u\n",APIC.pictureType);
@@ -203,10 +184,12 @@ void PrintFrame_APIC(ID3v2APICFrameType APIC){
   PrintFrame_saveAPICImage(APIC);
 }
 
-void PrintFrame_TXTF(ID3v2TXTFrameType frame){
+void PrintFrame_TXTF(ID3v2TXTFrameType frame,int version){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",frame.header.frameId);
   printf("Flags: %u %u\n",frame.header.flags[0],frame.header.flags[1]);
+  size_t size = FramesV2_getFrameSize(version,frame.header);
+  printf("Size: %ld\n",size);
   printf("TextEncoding: %d\n",frame.textEncoding);
   if(strncasecmp("TXXX",frame.header.frameId,4) == 0){
       printf("Description: ");
@@ -232,10 +215,12 @@ void PrintFrame_TXTF(ID3v2TXTFrameType frame){
   }
 }
 
-void PrintFrame_COMM(ID3v2COMMFrameType COMM){
+void PrintFrame_COMM(ID3v2COMMFrameType COMM,int version){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",COMM.header.frameId);
   printf("Flags: %u %u\n",COMM.header.flags[0],COMM.header.flags[1]);
+  size_t size = FramesV2_getFrameSize(version,COMM.header);
+  printf("Size: %ld\n",size);
   printf("TextEncoding: %d\n",COMM.textEncoding);
   printf("Language: %s\n",COMM.language);
   printf("Descript: ");
@@ -244,46 +229,58 @@ void PrintFrame_COMM(ID3v2COMMFrameType COMM){
   PRINT_TEXTSTR(COMM,actualText);
 }
 
-void PrintFrame_PRIV(ID3v2PRIVFrameType PRIV){
+void PrintFrame_PRIV(ID3v2PRIVFrameType PRIV,int version){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",PRIV.header.frameId);
   printf("Flags: %u %u\n",PRIV.header.flags[0],PRIV.header.flags[1]);
+  size_t size = FramesV2_getFrameSize(version,PRIV.header);
+  printf("Size: %ld\n",size);
   printf("Owner: ");
   PRINT_TEXTSTR(PRIV,owner);
 }
 
-void PrintFrame_MDCI(ID3v2MCDIFrameType MDCI){
+void PrintFrame_MDCI(ID3v2MCDIFrameType MDCI,int version){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",MDCI.header.frameId);
   printf("Flags: %u %u\n",MDCI.header.flags[0],MDCI.header.flags[1]);
+  size_t size = FramesV2_getFrameSize(version,MDCI.header);
+  printf("Size: %ld\n",size);
 }
 
-void PrintFrame_POPM(ID3v2POPMFrameType POPM){
+void PrintFrame_POPM(ID3v2POPMFrameType POPM,int version){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",POPM.header.frameId);
   printf("Flags: %u %u\n",POPM.header.flags[0],POPM.header.flags[1]);
+  size_t size = FramesV2_getFrameSize(version,POPM.header);
+  printf("Size: %ld\n",size);
   printf("User email: %s\n",POPM.userEmail.string);
   printf("Ratin: %d\n",POPM.rating);
 }
 
-void PrintFrame_DefaultFrame(ID3v2DefaultFrameType DefaultFrame){
+void PrintFrame_DefaultFrame(ID3v2DefaultFrameType DefaultFrame,int version){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",DefaultFrame.header.frameId);
   printf("Flags: %u %u\n",DefaultFrame.header.flags[0],DefaultFrame.header.flags[1]);
+  size_t size = FramesV2_getFrameSize(version,DefaultFrame.header);
+  printf("Size: %ld\n",size);
 }
 
-void PrintFrame_WWWF(ID3v2WWWFrameType WWWF){
+void PrintFrame_WWWF(ID3v2WWWFrameType WWWF,int version){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",WWWF.header.frameId);
   printf("Flags: %u %u\n",WWWF.header.flags[0],WWWF.header.flags[1]);
+  size_t size = FramesV2_getFrameSize(version,WWWF.header);
+  printf("Size: %ld\n",size);
   printf("URL: ");
   PRINT_TEXTSTR(WWWF,url);
 }
 
-void PrintFrame_WXXX(ID3v2WXXXFrameType WXXX){
+void PrintFrame_WXXX(ID3v2WXXXFrameType WXXX,int version){
   printf("\n----FRAME----\n");
   printf("Frame ID: %s\n",WXXX.header.frameId);
   printf("Flags: %u %u\n",WXXX.header.flags[0],WXXX.header.flags[1]);
+  size_t size = FramesV2_getFrameSize(version,WXXX.header);
+  printf("Size: %ld\n",size);
   printf("TextEncoding: %d\n",WXXX.textEncoding);
   printf("Description: ");
   PRINT_TEXTSTR(WXXX,description);
