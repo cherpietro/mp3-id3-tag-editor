@@ -149,7 +149,7 @@ bool ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
 void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
     int deletedSize;
     int oldSize;
-    if(strncasecmp(frameID,"TXXX",4)==0) deletedSize = DeleteFrame_deleteTXXX(&ID3Tag->TXTFrameList,ID3Tag->header.version[0]);
+    if(strncasecmp(frameID,"TXXX",4)==0) deletedSize = DeleteFrame_deleteTXXX(&ID3Tag->TXXXFrameList,ID3Tag->header.version[0]);
     else if(strncasecmp(frameID,"T",1)==0) deletedSize = DeleteFrame_deleteTXTF(&ID3Tag->TXTFrameList,frameID,ID3Tag->header.version[0]);
     else if(strncasecmp(frameID,"WXXX",4)==0) deletedSize = DeleteFrame_deleteWXXX(&ID3Tag->WXXXFrameList,ID3Tag->header.version[0]);
     else if(strncasecmp(frameID,"W",1)==0) deletedSize = DeleteFrame_deleteWWWF(&ID3Tag->WWWFrameList,frameID,ID3Tag->header.version[0]);

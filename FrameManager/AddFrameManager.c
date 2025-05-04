@@ -104,9 +104,11 @@ int AddFrame_addTXTF(ListFramePtr *TXTFrameList,char *frameID,int version){
     if(TXTFramePtr != NULL) {
         PrintFrame_TXTF(*TXTFramePtr,version);
         printf("\n\nFRAME ALREADY EXIST. Want to delete this frame? (y/n): ");
-        option = getchar();
-        cleanInputBuffer();
-        if(option == 'n') { return 0;}
+        do{
+            option = getchar();
+            cleanInputBuffer();
+        }while(option != 'y' && option != 'Y' && option != 'n' && option != 'N');
+        if(option == 'n' || option == 'N') { return 0;}
         deletedSize = FramesV2_getFrameSize(version,TXTFramePtr->header)+10;
         FramesV2_freeTXTF(&TXTFramePtr);
         ListFramePtr_deleteActive(TXTFrameList);
@@ -132,9 +134,11 @@ int AddFrame_addWWWF(ListFramePtr *WWWFrameList,char *frameID,int version){
     if(WWWFramePtr != NULL) {
         PrintFrame_WWWF(*WWWFramePtr,version);
         printf("\n\nFRAME ALREADY EXIST. Want to delete this frame? (y/n): ");
-        option = getchar();
-        cleanInputBuffer();
-        if(option == 'n') { return 0;}
+        do{
+            option = getchar();
+            cleanInputBuffer();
+        }while(option != 'y' && option != 'Y' && option != 'n' && option != 'N');
+        if(option == 'n' || option == 'N') { return 0;}
         deletedSize = FramesV2_getFrameSize(version,WWWFramePtr->header)+10;
         FramesV2_freeWWWF(&WWWFramePtr);
         ListFramePtr_deleteActive(WWWFrameList);
