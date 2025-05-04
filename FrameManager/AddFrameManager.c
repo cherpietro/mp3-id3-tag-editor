@@ -4,13 +4,6 @@
 #include "../ID3v2Frames.h"
 #include <string.h>
 
-#define OLD_ADD_FRAME_LIST(FrameList,FrameType,FramePtr,FrameGetFunct,FramePrintFunct)\
-    FrameType *FramePtr = FrameGetFunct(version);\
-    if(FramePtr == NULL)return 0;\
-    ListFramePtr_insertLast(FrameList,FramePtr);\
-    FramePrintFunct(*FramePtr,version);\
-    return (FramesV2_getFrameSize(version,FramePtr->header) +10);
-
 #define ADD_FRAME_LIST(FrameList,FrameType,FramePtr,FrameGetFunct,FramePrintFunct,FrameCheckFunct)\
     FrameType *FramePtr = FrameGetFunct(version);\
     if(FramePtr == NULL)return 0;\
