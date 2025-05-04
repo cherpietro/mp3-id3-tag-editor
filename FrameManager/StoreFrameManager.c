@@ -36,7 +36,7 @@ int StoreFrame_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     else if(strncmp(header.frameId,"T",1)==0){
         STORE_LIST(TXTFrameList,ID3v2TXTFrameType,StoreFrame_TXTF);
     }
-    else if(strncmp(header.frameId,"COMM",4)==0){ printf("pipo: %ld\n", ftell(mp3FilePointer));STORE_LIST(COMMFrameList,ID3v2COMMFrameType,StoreFrame_COMM);}
+    else if(strncmp(header.frameId,"COMM",4)==0){ STORE_LIST(COMMFrameList,ID3v2COMMFrameType,StoreFrame_COMM);}
     else if(strncmp(header.frameId,"PRIV",4)==0){ STORE_LIST(PRIVFrameList,ID3v2PRIVFrameType,StoreFrame_PRIV);}
     else if(strncmp(header.frameId,"APIC",4)==0){ STORE_LIST(APICFrameList,ID3v2APICFrameType,StoreFrame_APIC);}
     else if(strncmp(header.frameId,"POPM",4)==0){ STORE_LIST(POPMFrameList,ID3v2POPMFrameType,StoreFrame_POPM);}
