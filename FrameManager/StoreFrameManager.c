@@ -171,7 +171,7 @@ void StoreFrame_COMM(FILE *mp3FilePointer, uint32_t frameSize, ID3v2COMMFrameTyp
     COMM->language[0] = frameContent[index++];
     COMM->language[1] = frameContent[index++];
     COMM->language[2] = frameContent[index++];
-    if(frameContent[index] == '\0') index ++;
+    if(frameContent[index] == '\0') index ++;//Language should not have '\0'    
     STORE_TEXTSTR(COMM,descPtr,descSize,contentDescript);
     
     STORE_TEXTSTR(COMM,contentPtr,contentSize,actualText);
