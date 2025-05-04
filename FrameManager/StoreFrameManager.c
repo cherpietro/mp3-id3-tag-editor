@@ -41,99 +41,32 @@ int StoreFrame_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     else if(strncmp(header.frameId,"APIC",4)==0){ STORE_LIST(APICFrameList,ID3v2APICFrameType,StoreFrame_APIC);}
     else if(strncmp(header.frameId,"POPM",4)==0){ STORE_LIST(POPMFrameList,ID3v2POPMFrameType,StoreFrame_POPM);}
     else if(strncmp(header.frameId,"WXXX",4)==0){
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
         STORE_LIST(WXXXFrameList,ID3v2WXXXFrameType,StoreFrame_WXXX);
     }
-    else if(strncmp(header.frameId,"W",1)==0){
-        STORE_LIST(WWWFrameList,ID3v2WWWFrameType,StoreFrame_WWWF);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"MCDI",4)==0){
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-        STORE_FRAME(MCDI,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-    }
+    else if(strncmp(header.frameId,"W",1)==0){ STORE_LIST(WWWFrameList,ID3v2WWWFrameType,StoreFrame_WWWF);}
+    else if(strncmp(header.frameId,"MCDI",4)==0){ STORE_FRAME(MCDI,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
     //DEFAULT FRAMES
-    else if(strncmp(header.frameId,"IPLS",4)==0){
-        STORE_FRAME(IPLS,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"SYTC",4)==0){
-        STORE_FRAME(SYTC,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"USER",4)==0){
-        STORE_FRAME(USER,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"OWNE",4)==0){
-        STORE_FRAME(OWNE,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"PCNT",4)==0){
-        STORE_FRAME(PCNT,ID3v2PCNTFrameType,StoreFrame_PCNT);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"RVRB",4)==0){
-        STORE_FRAME(RVRB,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"EQUA",4)==0){
-        STORE_FRAME(EQUA,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"MLLT",4)==0){
-        STORE_FRAME(MLLT,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"ETCO",4)==0){
-        STORE_FRAME(ETCO,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"RVAD",4)==0){
-        STORE_FRAME(RVAD,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"POSS",4)==0){
-        STORE_FRAME(POSS,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"COMR",4)==0){
-        STORE_FRAME(COMR,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
+    else if(strncmp(header.frameId,"IPLS",4)==0){ STORE_FRAME(IPLS,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"SYTC",4)==0){ STORE_FRAME(SYTC,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"USER",4)==0){ STORE_FRAME(USER,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"OWNE",4)==0){ STORE_FRAME(OWNE,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"PCNT",4)==0){ STORE_FRAME(PCNT,ID3v2PCNTFrameType,StoreFrame_PCNT);}
+    else if(strncmp(header.frameId,"RVRB",4)==0){ STORE_FRAME(RVRB,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"EQUA",4)==0){ STORE_FRAME(EQUA,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"MLLT",4)==0){ STORE_FRAME(MLLT,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"ETCO",4)==0){ STORE_FRAME(ETCO,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"RVAD",4)==0){ STORE_FRAME(RVAD,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"POSS",4)==0){ STORE_FRAME(POSS,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"COMR",4)==0){ STORE_FRAME(COMR,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
     //default Lists
-    else if(strncmp(header.frameId,"UFID",4)==0){
-        STORE_LIST(UFIDFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"USLT",4)==0){
-        STORE_LIST(USLTFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"SYLT",4)==0){
-        STORE_LIST(SYLTFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"GEOB",4)==0){
-        STORE_LIST(GEOBFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"LINK",4)==0){
-        STORE_LIST(LINKFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"AENC",4)==0){
-        STORE_LIST(AENCFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"ENCR",4)==0){
-        STORE_LIST(ENCRFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
-    else if(strncmp(header.frameId,"GRID",4)==0){
-        STORE_LIST(GRIDFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);
-        printf("NOT TESTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
-    }
+    else if(strncmp(header.frameId,"UFID",4)==0){STORE_LIST(UFIDFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"USLT",4)==0){STORE_LIST(USLTFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"SYLT",4)==0){STORE_LIST(SYLTFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"GEOB",4)==0){STORE_LIST(GEOBFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"LINK",4)==0){STORE_LIST(LINKFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"AENC",4)==0){STORE_LIST(AENCFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"ENCR",4)==0){STORE_LIST(ENCRFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"GRID",4)==0){STORE_LIST(GRIDFrameList,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
     else{
         printf("NOT SUPPORTED TAG %s: %ld\nSize: %d\n", header.frameId,ftell(mp3FilePointer),frameSize);
         uint8_t *buffer = (uint8_t *)malloc(frameSize);
