@@ -27,7 +27,7 @@ typedef struct {
     
     /*TO IMPLEMENT*/
     ListFramePtr UFIDFrameList; //Binary Data
-    ListFramePtr USLTFrameList; 
+    ListFramePtr USLTFrameList; //SI hay tiempo lo meto
     ListFramePtr SYLTFrameList; //Unkown format
     ListFramePtr GEOBFrameList; //Binary Data
     ListFramePtr LINKFrameList; //Unkown format

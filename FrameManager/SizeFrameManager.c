@@ -34,6 +34,12 @@ size_t SizeFrame_getFrameListSize(ID3TagType *ID3Tag){
     ADD_FRAME_SIZE_LIST(AENCFrameList, ID3v2DefaultFrameType);
     ADD_FRAME_SIZE_LIST(ENCRFrameList, ID3v2DefaultFrameType);
     ADD_FRAME_SIZE_LIST(GRIDFrameList, ID3v2DefaultFrameType);
+
+    ADD_FRAME_SIZE(IPLS);
+    ADD_FRAME_SIZE(SYTC);
+    ADD_FRAME_SIZE(USER);
+    ADD_FRAME_SIZE(OWNE);
+
     ADD_FRAME_SIZE(COMR);
     ADD_FRAME_SIZE(POSS);
     ADD_FRAME_SIZE(RVRB);
