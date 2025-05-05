@@ -43,7 +43,7 @@ typedef struct {
     //
     ID3v2DefaultFrameType *COMR; //Binaty Data
     ID3v2DefaultFrameType *POSS; //Binaty Data
-    ID3v2DefaultFrameType *RVRB;
+    ID3v2RVRBFrameType *RVRB; //Stored but not submited by user
     ID3v2DefaultFrameType *EQUA; //Binary Data
     ID3v2DefaultFrameType *MLLT; //Unkown format
     ID3v2DefaultFrameType *ETCO; //Unkown format

@@ -84,7 +84,7 @@ void ID3v2_free(ID3TagType *ID3Tag){
     FREE_FRAME_LIST(GRIDFrameList,ID3v2DefaultFrameType,FramesV2_freeDefaultFrame);
     if(ID3Tag->COMR != NULL) FramesV2_freeDefaultFrame(&ID3Tag->COMR);
     if(ID3Tag->POSS != NULL) FramesV2_freeDefaultFrame(&ID3Tag->POSS);
-    if(ID3Tag->RVRB != NULL) FramesV2_freeDefaultFrame(&ID3Tag->RVRB);
+    if(ID3Tag->RVRB != NULL) FramesV2_freeRVRB(&ID3Tag->RVRB);
     if(ID3Tag->EQUA != NULL) FramesV2_freeDefaultFrame(&ID3Tag->EQUA);
     if(ID3Tag->MLLT != NULL) FramesV2_freeDefaultFrame(&ID3Tag->MLLT);
     if(ID3Tag->ETCO != NULL) FramesV2_freeDefaultFrame(&ID3Tag->ETCO);
@@ -160,7 +160,7 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
     else if(strncasecmp(frameID,"POPM",4)==0) deletedSize = DeleteFrame_deletePOPM(&ID3Tag->POPMFrameList,ID3Tag->header.version[0]);
     else if(strncasecmp(frameID,"MDCI",4)==0) deletedSize = DeleteFrame_default(&ID3Tag->MCDI,ID3Tag->header.version[0]);
     //NOT TESTED
-    else if(strncasecmp(frameID,"RVRB",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->RVRB,ID3Tag->header.version[0]);}
+    else if(strncasecmp(frameID,"RVRB",4)==0){deletedSize = DeleteFrame_RVRB(&ID3Tag->RVRB,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"EQUA",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->EQUA,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"MLLT",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->MLLT,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"ETCO",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->ETCO,ID3Tag->header.version[0]);}

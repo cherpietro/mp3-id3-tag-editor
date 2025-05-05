@@ -51,7 +51,7 @@ int StoreFrame_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     else if(strncmp(header.frameId,"USER",4)==0){ STORE_FRAME(USER,ID3v2USERFrameType,StoreFrame_USER);}
     else if(strncmp(header.frameId,"OWNE",4)==0){ STORE_FRAME(OWNE,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
     else if(strncmp(header.frameId,"PCNT",4)==0){ STORE_FRAME(PCNT,ID3v2PCNTFrameType,StoreFrame_PCNT);}
-    else if(strncmp(header.frameId,"RVRB",4)==0){ STORE_FRAME(RVRB,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"RVRB",4)==0){ STORE_FRAME(RVRB,ID3v2RVRBFrameType,StoreFrame_RVRB);}
     else if(strncmp(header.frameId,"EQUA",4)==0){ STORE_FRAME(EQUA,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
     else if(strncmp(header.frameId,"MLLT",4)==0){ STORE_FRAME(MLLT,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
     else if(strncmp(header.frameId,"ETCO",4)==0){ STORE_FRAME(ETCO,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
@@ -153,6 +153,22 @@ void StoreFrame_PCNT(FILE* mp3FilePointer, uint32_t frameSize, ID3v2PCNTFrameTyp
     (PCNT)->counter[1] = counterPtr[1];
     (PCNT)->counter[2] = counterPtr[2];
     (PCNT)->counter[3] = counterPtr[3];
+    free(frameContent);
+}
+
+void StoreFrame_RVRB(FILE* mp3FilePointer, uint32_t frameSize, ID3v2RVRBFrameType *RVRB){
+    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+    fread(frameContent, frameSize, 1, mp3FilePointer);
+    RVRB->left = (frameContent[0] << 8) | frameContent[1];
+    RVRB->right = (frameContent[2] << 8) | frameContent[3];
+    RVRB->bouncesL = frameContent[4];
+    RVRB->bouncesR = frameContent[5];
+    RVRB->feedBackLL = frameContent[6];
+    RVRB->feedBackLLR = frameContent[7];
+    RVRB->feedBackRR = frameContent[8];
+    RVRB->feedBackRL = frameContent[9];
+    RVRB->premixLR = frameContent[10];
+    RVRB->premixRL = frameContent[11];    
     free(frameContent);
 }
 

@@ -135,6 +135,10 @@ int DeleteFrame_IPLS(ID3v2IPLSFrameType **IPLSptr, int version){
     DELETE_FRAME(IPLSptr,FramesV2_freeIPLS,PrintFrame_IPLS);
 }
 
+int DeleteFrame_RVRB(ID3v2RVRBFrameType **RVRBptr, int version){
+    DELETE_FRAME(RVRBptr,FramesV2_freeRVRB,PrintFrame_RVRB);
+}
+
 int DeleteFrame_USER(ID3v2USERFrameType **USERptr, int version){
     DELETE_FRAME(USERptr,FramesV2_freeUSER,PrintFrame_USER);
 }

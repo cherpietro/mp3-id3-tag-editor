@@ -64,7 +64,7 @@ void printTag(ID3TagType *ID3Tag){
   
   if(ID3Tag->COMR != NULL) PrintFrame_DefaultFrame(*ID3Tag->COMR,version);
   if(ID3Tag->POSS != NULL) PrintFrame_DefaultFrame(*ID3Tag->POSS,version);
-  if(ID3Tag->RVRB != NULL) PrintFrame_DefaultFrame(*ID3Tag->RVRB,version);
+  if(ID3Tag->RVRB != NULL) PrintFrame_RVRB(*ID3Tag->RVRB,version);
   if(ID3Tag->EQUA != NULL) PrintFrame_DefaultFrame(*ID3Tag->EQUA,version);
   if(ID3Tag->MLLT != NULL) PrintFrame_DefaultFrame(*ID3Tag->MLLT,version);
   if(ID3Tag->ETCO != NULL) PrintFrame_DefaultFrame(*ID3Tag->ETCO,version);
@@ -137,7 +137,7 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
   
   else if(strncasecmp(frameID,"COMR",4)==0){ if(ID3Tag->COMR != NULL) PrintFrame_DefaultFrame(*ID3Tag->COMR,version);}
   else if(strncasecmp(frameID,"POSS",4)==0){ if(ID3Tag->POSS != NULL) PrintFrame_DefaultFrame(*ID3Tag->POSS,version);}
-  else if(strncasecmp(frameID,"RVRB",4)==0){ if(ID3Tag->RVRB != NULL) PrintFrame_DefaultFrame(*ID3Tag->RVRB,version);}
+  else if(strncasecmp(frameID,"RVRB",4)==0){ if(ID3Tag->RVRB != NULL) PrintFrame_RVRB(*ID3Tag->RVRB,version);}
   else if(strncasecmp(frameID,"EQUA",4)==0){ if(ID3Tag->EQUA != NULL) PrintFrame_DefaultFrame(*ID3Tag->EQUA,version);}
   else if(strncasecmp(frameID,"MLLT",4)==0){ if(ID3Tag->MLLT != NULL) PrintFrame_DefaultFrame(*ID3Tag->MLLT,version);}
   else if(strncasecmp(frameID,"ETCO",4)==0){ if(ID3Tag->ETCO != NULL) PrintFrame_DefaultFrame(*ID3Tag->ETCO,version);}
@@ -277,6 +277,24 @@ void PrintFrame_IPLS(ID3v2IPLSFrameType IPLS, int version){
   printf("TextEncoding: %d\n",IPLS.textEncoding);
   printf("People List: ");
   PRINT_TEXTSTR(IPLS,peopeList);
+}
+void PrintFrame_RVRB(ID3v2RVRBFrameType RVRB, int version){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",RVRB.header.frameId);
+  printf("Flags: %u %u\n",RVRB.header.flags[0],RVRB.header.flags[1]);
+  size_t size = FramesV2_getFrameSize(version,RVRB.header);
+  printf("Size: %ld\n",size);
+  printf("Reverb left: %d\n",RVRB.left);
+  printf("Reverb right: %d\n",RVRB.right);
+  printf("Reverb bounces, left: %d\n",RVRB.bouncesL);
+  printf("Reverb bounces, right: %d\n",RVRB.bouncesR);
+  printf("Reverb feedback, left to left: %d\n",RVRB.feedBackLL);
+  printf("Reverb feedback, left to right: %d\n",RVRB.feedBackLLR);
+  printf("Reverb feedback, right to right: %d\n",RVRB.feedBackRR);
+  printf("Reverb feedback, right to left: %d\n",RVRB.feedBackRL);
+  printf("Premix left to right: %d\n",RVRB.premixLR);
+  printf("Premix right to left: %d\n",RVRB.premixRL);
+
 }
 void PrintFrame_USER(ID3v2USERFrameType USER, int version){
   printf("\n----FRAME----\n");

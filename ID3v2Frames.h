@@ -82,6 +82,20 @@ typedef struct {
 
 typedef struct {
     ID3v2FrameHeaderType header;
+    uint16_t left;
+    uint16_t right;
+    uint8_t bouncesL;
+    uint8_t bouncesR;
+    uint8_t feedBackLL;
+    uint8_t feedBackLLR;
+    uint8_t feedBackRR;
+    uint8_t feedBackRL;
+    uint8_t premixLR;
+    uint8_t premixRL;
+} ID3v2RVRBFrameType;
+
+typedef struct {
+    ID3v2FrameHeaderType header;
     uint8_t textEncoding;
     char language[3];
     TextStringType actualText;
@@ -126,5 +140,5 @@ void FramesV2_freeDefaultFrame(ID3v2DefaultFrameType**);
 void FramesV2_freePCNT(ID3v2PCNTFrameType**);
 void FramesV2_freeIPLS(ID3v2IPLSFrameType**);
 void FramesV2_freeUSER(ID3v2USERFrameType **);
-
+void FramesV2_freeRVRB(ID3v2RVRBFrameType **);
 #endif // ID3V2FRAMES_H
