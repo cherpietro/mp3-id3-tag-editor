@@ -266,6 +266,12 @@ void PrintFrame_DefaultFrame(ID3v2DefaultFrameType DefaultFrame,int version){
   printf("Flags: %u %u\n",DefaultFrame.header.flags[0],DefaultFrame.header.flags[1]);
   size_t size = FramesV2_getFrameSize(version,DefaultFrame.header);
   printf("Size: %ld\n",size);
+  printf("FrameData: ");
+  for (size_t i = 0; i < 10 && i < DefaultFrame.size; i++) {
+    printf("0x%02X ", DefaultFrame.frameData[i]);
+  }
+  if (DefaultFrame.size > 10 ) printf("...");
+  printf("\n");
 }
 
 void PrintFrame_IPLS(ID3v2IPLSFrameType IPLS, int version){
