@@ -261,7 +261,7 @@ ID3v2USERFrameType * GetFrame_USER(int version){
     USERFramePtr->language[0] = language[0];
     USERFramePtr->language[1] = language[1];
     USERFramePtr->language[2] = language[2];//Language should not have '\0'
-    printf("Insert people list in one line (500 characters): ");
+    printf("Insert terms of use (500 characters): ");
     GET_TXTSTR(USERFramePtr,terms,actualText);
     printf("\n");
     FramesV2_updateFrameSize(version,&USERFramePtr->header,USERFramePtr->actualText.size+4);
