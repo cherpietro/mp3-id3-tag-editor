@@ -119,7 +119,7 @@ int ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
         else if(!HeaderV2_isID3(ID3Tag->header)){
             HeaderV2_init(&ID3Tag->header);
             HeaderV2_updateTagSize(&ID3Tag->header,20);
-            HeaderV2_printTagHeader(ID3Tag->header);
+            // HeaderV2_printTagHeader(ID3Tag->header);
             fclose(mp3FilePointer);
             printf("Not ID3v2 Tag detected (Created empty)\n");
             return 0;
