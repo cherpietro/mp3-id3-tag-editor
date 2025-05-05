@@ -196,7 +196,6 @@ void saveChangesInFile(char *file, ID3TagType *ID3Tag){
     }
     //Check this function return
     FileManager_writteTagIntoFile(file,ID3Tag);
-    printf("File saved in ./savedFiles/modified.mp3");
   // printf("difference between files: \n");
   // system("cmp -l ./files/overture.mp3 ./savedFiles/modified.mp3 | wc -l");
   // printf("\n");

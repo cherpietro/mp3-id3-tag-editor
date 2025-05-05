@@ -168,9 +168,19 @@ bool FileManager_removeTagFromFile(char*file){
             // remove(file);
             // rename("tagRe6moved.mp3",file);
         }
-        else printf("Not ID3v2 Tag detected or not yet supported version\n");
+        unsigned char *dataBuffer = (unsigned char *)malloc(fileSize);
+        size_t bytesRead = fread(dataBuffer, 1, fileSize, mp3FilePointer);
+        FILE *temp = fopen("savedFiles/tagRemoved.mp3", "wb");
+        if (!temp) {
+            printf("error\n");
+            free(dataBuffer);
+            return false;
+        }
+        fwrite(dataBuffer, 1, bytesRead, temp);
+        fclose(temp);
+        free(dataBuffer);
         fclose(mp3FilePointer);
-        return false;
+        return true;
 
     }
     else printf("The file DOESN'T exist!\n");
@@ -235,8 +245,10 @@ void FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
         // content
         fwrite(dataBuffer,1,fileSize,temp);
         fclose(temp);
+        printf("File saved in ./savedFiles/modified.mp3");
         // remove(file);
         // rename("temp.mp3",file);
     }
     remove("./savedFiles/tagRemoved.mp3");
+
 }
