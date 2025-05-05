@@ -34,7 +34,12 @@ static void writteWWW(FILE *destFilePtr,ID3v2WWWFrameType *WWWFrame){
     fwrite(&WWWFrame->header,1, sizeof(WWWFrame->header),destFilePtr);
     fwrite(&WWWFrame->url.string,1, TxtStr_getStringLen(WWWFrame->url),destFilePtr);
 }
-//WXXX
+static void writteWXXX(FILE *destFilePtr,ID3v2WXXXFrameType *WXXXFrame){
+    fwrite(&WXXXFrame->header,1, sizeof(WXXXFrame->header),destFilePtr);
+    fwrite(&WXXXFrame->textEncoding,1, 1,destFilePtr);
+    fwrite(WXXXFrame->description.string,1, TxtStr_getStringLen(WXXXFrame->description),destFilePtr);
+    fwrite(&WXXXFrame->url.string,1, TxtStr_getStringLen(WXXXFrame->url),destFilePtr);
+}
 static void writteCOMM(FILE *destFilePtr,ID3v2COMMFrameType *COMMFrame){
     fwrite(&COMMFrame->header,1, sizeof(COMMFrame->header),destFilePtr);
         fwrite(&COMMFrame->textEncoding,1, 1,destFilePtr);
@@ -71,14 +76,21 @@ void FileManager_writteAPICFramesInFile(FILE *destFilePtr, ListFramePtr *APICFra
 void FileManager_writteWWWFramesInFile(FILE *destFilePtr, ListFramePtr *WWWFrameList){
     WRITTE_FRAMELIST(WWWFrameList,WWWFrame,ID3v2WWWFrameType,writteWWW);
 }
-//WXXX
+
+void FileManager_writteWXXXFramesInFile(FILE *destFilePtr, ListFramePtr *WXXXFrameList){
+    WRITTE_FRAMELIST(WXXXFrameList,WXXXFrame,ID3v2WXXXFrameType,writteWXXX);
+}
 void FileManager_writteCOMMFramesInFile(FILE *destFilePtr, ListFramePtr *COMMFrameList){
     WRITTE_FRAMELIST(COMMFrameList,COMMFrame,ID3v2COMMFrameType,writteCOMM);
 }
 void FileManager_writtePOPMFramesInFile(FILE *destFilePtr, ListFramePtr *POPMFrameList){
     WRITTE_FRAMELIST(POPMFrameList,POPMFrame,ID3v2POPMFrameType,writtePOPM);
 }
-//PCNT
+void FileManager_writtePCNTInFile(FILE *destFilePtr, ID3v2PCNTFrameType PCNT){ //TEST
+    fwrite(&PCNT.header,1, sizeof(PCNT.header),destFilePtr);
+    fwrite(PCNT.counter,4, sizeof(char),destFilePtr);
+}
+//
 void FileManager_writtePRIVFramesInFile(FILE *destFilePtr, ListFramePtr *PRIVFrameList){
     WRITTE_FRAMELIST(PRIVFrameList,PRIVFrame,ID3v2PRIVFrameType,writtePRIV);
 }
@@ -90,8 +102,8 @@ void FileManager_writteDefaultFramesInFile(FILE *destFilePtr, ListFramePtr *Defa
     WRITTE_FRAMELIST(DefaultFrameList,Defaultrame,ID3v2DefaultFrameType,writteDefault);
 }
 void FileManager_writteDefaultFrameInFile(FILE *destFilePtr, ID3v2DefaultFrameType Defaultrame){
-        fwrite(&Defaultrame.header,1, sizeof(Defaultrame.header),destFilePtr);
-        fwrite(&Defaultrame.frameData,1, Defaultrame.size,destFilePtr);
+    fwrite(&Defaultrame.header,1, sizeof(Defaultrame.header),destFilePtr);
+    fwrite(&Defaultrame.frameData,1, Defaultrame.size,destFilePtr);
 }
 //IPLS
 //USER
@@ -171,10 +183,10 @@ void FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
         FileManager_writteTXTFramesInFile(temp,&ID3Tag->TXTFrameList);
         FileManager_writteAPICFramesInFile(temp,&ID3Tag->APICFrameList);
         FileManager_writteWWWFramesInFile(temp,&ID3Tag->WWWFrameList);
-        //WXXX
+        FileManager_writteWXXXFramesInFile(temp,&ID3Tag->WXXXFrameList);
         FileManager_writteCOMMFramesInFile(temp,&ID3Tag->COMMFrameList);
         FileManager_writtePOPMFramesInFile(temp,&ID3Tag->POPMFrameList);
-        //PCNT
+        if(ID3Tag->PCNT != NULL) FileManager_writtePCNTInFile(temp,*ID3Tag->PCNT);
         FileManager_writtePRIVFramesInFile(temp,&ID3Tag->PRIVFrameList);
         if(ID3Tag->MCDI != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->MCDI);
         FileManager_writteDefaultFramesInFile(temp,&ID3Tag->UFIDFrameList);
