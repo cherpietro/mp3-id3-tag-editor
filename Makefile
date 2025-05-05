@@ -7,7 +7,7 @@ all:create_dirs compile clear
 	./a.out
 
 compile: create_dirs clean $(OBJ)
-	$(CC) $(CFLAGS) id3.c $(OBJ)
+	$(CC) $(CFLAGS) main.c $(OBJ)
 
 create_dirs:
 	mkdir -p $(DIRS)
