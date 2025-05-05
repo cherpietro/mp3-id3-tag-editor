@@ -12,6 +12,18 @@ void FileManager_writteTXTFramesInFile(FILE *destFilePtr, ListFramePtr *TXTFrame
     ListFramePtr_setNextActive(TXTFrameList);
   }
 }
+void FileManager_writteTXXXFramesInFile(FILE *destFilePtr, ListFramePtr *TXXXFrameList){
+  ID3v2TXXXFrameType *TXXXFrame;
+  ListFramePtr_setFirstActive(TXXXFrameList);
+  while(TXXXFrameList->active != NULL){
+    TXXXFrame = (ID3v2TXXXFrameType *)ListFramePtr_getActiveFramePtr(*TXXXFrameList);
+    fwrite(&TXXXFrame->header,1, sizeof(TXXXFrame->header),destFilePtr);
+    fwrite(&TXXXFrame->textEncoding,1, 1,destFilePtr);
+    fwrite(TXXXFrame->description.string,1, TxtStr_getStringLen(TXXXFrame->description),destFilePtr);
+    fwrite(TXXXFrame->value.string,1, TxtStr_getStringLen(TXXXFrame->value),destFilePtr);
+    ListFramePtr_setNextActive(TXXXFrameList);
+  }
+}
 
 void FileManager_writteCOMMFramesInFile(FILE *destFilePtr, ListFramePtr *COMMFrameList){
   ID3v2COMMFrameType *COMMFrame;
@@ -169,12 +181,14 @@ void FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
     // header
     fwrite(&ID3Tag->header,1,sizeof(ID3Tag->header),temp);
 
+    FileManager_writteTXXXFramesInFile(temp,&ID3Tag->TXXXFrameList);
     FileManager_writteTXTFramesInFile(temp,&ID3Tag->TXTFrameList);
+    FileManager_writteAPICFramesInFile(temp,&ID3Tag->APICFrameList);
     FileManager_writteCOMMFramesInFile(temp,&ID3Tag->COMMFrameList);
     FileManager_writtePRIVFramesInFile(temp,&ID3Tag->PRIVFrameList);
-    FileManager_writteAPICFramesInFile(temp,&ID3Tag->APICFrameList);
     if(ID3Tag->MCDI != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->MCDI);
     FileManager_writtePOPMFramesInFile(temp,&ID3Tag->POPMFrameList);
+
     FileManager_writtePadding(temp,ID3Tag->paddingSize);
     
     // content
