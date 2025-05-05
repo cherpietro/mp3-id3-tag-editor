@@ -15,6 +15,7 @@ static void cleanInputBuffer(){
 
 void saveChangesInFile(char *, ID3TagType *);
 void removeTagInFile(char *);
+void printFrameDefinition();
 
 char* openDir(){
     DIR *dir;
@@ -93,7 +94,8 @@ int main(){
         printf("5. Save changes in file\n");
         printf("6. Remove Tag from file\n");
         printf("7. Print whole tag\n");
-        printf("0. Exit\n");
+        printf("8. Show supported frames\n");
+        printf("0. Exit (Remember to save tag into file)\n");
     
         if (scanf("%d", &option) != 1) {
         system("clear");
@@ -169,8 +171,16 @@ int main(){
                 cleanInputBuffer();
                 system("clear");
                 break;
+            case 8:
+                system("clear");  
+                printFrameDefinition();
+                cleanInputBuffer();
+                printf("\nPress enter to continue...\n");
+                cleanInputBuffer();
+                system("clear");
+                break;
             case 0:
-                printf("Option 0.\n");
+                printf("Good bye :)\n");
                 break;
             default:
                 printf("Not avaliable option\n\n");
@@ -195,4 +205,20 @@ void saveChangesInFile(char *file, ID3TagType *ID3Tag){
 void removeTagInFile(char *file){
     if(FileManager_removeTagFromFile(file)) printf("File saved in ./savedFiles/tagRemoved.mp3");
     else printf("Error removing tag\n");
+}
+
+void printFrameDefinition() {
+    char *file = "./FrameDefinition.txt";
+    FILE *filePtr = fopen(file, "r");
+    if (filePtr == NULL) {
+        printf("Error opening file");
+        return;
+    }
+
+    char linea[256];
+    while (fgets(linea, sizeof(linea), filePtr)) {
+        printf("%s", linea);
+    }
+    printf("\n\n");
+    fclose(filePtr);
 }
