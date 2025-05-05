@@ -17,6 +17,7 @@ size_t SizeFrame_getFrameListSize(ID3TagType *ID3Tag){
     size_t tagSizeOfStruct = 10; // header
 
     ADD_FRAME_SIZE_LIST(TXTFrameList, ID3v2TXTFrameType);
+    ADD_FRAME_SIZE_LIST(TXXXFrameList, ID3v2TXXXFrameType);
     ADD_FRAME_SIZE_LIST(COMMFrameList, ID3v2COMMFrameType);
     ADD_FRAME_SIZE_LIST(APICFrameList, ID3v2APICFrameType);
     ADD_FRAME_SIZE_LIST(PRIVFrameList, ID3v2PRIVFrameType);
