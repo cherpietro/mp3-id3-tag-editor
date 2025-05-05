@@ -245,8 +245,6 @@ void FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
         fwrite(dataBuffer,1,fileSize,temp);
         fclose(temp);
         printf("File saved in ./savedFiles/modified.mp3");
-        // remove(file);
-        // rename("temp.mp3",file);
     }
     remove("./savedFiles/tagRemoved.mp3");
 

@@ -107,9 +107,7 @@ void TIMBERHEARTH_FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
       fclose(temp);
       return;
     }
-    // header
     fwrite(&ID3Tag->header,1,sizeof(ID3Tag->header),temp);
-    /*AUX*/
     ID3v2TXTFrameType *TXTFrame;
     ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
     TXTFrame = (ID3v2TXTFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
@@ -290,8 +288,6 @@ void testJokin1_FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
       ListFramePtr_setNextActive(&ID3Tag->COMMFrameList);
     }
     //TXTFrames
-    // ID3v2TXTFrameType *TXTFrame;
-    // ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
     while(ID3Tag->TXTFrameList.active != NULL){
       TXTFrame = (ID3v2TXTFrameType *)ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
       fwrite(&TXTFrame->header,1, sizeof(TXTFrame->header),temp);

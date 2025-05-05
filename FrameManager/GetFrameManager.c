@@ -78,7 +78,6 @@ ID3v2TXTFrameType * GetFrame_TXTF(char * frameID, int version){
     for (int i = 0; i < 4; i++) frameID[i] = toupper(frameID[i]);
     memcpy(TXTFramePtr->header.frameId,frameID,4); 
     TXTFramePtr->header.flags[0] = 0;TXTFramePtr->header.flags[1] = 0;
-    // TXTFramePtr->textEncoding = 0;
     TXTFramePtr->textEncoding = 3;
     printf("Insert tag content (max. size 254): ");
     fgets(content, sizeof(content), stdin);
@@ -195,8 +194,7 @@ ID3v2APICFrameType *GetFrame_APIC(int version){
     coverFileName[strcspn(coverFileName, "\n")] = 0;
     
     FILE *coverPtr = fopen(coverFileName, "rb");
-    // FILE *coverPtr = fopen("pipoCover.jpg", "rb");
-
+    
     if (coverPtr){        
         fseek(coverPtr, 0, SEEK_END);
         APICFramePtr->imageDataSize = ftell(coverPtr); 

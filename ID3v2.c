@@ -107,7 +107,6 @@ int ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
         int paddingReached = 0;
         HeaderV2_storeHeader(mp3FilePointer,&ID3Tag->header);
         if(HeaderV2_isID3v2Tag(ID3Tag->header)){
-                // HeaderV2_printTagHeader(ID3Tag->header);
                 uint32_t tagSize = HeaderV2_getTagSize(ID3Tag->header);
                 while(paddingReached == 0 && ftell(mp3FilePointer) < tagSize + 10){
                     paddingReached = StoreFrame_storeNextFrameInStruct(mp3FilePointer,ID3Tag);
@@ -120,7 +119,6 @@ int ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
         else if(!HeaderV2_isID3(ID3Tag->header)){
             HeaderV2_init(&ID3Tag->header);
             HeaderV2_updateTagSize(&ID3Tag->header,200);
-            // HeaderV2_printTagHeader(ID3Tag->header);
             fclose(mp3FilePointer);
             printf("Not ID3v2 Tag detected (Created empty)\n");
             return 0;
@@ -140,7 +138,6 @@ bool ID3v2_getTagSizeOfTheStruct(ID3TagType *ID3Tag){
     tagSizeOfStruct = SizeFrame_getFrameListSize(ID3Tag);    
     if((HeaderV2_getTagSize(ID3Tag->header) +10 - ID3Tag->paddingSize ) == tagSizeOfStruct ){
         return true;
-        // printf("size is okay\n");
     }
     else{
         printf("size is NOT okay %ld\n",(tagSizeOfStruct+10 - (int) ID3Tag->paddingSize ));

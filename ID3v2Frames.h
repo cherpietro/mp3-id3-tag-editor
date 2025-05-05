@@ -36,13 +36,11 @@ typedef struct {
 typedef struct {
     ID3v2FrameHeaderType header;
     uint8_t textEncoding;
-    // char *content;
     TextStringType content;
 } ID3v2TXTFrameType;
 typedef struct {
     ID3v2FrameHeaderType header;
     uint8_t textEncoding;
-    // char *content;
     TextStringType description;
     TextStringType value;
 } ID3v2TXXXFrameType;

@@ -70,13 +70,6 @@ char* openDir(){
     return full_path;
 }
 int main(){
-    // char *file = "./files/jokin2.mp3"; //PCNT-APIC1-COMM1-TXT-TXXX8-PRIV8
-    // char *file = "./files/jokin1.mp3"; //COMM1-APIC1-TXT-TXXX1-PRIV1
-    // char *file = "./files/EliteFour.mp3"; //MDCI-TXT-APIC-PRIV(10)
-    // char *file = "./files/overture.mp3"; //APIC-TXT-TXXX6
-    // char *file = "./files/TimberHearth.mp3"; //COMM2-TXT
-    // char *file = "./files/ingenium/(G)I-DLE/I feel/(G)I-DLE - Queencard.mp3"; //WOAS - USLT
-    // char *file = "./files/void.mp3";
     char *file = openDir();
     if(file == NULL) return 0;
     system("clear");
@@ -194,11 +187,7 @@ void saveChangesInFile(char *file, ID3TagType *ID3Tag){
         printf("error with size of the the tag\n");
         return;
     }
-    //Check this function return
     FileManager_writteTagIntoFile(file,ID3Tag);
-  // printf("difference between files: \n");
-  // system("cmp -l ./files/overture.mp3 ./savedFiles/modified.mp3 | wc -l");
-  // printf("\n");
 }
 void removeTagInFile(char *file){
     if(FileManager_removeTagFromFile(file)) printf("File saved in ./savedFiles/tagRemoved.mp3\n");

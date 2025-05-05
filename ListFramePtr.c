@@ -63,13 +63,6 @@ bool ListFramePtr_isEmpty(ListFramePtr list) {
     return (list.first == NULL && list.last == NULL);
 }
 
-// void ListFramePtr_freeList(ListFramePtr *list) {
-//     ListFramePtr_setFirstActive(list);
-//     while (!ListFramePtr_isEmpty(*list)) {
-//         ListFramePtr_deleteActive(list);
-//     }
-// }
-
 void *ListFramePtr_getActiveFramePtr(ListFramePtr list) {
     if(list.active != NULL) return list.active->frame;
     return NULL;

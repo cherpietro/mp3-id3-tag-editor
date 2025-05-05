@@ -29,5 +29,4 @@ void *ListFramePtr_getActiveFramePtr(ListFramePtr);
 
 bool ListFramePtr_isEmpty(ListFramePtr);
 
-// void ListFramePtr_freeList(ListFramePtr *);
 #endif // LIST_FRAME_PTR_H

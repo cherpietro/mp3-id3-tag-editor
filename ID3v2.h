@@ -35,7 +35,6 @@ typedef struct {
     ListFramePtr ENCRFrameList; //Binary Data
     ListFramePtr GRIDFrameList; //Binary Data
     
-    // ID3v2DefaultFrameType *IPLS; 
     ID3v2IPLSFrameType *IPLS; //Done
     ID3v2DefaultFrameType *SYTC; //Binary Data
     ID3v2USERFrameType *USER; //Done
