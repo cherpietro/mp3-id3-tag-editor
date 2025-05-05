@@ -39,7 +39,7 @@ typedef struct {
     ID3v2IPLSFrameType *IPLS;
     ID3v2DefaultFrameType *SYTC; //Binary Data
     ID3v2USERFrameType *USER; 
-    ID3v2DefaultFrameType *OWNE; 
+    ID3v2DefaultFrameType *OWNE; //date attribute unkown
     //
     ID3v2DefaultFrameType *COMR; //???
     ID3v2DefaultFrameType *POSS;
