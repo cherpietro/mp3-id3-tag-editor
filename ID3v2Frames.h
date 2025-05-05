@@ -65,13 +65,12 @@ typedef struct {
     ID3v2FrameHeaderType header;
     TextStringType userEmail;
     uint8_t rating;
-    // uint32_t counter; //MAYBE COUNTER CAN INCREASE
-    char counter[4]; //MAYBE COUNTER CAN INCREASE
+    char counter[4]; 
 } ID3v2POPMFrameType;
 
 typedef struct {
     ID3v2FrameHeaderType header;
-    char *counter;
+    char counter[4];
 } ID3v2PCNTFrameType;
 
 
