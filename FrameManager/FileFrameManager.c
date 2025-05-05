@@ -145,6 +145,7 @@ bool FileManager_removeTagFromFile(char*file){
         uint32_t fileSize = ftell(mp3FilePointer);
         ID3v2HeaderType header;
         HeaderV2_storeHeader(mp3FilePointer,&header);
+        fseek(mp3FilePointer, 0, SEEK_SET);
         if(HeaderV2_isID3v2Tag(header)){
             uint32_t tagSize = HeaderV2_getTagSize(header);
             fseek(mp3FilePointer, tagSize+10, SEEK_SET);
@@ -165,8 +166,6 @@ bool FileManager_removeTagFromFile(char*file){
             fclose(temp);
             free(dataBuffer);
             return true;
-            // remove(file);
-            // rename("tagRe6moved.mp3",file);
         }
         unsigned char *dataBuffer = (unsigned char *)malloc(fileSize);
         size_t bytesRead = fread(dataBuffer, 1, fileSize, mp3FilePointer);

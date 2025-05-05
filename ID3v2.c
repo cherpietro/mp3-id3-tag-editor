@@ -60,7 +60,7 @@ void ID3v2_init(ID3TagType *ID3Tag){
     ID3Tag->USER = NULL;
     ID3Tag->OWNE = NULL;
     ID3Tag->PCNT = NULL;
-    ID3Tag->paddingSize = 20;
+    ID3Tag->paddingSize = 200;
 }
 
 void ID3v2_free(ID3TagType *ID3Tag){
@@ -114,11 +114,12 @@ int ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
                 }
                 if (paddingReached == -1) return -2; 
                 ID3Tag->paddingSize = (HeaderV2_getTagSize(ID3Tag->header))+10 - (ftell(mp3FilePointer))+10; //ID3Tag size doesn't include header 
+                printf("PADDING SIZE: %ld\n",ID3Tag->paddingSize);
                 return 0;
         }
         else if(!HeaderV2_isID3(ID3Tag->header)){
             HeaderV2_init(&ID3Tag->header);
-            HeaderV2_updateTagSize(&ID3Tag->header,20);
+            HeaderV2_updateTagSize(&ID3Tag->header,200);
             // HeaderV2_printTagHeader(ID3Tag->header);
             fclose(mp3FilePointer);
             printf("Not ID3v2 Tag detected (Created empty)\n");
