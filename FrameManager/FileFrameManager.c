@@ -110,6 +110,12 @@ void FileManager_writteIPLSInFile(FILE *destFilePtr, ID3v2IPLSFrameType IPLS){
     fwrite(&IPLS.textEncoding,1, 1,destFilePtr);
     fwrite(IPLS.peopeList.string,1, TxtStr_getStringLen(IPLS.peopeList),destFilePtr);
 }
+void FileManager_writteUSERInFile(FILE *destFilePtr, ID3v2USERFrameType USER){
+    fwrite(&USER.header,1, sizeof(USER.header),destFilePtr);
+    fwrite(&USER.textEncoding,1, 1,destFilePtr);
+    fwrite(&USER.language,1, 3,destFilePtr);
+    fwrite(USER.actualText.string,1, TxtStr_getStringLen(USER.actualText),destFilePtr);
+}
 //USER
 //RVRB
 ////////////////////////////
@@ -203,7 +209,8 @@ void FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
         FileManager_writteDefaultFramesInFile(temp,&ID3Tag->GRIDFrameList);
         if(ID3Tag->IPLS != NULL) FileManager_writteIPLSInFile(temp,*ID3Tag->IPLS);
         if(ID3Tag->SYTC != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->SYTC);
-        //USER
+        if(ID3Tag->USER != NULL) FileManager_writteUSERInFile(temp,*ID3Tag->USER);
+        //
         if(ID3Tag->OWNE != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->OWNE);
         if(ID3Tag->COMR != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->COMR);
         if(ID3Tag->POSS != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->POSS);
