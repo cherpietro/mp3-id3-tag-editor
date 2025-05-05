@@ -30,7 +30,10 @@ static void writteAPIC(FILE *destFilePtr,ID3v2APICFrameType *APICFrame){
     fwrite(APICFrame->description.string,1, TxtStr_getStringLen(APICFrame->description),destFilePtr);
     fwrite(APICFrame->imageData,1,APICFrame->imageDataSize ,destFilePtr);
 }
-//WWWF
+static void writteWWW(FILE *destFilePtr,ID3v2WWWFrameType *WWWFrame){
+    fwrite(&WWWFrame->header,1, sizeof(WWWFrame->header),destFilePtr);
+    fwrite(&WWWFrame->url.string,1, TxtStr_getStringLen(WWWFrame->url),destFilePtr);
+}
 //WXXX
 static void writteCOMM(FILE *destFilePtr,ID3v2COMMFrameType *COMMFrame){
     fwrite(&COMMFrame->header,1, sizeof(COMMFrame->header),destFilePtr);
@@ -65,7 +68,9 @@ void FileManager_writteTXTFramesInFile(FILE *destFilePtr, ListFramePtr *TXTFrame
 void FileManager_writteAPICFramesInFile(FILE *destFilePtr, ListFramePtr *APICFrameList){
     WRITTE_FRAMELIST(APICFrameList,APICFrame,ID3v2APICFrameType,writteAPIC);
 }
-//WWWF
+void FileManager_writteWWWFramesInFile(FILE *destFilePtr, ListFramePtr *WWWFrameList){
+    WRITTE_FRAMELIST(WWWFrameList,WWWFrame,ID3v2WWWFrameType,writteWWW);
+}
 //WXXX
 void FileManager_writteCOMMFramesInFile(FILE *destFilePtr, ListFramePtr *COMMFrameList){
     WRITTE_FRAMELIST(COMMFrameList,COMMFrame,ID3v2COMMFrameType,writteCOMM);
@@ -165,7 +170,7 @@ void FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
         FileManager_writteTXXXFramesInFile(temp,&ID3Tag->TXXXFrameList);
         FileManager_writteTXTFramesInFile(temp,&ID3Tag->TXTFrameList);
         FileManager_writteAPICFramesInFile(temp,&ID3Tag->APICFrameList);
-        //WWWF
+        FileManager_writteWWWFramesInFile(temp,&ID3Tag->WWWFrameList);
         //WXXX
         FileManager_writteCOMMFramesInFile(temp,&ID3Tag->COMMFrameList);
         FileManager_writtePOPMFramesInFile(temp,&ID3Tag->POPMFrameList);
