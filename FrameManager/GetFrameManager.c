@@ -188,8 +188,8 @@ ID3v2APICFrameType *GetFrame_APIC(int version){
     APICFramePtr->textEncoding = 3;
     APICFramePtr->pictureType = 0;
     
-    char coverFileName[35];
-    printf("Introduce the name of the image: ");
+    char coverFileName[100];
+    printf("Introduce the image you want to store: ");
     fgets(coverFileName, sizeof(coverFileName), stdin);
     coverFileName[strcspn(coverFileName, "\n")] = 0;
     
