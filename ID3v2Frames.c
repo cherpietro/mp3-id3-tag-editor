@@ -72,6 +72,11 @@ void FramesV2_freeDefaultFrame(ID3v2DefaultFrameType **DefaultFrame){
     free(*DefaultFrame);
     *DefaultFrame = NULL;
 }
+void FramesV2_freeUSER(ID3v2USERFrameType **USER){
+    TxtStr_freeTextString(&(*USER)->actualText);
+    free(*USER);
+    *USER = NULL;
+}
 void FramesV2_freeIPLS(ID3v2IPLSFrameType **IPLS){
     TxtStr_freeTextString(&(*IPLS)->peopeList);
     free(*IPLS);

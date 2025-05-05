@@ -48,7 +48,7 @@ int StoreFrame_storeNextFrameInStruct(FILE *mp3FilePointer, ID3TagType *ID3Tag){
     //DEFAULT FRAMES
     else if(strncmp(header.frameId,"IPLS",4)==0){ STORE_FRAME(IPLS,ID3v2IPLSFrameType,StoreFrame_storeIPLS);}
     else if(strncmp(header.frameId,"SYTC",4)==0){ STORE_FRAME(SYTC,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
-    else if(strncmp(header.frameId,"USER",4)==0){ STORE_FRAME(USER,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
+    else if(strncmp(header.frameId,"USER",4)==0){ STORE_FRAME(USER,ID3v2USERFrameType,StoreFrame_USER);}
     else if(strncmp(header.frameId,"OWNE",4)==0){ STORE_FRAME(OWNE,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
     else if(strncmp(header.frameId,"PCNT",4)==0){ STORE_FRAME(PCNT,ID3v2PCNTFrameType,StoreFrame_PCNT);}
     else if(strncmp(header.frameId,"RVRB",4)==0){ STORE_FRAME(RVRB,ID3v2DefaultFrameType,StoreFrame_DefaultFrame);}
@@ -211,5 +211,20 @@ void StoreFrame_storeIPLS(FILE* mp3FilePointer, uint32_t frameSize, ID3v2IPLSFra
     (IPLS)->textEncoding = frameContent[0];
     char *peopleLstPtr = (char *)frameContent + 1;
     TxtStr_storeTextString(&(IPLS)->peopeList,peopleLstPtr,frameSize -1);
+    free(frameContent);
+}
+
+void StoreFrame_USER(FILE* mp3FilePointer, uint32_t frameSize, ID3v2USERFrameType *USER){
+    USER = (ID3v2USERFrameType *)malloc(sizeof(ID3v2USERFrameType));
+    uint8_t *frameContent = (uint8_t *)malloc(frameSize);
+    fread(frameContent, frameSize, 1, mp3FilePointer);
+    size_t index = 0;
+    USER->textEncoding = frameContent[index++];
+    USER->language[0] = frameContent[index++];
+    USER->language[1] = frameContent[index++];
+    USER->language[2] = frameContent[index++];
+    char *contentPtr = (char*) frameContent + index;
+    size_t contentSize = frameSize-index;
+    TxtStr_storeTextString(&USER->actualText,contentPtr,contentSize);
     free(frameContent);
 }

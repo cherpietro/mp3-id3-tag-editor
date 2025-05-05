@@ -98,6 +98,9 @@ int AddFrame_addPCNT(ID3v2PCNTFrameType **PCNT,int version){
 int AddFrame_addIPLS(ID3v2IPLSFrameType **IPLS,int version){
     ADD_FRAME(IPLS,GetFrame_IPLS,PrintFrame_IPLS);
 }
+int AddFrame_addUSER(ID3v2USERFrameType **USER,int version){
+    ADD_FRAME(USER,GetFrame_USER,PrintFrame_USER);
+}
 
 int AddFrame_addTXTF(ListFramePtr *TXTFrameList,char *frameID,int version){
     char option;

@@ -21,4 +21,6 @@ int AddFrame_addPCNT(ID3v2PCNTFrameType **,int );
 
 int AddFrame_addIPLS(ID3v2IPLSFrameType **,int );
 
+int AddFrame_addUSER(ID3v2USERFrameType **,int );
+
 #endif // ADDFRAMEMANAGER_H

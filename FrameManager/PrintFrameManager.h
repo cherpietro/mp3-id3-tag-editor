@@ -24,5 +24,6 @@ void PrintFrame_TXXX(ID3v2TXXXFrameType ,int);
 void PrintFrame_PCNT(ID3v2PCNTFrameType,int);
 void PrintFrame_IPLS(ID3v2IPLSFrameType , int );
 void PrintFrame_saveAPICImage(ID3v2APICFrameType);
+void PrintFrame_USER(ID3v2USERFrameType , int );
 
 #endif // PRINTFRAMEMANAGER_H

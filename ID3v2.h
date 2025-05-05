@@ -20,8 +20,8 @@ typedef struct {
     ListFramePtr POPMFrameList; 
     ID3v2PCNTFrameType *PCNT; //test
     //Not supported addition
-    ListFramePtr PRIVFrameList;
-    ID3v2DefaultFrameType *MCDI;
+    ListFramePtr PRIVFrameList; //Binary Data
+    ID3v2DefaultFrameType *MCDI; //Binary Data
     //Pending to include addition
     /**/
     
@@ -37,8 +37,8 @@ typedef struct {
     
     // ID3v2DefaultFrameType *IPLS; 
     ID3v2IPLSFrameType *IPLS;
-    ID3v2DefaultFrameType *SYTC; 
-    ID3v2DefaultFrameType *USER; 
+    ID3v2DefaultFrameType *SYTC; //Binary Data
+    ID3v2USERFrameType *USER; 
     ID3v2DefaultFrameType *OWNE; 
     //
     ID3v2DefaultFrameType *COMR; //???

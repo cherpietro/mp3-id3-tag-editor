@@ -247,3 +247,23 @@ ID3v2IPLSFrameType * GetFrame_IPLS(int version){
     FramesV2_updateFrameSize(version,&IPLSFramePtr->header,IPLSFramePtr->peopeList.size+1);
     return IPLSFramePtr;
 }
+ID3v2USERFrameType * GetFrame_USER(int version){
+    char language[4];
+    char terms[501];
+    ID3v2USERFrameType *USERFramePtr = (ID3v2USERFrameType*) malloc(sizeof(ID3v2USERFrameType));
+    USERFramePtr->header.flags[0] = 0;USERFramePtr->header.flags[1] = 0;
+    memcpy(USERFramePtr->header.frameId,"USER",4); 
+    USERFramePtr->textEncoding = 3;
+    printf("Insert tag language (3 characters): ");
+    fgets(language, sizeof(language), stdin);
+    cleanInputBuffer();
+    language[strcspn(language, "\n")] = 0;
+    USERFramePtr->language[0] = language[0];
+    USERFramePtr->language[1] = language[1];
+    USERFramePtr->language[2] = language[2];//Language should not have '\0'
+    printf("Insert people list in one line (500 characters): ");
+    GET_TXTSTR(USERFramePtr,terms,actualText);
+    printf("\n");
+    FramesV2_updateFrameSize(version,&USERFramePtr->header,USERFramePtr->actualText.size+4);
+    return USERFramePtr;
+}

@@ -10,6 +10,6 @@ ID3v2PCNTFrameType* GetFrame_PCNT(int);
 ID3v2COMMFrameType* GetFrame_COMM(int);
 
 ID3v2IPLSFrameType* GetFrame_IPLS(int);
-
+ID3v2USERFrameType * GetFrame_USER(int );
 bool FramesV2_validTextFrameId(char *);
 bool FramesV2_validWebFrameId(char *);
