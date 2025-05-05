@@ -87,6 +87,7 @@ int main(){
     char frameID[5];
     int option;
     do {
+        HeaderV2_printTagHeader(ID3Tag.header);
         printf("1. List Frames in TAG\n");
         printf("2. Print specific frame\n");
         printf("3. Remove Tag Frame\n");
@@ -95,8 +96,8 @@ int main(){
         printf("6. Remove Tag from file\n");
         printf("7. Print whole tag\n");
         printf("8. Show supported frames\n");
-        printf("0. Exit (Remember to save tag into file)\n");
-    
+        printf("\n0. Exit (Remember to save tag into file)\n");
+        printf("\n\nSelect option: ");
         if (scanf("%d", &option) != 1) {
         system("clear");
         cleanInputBuffer();
@@ -127,7 +128,6 @@ int main(){
                 system("clear");
                 printf("Introduce the Frame id to delete: ");
                 scanf("%4s", frameID);
-                printf("%s\n", frameID);
                 cleanInputBuffer();
                 ID3v2_deleteFrame(&ID3Tag, frameID);
 
@@ -139,7 +139,6 @@ int main(){
                 system("clear");
                 printf("Introduce the Frame id to include: ");
                 scanf("%4s", frameID);
-                printf("%s\n", frameID);
                 cleanInputBuffer();
                 ID3v2_addFrame(&ID3Tag, frameID);
 
@@ -203,7 +202,7 @@ void saveChangesInFile(char *file, ID3TagType *ID3Tag){
   // printf("\n");
 }
 void removeTagInFile(char *file){
-    if(FileManager_removeTagFromFile(file)) printf("File saved in ./savedFiles/tagRemoved.mp3");
+    if(FileManager_removeTagFromFile(file)) printf("File saved in ./savedFiles/tagRemoved.mp3\n");
     else printf("Error removing tag\n");
 }
 

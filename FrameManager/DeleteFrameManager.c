@@ -8,6 +8,7 @@
     int deletedSize = 0;\
     ListFramePtr_setFirstActive(FrameList);\
     FrameType * FramePtr = ListFramePtr_getActiveFramePtr(*FrameList);\
+    if (FramePtr == NULL) {printf("Not frame in tag\n"); return 0;}\
     do{\
         fflush(stdout);\
         system("clear");\
