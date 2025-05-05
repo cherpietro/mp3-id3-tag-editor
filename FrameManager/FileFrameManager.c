@@ -42,10 +42,10 @@ static void writteWXXX(FILE *destFilePtr,ID3v2WXXXFrameType *WXXXFrame){
 }
 static void writteCOMM(FILE *destFilePtr,ID3v2COMMFrameType *COMMFrame){
     fwrite(&COMMFrame->header,1, sizeof(COMMFrame->header),destFilePtr);
-        fwrite(&COMMFrame->textEncoding,1, 1,destFilePtr);
-        fwrite(&COMMFrame->language,1, 3,destFilePtr);
-        fwrite(COMMFrame->contentDescript.string,1, TxtStr_getStringLen(COMMFrame->contentDescript),destFilePtr);
-        fwrite(COMMFrame->actualText.string,1, TxtStr_getStringLen(COMMFrame->actualText),destFilePtr);
+    fwrite(&COMMFrame->textEncoding,1, 1,destFilePtr);
+    fwrite(&COMMFrame->language,1, 3,destFilePtr);
+    fwrite(COMMFrame->contentDescript.string,1, TxtStr_getStringLen(COMMFrame->contentDescript),destFilePtr);
+    fwrite(COMMFrame->actualText.string,1, TxtStr_getStringLen(COMMFrame->actualText),destFilePtr);
 }
 static void writtePOPM(FILE *destFilePtr,ID3v2POPMFrameType *POPMFrame){
     fwrite(&POPMFrame->header,1, sizeof(POPMFrame->header),destFilePtr);
@@ -90,7 +90,7 @@ void FileManager_writtePCNTInFile(FILE *destFilePtr, ID3v2PCNTFrameType PCNT){ /
     fwrite(&PCNT.header,1, sizeof(PCNT.header),destFilePtr);
     fwrite(PCNT.counter,4, sizeof(char),destFilePtr);
 }
-//
+
 void FileManager_writtePRIVFramesInFile(FILE *destFilePtr, ListFramePtr *PRIVFrameList){
     WRITTE_FRAMELIST(PRIVFrameList,PRIVFrame,ID3v2PRIVFrameType,writtePRIV);
 }
@@ -105,7 +105,11 @@ void FileManager_writteDefaultFrameInFile(FILE *destFilePtr, ID3v2DefaultFrameTy
     fwrite(&Defaultrame.header,1, sizeof(Defaultrame.header),destFilePtr);
     fwrite(&Defaultrame.frameData,1, Defaultrame.size,destFilePtr);
 }
-//IPLS
+void FileManager_writteIPLSInFile(FILE *destFilePtr, ID3v2IPLSFrameType IPLS){
+    fwrite(&IPLS.header,1, sizeof(IPLS.header),destFilePtr);
+    fwrite(&IPLS.textEncoding,1, 1,destFilePtr);
+    fwrite(IPLS.peopeList.string,1, TxtStr_getStringLen(IPLS.peopeList),destFilePtr);
+}
 //USER
 //RVRB
 ////////////////////////////
@@ -197,7 +201,7 @@ void FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
         FileManager_writteDefaultFramesInFile(temp,&ID3Tag->AENCFrameList);
         FileManager_writteDefaultFramesInFile(temp,&ID3Tag->ENCRFrameList);
         FileManager_writteDefaultFramesInFile(temp,&ID3Tag->GRIDFrameList);
-        //IPLS
+        if(ID3Tag->IPLS != NULL) FileManager_writteIPLSInFile(temp,*ID3Tag->IPLS);
         if(ID3Tag->SYTC != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->SYTC);
         //USER
         if(ID3Tag->OWNE != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->OWNE);
