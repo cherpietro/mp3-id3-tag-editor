@@ -57,14 +57,14 @@ void printTag(ID3TagType *ID3Tag){
   PRINT_LIST_FRAME(ID3Tag->ENCRFrameList,ENCRFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame); 
   PRINT_LIST_FRAME(ID3Tag->GRIDFrameList,GRIDFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame); 
   
-  if(ID3Tag->IPLS != NULL) PrintFrame_DefaultFrame(*ID3Tag->IPLS,version);
+  if(ID3Tag->IPLS != NULL) PrintFrame_IPLS(*ID3Tag->IPLS,version);
   if(ID3Tag->SYTC != NULL) PrintFrame_DefaultFrame(*ID3Tag->SYTC,version);
-  if(ID3Tag->USER != NULL) PrintFrame_DefaultFrame(*ID3Tag->USER,version);
+  if(ID3Tag->USER != NULL) PrintFrame_USER(*ID3Tag->USER,version);
   if(ID3Tag->OWNE != NULL) PrintFrame_DefaultFrame(*ID3Tag->OWNE,version);
   
   if(ID3Tag->COMR != NULL) PrintFrame_DefaultFrame(*ID3Tag->COMR,version);
   if(ID3Tag->POSS != NULL) PrintFrame_DefaultFrame(*ID3Tag->POSS,version);
-  if(ID3Tag->RVRB != NULL) PrintFrame_DefaultFrame(*ID3Tag->RVRB,version);
+  if(ID3Tag->RVRB != NULL) PrintFrame_RVRB(*ID3Tag->RVRB,version);
   if(ID3Tag->EQUA != NULL) PrintFrame_DefaultFrame(*ID3Tag->EQUA,version);
   if(ID3Tag->MLLT != NULL) PrintFrame_DefaultFrame(*ID3Tag->MLLT,version);
   if(ID3Tag->ETCO != NULL) PrintFrame_DefaultFrame(*ID3Tag->ETCO,version);
@@ -126,9 +126,9 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
   else if(strncasecmp(frameID,"GRID",4)==0){ PRINT_LIST_FRAME(ID3Tag->GRIDFrameList,GRIDFrame,ID3v2DefaultFrameType,PrintFrame_DefaultFrame);}
 
 
-  else if(strncasecmp(frameID,"IPLS",4)==0){ if(ID3Tag->IPLS != NULL) PrintFrame_DefaultFrame(*ID3Tag->IPLS,version);}
+  else if(strncasecmp(frameID,"IPLS",4)==0){ if(ID3Tag->IPLS != NULL) PrintFrame_IPLS(*ID3Tag->IPLS,version);}
   else if(strncasecmp(frameID,"SYTC",4)==0){ if(ID3Tag->SYTC != NULL) PrintFrame_DefaultFrame(*ID3Tag->SYTC,version);}
-  else if(strncasecmp(frameID,"USER",4)==0){ if(ID3Tag->USER != NULL) PrintFrame_DefaultFrame(*ID3Tag->USER,version);}
+  else if(strncasecmp(frameID,"USER",4)==0){ if(ID3Tag->USER != NULL) PrintFrame_USER(*ID3Tag->USER,version);}
   else if(strncasecmp(frameID,"OWNE",4)==0){ if(ID3Tag->OWNE != NULL) PrintFrame_DefaultFrame(*ID3Tag->OWNE,version);}
   // else if(strncasecmp(frameID,"IPLS",4)==0){ if(ID3Tag->IPLS != NULL) PrintFrame_IPLS(*ID3Tag->IPLS);}
   // else if(strncasecmp(frameID,"SYTC",4)==0){ if(ID3Tag->SYTC != NULL) PrintFrame_SYTC(*ID3Tag->SYTC);}
@@ -137,7 +137,7 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
   
   else if(strncasecmp(frameID,"COMR",4)==0){ if(ID3Tag->COMR != NULL) PrintFrame_DefaultFrame(*ID3Tag->COMR,version);}
   else if(strncasecmp(frameID,"POSS",4)==0){ if(ID3Tag->POSS != NULL) PrintFrame_DefaultFrame(*ID3Tag->POSS,version);}
-  else if(strncasecmp(frameID,"RVRB",4)==0){ if(ID3Tag->RVRB != NULL) PrintFrame_DefaultFrame(*ID3Tag->RVRB,version);}
+  else if(strncasecmp(frameID,"RVRB",4)==0){ if(ID3Tag->RVRB != NULL) PrintFrame_RVRB(*ID3Tag->RVRB,version);}
   else if(strncasecmp(frameID,"EQUA",4)==0){ if(ID3Tag->EQUA != NULL) PrintFrame_DefaultFrame(*ID3Tag->EQUA,version);}
   else if(strncasecmp(frameID,"MLLT",4)==0){ if(ID3Tag->MLLT != NULL) PrintFrame_DefaultFrame(*ID3Tag->MLLT,version);}
   else if(strncasecmp(frameID,"ETCO",4)==0){ if(ID3Tag->ETCO != NULL) PrintFrame_DefaultFrame(*ID3Tag->ETCO,version);}
@@ -266,6 +266,46 @@ void PrintFrame_DefaultFrame(ID3v2DefaultFrameType DefaultFrame,int version){
   printf("Flags: %u %u\n",DefaultFrame.header.flags[0],DefaultFrame.header.flags[1]);
   size_t size = FramesV2_getFrameSize(version,DefaultFrame.header);
   printf("Size: %ld\n",size);
+}
+
+void PrintFrame_IPLS(ID3v2IPLSFrameType IPLS, int version){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",IPLS.header.frameId);
+  printf("Flags: %u %u\n",IPLS.header.flags[0],IPLS.header.flags[1]);
+  size_t size = FramesV2_getFrameSize(version,IPLS.header);
+  printf("Size: %ld\n",size);
+  printf("TextEncoding: %d\n",IPLS.textEncoding);
+  printf("People List: ");
+  PRINT_TEXTSTR(IPLS,peopeList);
+}
+void PrintFrame_RVRB(ID3v2RVRBFrameType RVRB, int version){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",RVRB.header.frameId);
+  printf("Flags: %u %u\n",RVRB.header.flags[0],RVRB.header.flags[1]);
+  size_t size = FramesV2_getFrameSize(version,RVRB.header);
+  printf("Size: %ld\n",size);
+  printf("Reverb left: %d\n",RVRB.left);
+  printf("Reverb right: %d\n",RVRB.right);
+  printf("Reverb bounces, left: %d\n",RVRB.bouncesL);
+  printf("Reverb bounces, right: %d\n",RVRB.bouncesR);
+  printf("Reverb feedback, left to left: %d\n",RVRB.feedBackLL);
+  printf("Reverb feedback, left to right: %d\n",RVRB.feedBackLLR);
+  printf("Reverb feedback, right to right: %d\n",RVRB.feedBackRR);
+  printf("Reverb feedback, right to left: %d\n",RVRB.feedBackRL);
+  printf("Premix left to right: %d\n",RVRB.premixLR);
+  printf("Premix right to left: %d\n",RVRB.premixRL);
+
+}
+void PrintFrame_USER(ID3v2USERFrameType USER, int version){
+  printf("\n----FRAME----\n");
+  printf("Frame ID: %s\n",USER.header.frameId);
+  printf("Flags: %u %u\n",USER.header.flags[0],USER.header.flags[1]);
+  size_t size = FramesV2_getFrameSize(version,USER.header);
+  printf("Size: %ld\n",size);
+  printf("TextEncoding: %d\n",USER.textEncoding);
+  printf("Language: %s\n",USER.language);
+  printf("Terms of use: ");
+  PRINT_TEXTSTR(USER,actualText);
 }
 
 void PrintFrame_WWWF(ID3v2WWWFrameType WWWF,int version){

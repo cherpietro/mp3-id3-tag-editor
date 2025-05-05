@@ -4,17 +4,10 @@
 #include "../ID3v2Frames.h"
 #include <string.h>
 
-#define OLD_ADD_FRAME_LIST(FrameList,FrameType,FramePtr,FrameGetFunct,FramePrintFunct)\
-    FrameType *FramePtr = FrameGetFunct(version);\
-    if(FramePtr == NULL)return 0;\
-    ListFramePtr_insertLast(FrameList,FramePtr);\
-    FramePrintFunct(*FramePtr,version);\
-    return (FramesV2_getFrameSize(version,FramePtr->header) +10);
-
 #define ADD_FRAME_LIST(FrameList,FrameType,FramePtr,FrameGetFunct,FramePrintFunct,FrameCheckFunct)\
     FrameType *FramePtr = FrameGetFunct(version);\
     if(FramePtr == NULL)return 0;\
-    if(FrameCheckFunct(FrameList,FramePtr)){printf("repeated frame\n");free(FramePtr);return 0;}\
+    if(FrameCheckFunct(FrameList,FramePtr)){free(FramePtr);return 0;}\
     ListFramePtr_insertLast(FrameList,FramePtr);\
     FramePrintFunct(*FramePtr,version);\
     return (FramesV2_getFrameSize(version,FramePtr->header) +10);
@@ -30,22 +23,15 @@ static void cleanInputBuffer(){
     while ((ch = getchar()) != '\n' && ch != EOF);
 }
 
-int AddFrame_addTXXX(ListFramePtr *TXTFrameList,int version){
-    OLD_ADD_FRAME_LIST(TXTFrameList,ID3v2TXTFrameType,TXTFramePtr,GetFrame_TXXX,PrintFrame_TXTF);
-}
 static bool hasRepeatWXXX(ListFramePtr *WXXXrameList,ID3v2WXXXFrameType *WXXXFramePtr){
     ID3v2WXXXFrameType *checkPtr;
     ListFramePtr_setFirstActive(WXXXrameList);
     while(WXXXrameList->active != NULL){
         checkPtr= ListFramePtr_getActiveFramePtr(*WXXXrameList);
-        if(strcmp(checkPtr->description.string,WXXXFramePtr->description.string) == 0) return true;
+        if(strcmp(checkPtr->description.string,WXXXFramePtr->description.string) == 0){printf("repeated frame\n"); return true;}
         ListFramePtr_setNextActive(WXXXrameList);
     }
     return false;
-}
-int AddFrame_addWXXX(ListFramePtr *WXXXFrameList,int version){
-    ADD_FRAME_LIST(WXXXFrameList,ID3v2WXXXFrameType,WXXXFramePtr,GetFrame_WXXX,PrintFrame_WXXX,hasRepeatWXXX);
-
 }
 static bool hasRepeatAPIC(ListFramePtr *APICFrameList,ID3v2APICFrameType *APICFramePtr){
     ID3v2APICFrameType *checkPtr;
@@ -57,10 +43,6 @@ static bool hasRepeatAPIC(ListFramePtr *APICFrameList,ID3v2APICFrameType *APICFr
     }
     return false;
 }
-int AddFrame_addAPIC(ListFramePtr *APICFrameList,int version){
-    ADD_FRAME_LIST(APICFrameList,ID3v2APICFrameType,APICFramePtr,GetFrame_APIC,PrintFrame_APIC,hasRepeatAPIC);
-}
-
 static bool hasRepeatCOMM(ListFramePtr *COMMFrameList,ID3v2COMMFrameType *COMMFramePtr){
     ID3v2COMMFrameType *checkPtr;
     ListFramePtr_setFirstActive(COMMFrameList);
@@ -70,9 +52,6 @@ static bool hasRepeatCOMM(ListFramePtr *COMMFrameList,ID3v2COMMFrameType *COMMFr
         ListFramePtr_setNextActive(COMMFrameList);
     }
     return false;
-}
-int AddFrame_addCOMM(ListFramePtr *COMMFrameList,int version){
-    ADD_FRAME_LIST(COMMFrameList,ID3v2COMMFrameType,COMMFramePtr,GetFrame_COMM,PrintFrame_COMM,hasRepeatCOMM);
 }
 static bool hasRepeatPOPM(ListFramePtr *POPMFrameList,ID3v2POPMFrameType *POPMFramePtr){
     ID3v2POPMFrameType *checkPtr;
@@ -84,11 +63,43 @@ static bool hasRepeatPOPM(ListFramePtr *POPMFrameList,ID3v2POPMFrameType *POPMFr
     }
     return false;
 }
+static bool hasRepeatTXXX(ListFramePtr *TWXXXrameList,ID3v2TXXXFrameType *TXXXFramePtr){
+    ID3v2TXXXFrameType *checkPtr;
+    ListFramePtr_setFirstActive(TWXXXrameList);
+    while(TWXXXrameList->active != NULL){
+        checkPtr= ListFramePtr_getActiveFramePtr(*TWXXXrameList);
+        if(strcmp(checkPtr->description.string,TXXXFramePtr->description.string) == 0) return true;
+        ListFramePtr_setNextActive(TWXXXrameList);
+    }
+    return false;
+}
+
+int AddFrame_addTXXX(ListFramePtr *TXXXFrameList,int version){
+    ADD_FRAME_LIST(TXXXFrameList,ID3v2TXXXFrameType,TXXXFramePtr,GetFrame_TXXX,PrintFrame_TXXX,hasRepeatTXXX);
+}
+
+int AddFrame_addWXXX(ListFramePtr *WXXXFrameList,int version){
+    ADD_FRAME_LIST(WXXXFrameList,ID3v2WXXXFrameType,WXXXFramePtr,GetFrame_WXXX,PrintFrame_WXXX,hasRepeatWXXX);
+}
+int AddFrame_addAPIC(ListFramePtr *APICFrameList,int version){
+    ADD_FRAME_LIST(APICFrameList,ID3v2APICFrameType,APICFramePtr,GetFrame_APIC,PrintFrame_APIC,hasRepeatAPIC);
+}
+
+int AddFrame_addCOMM(ListFramePtr *COMMFrameList,int version){
+    ADD_FRAME_LIST(COMMFrameList,ID3v2COMMFrameType,COMMFramePtr,GetFrame_COMM,PrintFrame_COMM,hasRepeatCOMM);
+}
+
 int AddFrame_addPOPM(ListFramePtr *POPMFrameList,int version){
     ADD_FRAME_LIST(POPMFrameList,ID3v2POPMFrameType,POPMFramePtr,GetFrame_POPM,PrintFrame_POPM,hasRepeatPOPM);
 }
 int AddFrame_addPCNT(ID3v2PCNTFrameType **PCNT,int version){
     ADD_FRAME(PCNT,GetFrame_PCNT,PrintFrame_PCNT);
+}
+int AddFrame_addIPLS(ID3v2IPLSFrameType **IPLS,int version){
+    ADD_FRAME(IPLS,GetFrame_IPLS,PrintFrame_IPLS);
+}
+int AddFrame_addUSER(ID3v2USERFrameType **USER,int version){
+    ADD_FRAME(USER,GetFrame_USER,PrintFrame_USER);
 }
 
 int AddFrame_addTXTF(ListFramePtr *TXTFrameList,char *frameID,int version){

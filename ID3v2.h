@@ -20,33 +20,34 @@ typedef struct {
     ListFramePtr POPMFrameList; 
     ID3v2PCNTFrameType *PCNT; //test
     //Not supported addition
-    ListFramePtr PRIVFrameList;
-    ID3v2DefaultFrameType *MCDI;
+    ListFramePtr PRIVFrameList; //Binary Data
+    ID3v2DefaultFrameType *MCDI; //Binary Data
     //Pending to include addition
     /**/
     
     /*TO IMPLEMENT*/
-    ListFramePtr UFIDFrameList; //LIST
-    ListFramePtr USLTFrameList; //LIST
-    ListFramePtr SYLTFrameList; //LIST
-    ListFramePtr GEOBFrameList; //LIST
-    ListFramePtr LINKFrameList; //List
-    ListFramePtr AENCFrameList; //LIST
-    ListFramePtr ENCRFrameList; //LIST
-    ListFramePtr GRIDFrameList; //LIST
+    ListFramePtr UFIDFrameList; //Binary Data
+    ListFramePtr USLTFrameList; //SI hay tiempo lo meto
+    ListFramePtr SYLTFrameList; //Unkown format
+    ListFramePtr GEOBFrameList; //Binary Data
+    ListFramePtr LINKFrameList; //Unkown format
+    ListFramePtr AENCFrameList; //Binary Data
+    ListFramePtr ENCRFrameList; //Binary Data
+    ListFramePtr GRIDFrameList; //Binary Data
     
-    ID3v2DefaultFrameType *IPLS; 
-    ID3v2DefaultFrameType *SYTC; 
-    ID3v2DefaultFrameType *USER; 
-    ID3v2DefaultFrameType *OWNE; 
+    // ID3v2DefaultFrameType *IPLS; 
+    ID3v2IPLSFrameType *IPLS; //Done
+    ID3v2DefaultFrameType *SYTC; //Binary Data
+    ID3v2USERFrameType *USER; //Done
+    ID3v2DefaultFrameType *OWNE; //date attribute unkown
     //
-    ID3v2DefaultFrameType *COMR; //???
-    ID3v2DefaultFrameType *POSS;
-    ID3v2DefaultFrameType *RVRB;
-    ID3v2DefaultFrameType *EQUA;
-    ID3v2DefaultFrameType *MLLT;
-    ID3v2DefaultFrameType *ETCO;
-    ID3v2DefaultFrameType *RVAD;
+    ID3v2DefaultFrameType *COMR; //Binaty Data
+    ID3v2DefaultFrameType *POSS; //Binaty Data
+    ID3v2RVRBFrameType *RVRB; //Stored but not submited by user
+    ID3v2DefaultFrameType *EQUA; //Binary Data
+    ID3v2DefaultFrameType *MLLT; //Unkown format
+    ID3v2DefaultFrameType *ETCO; //Unkown format
+    ID3v2DefaultFrameType *RVAD; //Unkown format
     /**/
     size_t paddingSize;
 } ID3TagType;

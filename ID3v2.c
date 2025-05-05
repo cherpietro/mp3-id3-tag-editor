@@ -84,14 +84,14 @@ void ID3v2_free(ID3TagType *ID3Tag){
     FREE_FRAME_LIST(GRIDFrameList,ID3v2DefaultFrameType,FramesV2_freeDefaultFrame);
     if(ID3Tag->COMR != NULL) FramesV2_freeDefaultFrame(&ID3Tag->COMR);
     if(ID3Tag->POSS != NULL) FramesV2_freeDefaultFrame(&ID3Tag->POSS);
-    if(ID3Tag->RVRB != NULL) FramesV2_freeDefaultFrame(&ID3Tag->RVRB);
+    if(ID3Tag->RVRB != NULL) FramesV2_freeRVRB(&ID3Tag->RVRB);
     if(ID3Tag->EQUA != NULL) FramesV2_freeDefaultFrame(&ID3Tag->EQUA);
     if(ID3Tag->MLLT != NULL) FramesV2_freeDefaultFrame(&ID3Tag->MLLT);
     if(ID3Tag->ETCO != NULL) FramesV2_freeDefaultFrame(&ID3Tag->ETCO);
     if(ID3Tag->RVAD != NULL) FramesV2_freeDefaultFrame(&ID3Tag->RVAD);
-    if(ID3Tag->IPLS != NULL) FramesV2_freeDefaultFrame(&ID3Tag->IPLS);
+    if(ID3Tag->IPLS != NULL) FramesV2_freeIPLS(&ID3Tag->IPLS);
     if(ID3Tag->SYTC != NULL) FramesV2_freeDefaultFrame(&ID3Tag->SYTC);
-    if(ID3Tag->USER != NULL) FramesV2_freeDefaultFrame(&ID3Tag->USER);
+    if(ID3Tag->USER != NULL) FramesV2_freeUSER(&ID3Tag->USER);
     if(ID3Tag->OWNE != NULL) FramesV2_freeDefaultFrame(&ID3Tag->OWNE);
     if(ID3Tag->PCNT != NULL) FramesV2_freePCNT(&ID3Tag->PCNT);
 }
@@ -160,7 +160,7 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
     else if(strncasecmp(frameID,"POPM",4)==0) deletedSize = DeleteFrame_deletePOPM(&ID3Tag->POPMFrameList,ID3Tag->header.version[0]);
     else if(strncasecmp(frameID,"MDCI",4)==0) deletedSize = DeleteFrame_default(&ID3Tag->MCDI,ID3Tag->header.version[0]);
     //NOT TESTED
-    else if(strncasecmp(frameID,"RVRB",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->RVRB,ID3Tag->header.version[0]);}
+    else if(strncasecmp(frameID,"RVRB",4)==0){deletedSize = DeleteFrame_RVRB(&ID3Tag->RVRB,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"EQUA",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->EQUA,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"MLLT",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->MLLT,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"ETCO",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->ETCO,ID3Tag->header.version[0]);}
@@ -175,9 +175,9 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
     else if(strncasecmp(frameID,"AENC",4)==0){deletedSize = DeleteFrame_defaultList(&ID3Tag->AENCFrameList,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"ENCR",4)==0){deletedSize = DeleteFrame_defaultList(&ID3Tag->ENCRFrameList,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"GRID",4)==0){deletedSize = DeleteFrame_defaultList(&ID3Tag->GRIDFrameList,ID3Tag->header.version[0]);}
-    else if(strncasecmp(frameID,"IPLS",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->IPLS,ID3Tag->header.version[0]);}
+    else if(strncasecmp(frameID,"IPLS",4)==0){deletedSize = DeleteFrame_IPLS(&ID3Tag->IPLS,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"SYTC",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->SYTC,ID3Tag->header.version[0]);}
-    else if(strncasecmp(frameID,"USER",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->USER,ID3Tag->header.version[0]);}
+    else if(strncasecmp(frameID,"USER",4)==0){deletedSize = DeleteFrame_USER(&ID3Tag->USER,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"OWNE",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->OWNE,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"PCNT",4)==0){deletedSize = DeleteFrame_deletePCNT(&ID3Tag->PCNT,ID3Tag->header.version[0]);}
     else return; //NOT SUPPORTED TAG
@@ -189,7 +189,7 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
 void ID3v2_addFrame(ID3TagType *ID3Tag, char *frameID){
     int incrementedSize = 0;
     int oldSize = 0;
-    if(strncasecmp(frameID,"TXXX",4)==0){ADD_FRAME_LIST(TXTFrameList,AddFrame_addTXXX);}    
+    if(strncasecmp(frameID,"TXXX",4)==0){ADD_FRAME_LIST(TXXXFrameList,AddFrame_addTXXX);}    
     else if(strncasecmp(frameID,"T",1)==0){ 
         if(FramesV2_validTextFrameId(frameID)){ ADD_SINGLE_FRAME_LIST(TXTFrameList, AddFrame_addTXTF, frameID);}
         else printf("Not supported tag to include");
@@ -203,4 +203,6 @@ void ID3v2_addFrame(ID3TagType *ID3Tag, char *frameID){
     else if(strncasecmp(frameID,"COMM",4)==0){ADD_FRAME_LIST(COMMFrameList, AddFrame_addCOMM);}
     else if(strncasecmp(frameID,"POPM",4)==0){ADD_FRAME_LIST(POPMFrameList, AddFrame_addPOPM);}
     else if(strncasecmp(frameID,"PCNT",4)==0){ADD_FRAME_LIST(PCNT, AddFrame_addPCNT);}
+    else if(strncasecmp(frameID,"IPLS",4)==0){ADD_FRAME_LIST(IPLS, AddFrame_addIPLS);}
+    else if(strncasecmp(frameID,"USER",4)==0){ADD_FRAME_LIST(USER, AddFrame_addUSER);}
 }
