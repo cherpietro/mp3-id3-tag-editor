@@ -90,6 +90,7 @@ void FileManager_writteDefaultFrameInFile(FILE *destFilePtr, ID3v2DefaultFrameTy
 }
 //IPLS
 //USER
+//RVRB
 ////////////////////////////
 
 void FileManager_writtePadding(FILE *destFilePtr, int paddingSize){
@@ -164,10 +165,32 @@ void FileManager_writteTagIntoFile(char *file, ID3TagType *ID3Tag){
         FileManager_writteTXXXFramesInFile(temp,&ID3Tag->TXXXFrameList);
         FileManager_writteTXTFramesInFile(temp,&ID3Tag->TXTFrameList);
         FileManager_writteAPICFramesInFile(temp,&ID3Tag->APICFrameList);
+        //WWWF
+        //WXXX
         FileManager_writteCOMMFramesInFile(temp,&ID3Tag->COMMFrameList);
+        FileManager_writtePOPMFramesInFile(temp,&ID3Tag->POPMFrameList);
+        //PCNT
         FileManager_writtePRIVFramesInFile(temp,&ID3Tag->PRIVFrameList);
         if(ID3Tag->MCDI != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->MCDI);
-        FileManager_writtePOPMFramesInFile(temp,&ID3Tag->POPMFrameList);
+        FileManager_writteDefaultFramesInFile(temp,&ID3Tag->UFIDFrameList);
+        FileManager_writteDefaultFramesInFile(temp,&ID3Tag->USLTFrameList);
+        FileManager_writteDefaultFramesInFile(temp,&ID3Tag->SYLTFrameList);
+        FileManager_writteDefaultFramesInFile(temp,&ID3Tag->GEOBFrameList);
+        FileManager_writteDefaultFramesInFile(temp,&ID3Tag->LINKFrameList);
+        FileManager_writteDefaultFramesInFile(temp,&ID3Tag->AENCFrameList);
+        FileManager_writteDefaultFramesInFile(temp,&ID3Tag->ENCRFrameList);
+        FileManager_writteDefaultFramesInFile(temp,&ID3Tag->GRIDFrameList);
+        //IPLS
+        if(ID3Tag->SYTC != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->SYTC);
+        //USER
+        if(ID3Tag->OWNE != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->OWNE);
+        if(ID3Tag->COMR != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->COMR);
+        if(ID3Tag->POSS != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->POSS);
+        //RVRB
+        if(ID3Tag->EQUA != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->EQUA);
+        if(ID3Tag->MLLT != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->MLLT);
+        if(ID3Tag->ETCO != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->ETCO);
+        if(ID3Tag->RVAD != NULL) FileManager_writteDefaultFrameInFile(temp,*ID3Tag->RVAD);
 
         FileManager_writtePadding(temp,ID3Tag->paddingSize);
         
