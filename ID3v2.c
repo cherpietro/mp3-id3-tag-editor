@@ -107,7 +107,7 @@ int ID3v2_storeTagInStruct(char *file,ID3TagType *ID3Tag){
         int paddingReached = 0;
         HeaderV2_storeHeader(mp3FilePointer,&ID3Tag->header);
         if(HeaderV2_isID3v2Tag(ID3Tag->header)){
-                HeaderV2_printTagHeader(ID3Tag->header);
+                // HeaderV2_printTagHeader(ID3Tag->header);
                 uint32_t tagSize = HeaderV2_getTagSize(ID3Tag->header);
                 while(paddingReached == 0 && ftell(mp3FilePointer) < tagSize + 10){
                     paddingReached = StoreFrame_storeNextFrameInStruct(mp3FilePointer,ID3Tag);
@@ -180,7 +180,7 @@ void ID3v2_deleteFrame(ID3TagType *ID3Tag, char *frameID){
     else if(strncasecmp(frameID,"USER",4)==0){deletedSize = DeleteFrame_USER(&ID3Tag->USER,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"OWNE",4)==0){deletedSize = DeleteFrame_default(&ID3Tag->OWNE,ID3Tag->header.version[0]);}
     else if(strncasecmp(frameID,"PCNT",4)==0){deletedSize = DeleteFrame_deletePCNT(&ID3Tag->PCNT,ID3Tag->header.version[0]);}
-    else return; //NOT SUPPORTED TAG
+    else{printf("\nNot supported tag\n");return;} //NOT SUPPORTED TAG
     oldSize = HeaderV2_getTagSize(ID3Tag->header);
     HeaderV2_updateTagSize(&ID3Tag->header,oldSize-deletedSize);
 
@@ -205,4 +205,5 @@ void ID3v2_addFrame(ID3TagType *ID3Tag, char *frameID){
     else if(strncasecmp(frameID,"PCNT",4)==0){ADD_FRAME_LIST(PCNT, AddFrame_addPCNT);}
     else if(strncasecmp(frameID,"IPLS",4)==0){ADD_FRAME_LIST(IPLS, AddFrame_addIPLS);}
     else if(strncasecmp(frameID,"USER",4)==0){ADD_FRAME_LIST(USER, AddFrame_addUSER);}
+    else printf("\nNot supported tag\n");
 }

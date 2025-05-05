@@ -146,28 +146,28 @@ bool FileManager_removeTagFromFile(char*file){
         ID3v2HeaderType header;
         HeaderV2_storeHeader(mp3FilePointer,&header);
         if(HeaderV2_isID3v2Tag(header)){
-                uint32_t tagSize = HeaderV2_getTagSize(header);
-                fseek(mp3FilePointer, tagSize+10, SEEK_SET);
-                uint32_t remainingSize = fileSize - tagSize;
-                unsigned char *dataBuffer = (unsigned char *)malloc(remainingSize);
-                if (!dataBuffer) {
-                        printf("error\n");
-                        return false;
-                }
-                size_t bytesRead = fread(dataBuffer, 1, remainingSize, mp3FilePointer);
-                FILE *temp = fopen("savedFiles/tagRemoved.mp3", "wb");
-                if (!temp) {
+            uint32_t tagSize = HeaderV2_getTagSize(header);
+            fseek(mp3FilePointer, tagSize+10, SEEK_SET);
+            uint32_t remainingSize = fileSize - tagSize;
+            unsigned char *dataBuffer = (unsigned char *)malloc(remainingSize);
+            if (!dataBuffer) {
                     printf("error\n");
-                    free(dataBuffer);
                     return false;
-                }
-                fwrite(dataBuffer, 1, bytesRead, temp);
-                fclose(temp);
-                free(dataBuffer);
-                return true;
-                // remove(file);
-                // rename("tagRe6moved.mp3",file);
             }
+            size_t bytesRead = fread(dataBuffer, 1, remainingSize, mp3FilePointer);
+            FILE *temp = fopen("savedFiles/tagRemoved.mp3", "wb");
+            if (!temp) {
+                printf("error\n");
+                free(dataBuffer);
+                return false;
+            }
+            fwrite(dataBuffer, 1, bytesRead, temp);
+            fclose(temp);
+            free(dataBuffer);
+            return true;
+            // remove(file);
+            // rename("tagRe6moved.mp3",file);
+        }
         else printf("Not ID3v2 Tag detected or not yet supported version\n");
         fclose(mp3FilePointer);
         return false;

@@ -11,6 +11,7 @@
 #define PRINT_LIST_FRAME(FrameLst,FramePtr,FrameType,printFunct)\
   FrameType *FramePtr;\
   ListFramePtr_setFirstActive(&FrameLst);\
+  if (FrameLst.active == NULL) printf("Not frame in tag\n");\
   while(FrameLst.active != NULL){\
     FramePtr = (FrameType *)ListFramePtr_getActiveFramePtr(FrameLst);\
     printFunct(*FramePtr,version);\
@@ -76,6 +77,7 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
   if(strncasecmp(frameID,"TXXX",4)==0){
     ListFramePtr_setFirstActive(&ID3Tag->TXXXFrameList);
     ID3v2TXXXFrameType * TXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXXXFrameList);
+    if (TXXXFramePtr != NULL) printf("Not frame in tag\n");
     while (TXXXFramePtr != NULL){
       if(strncasecmp(frameID,TXXXFramePtr->header.frameId,4) == 0) PrintFrame_TXXX(*TXXXFramePtr,version);
       ListFramePtr_setNextActive(&ID3Tag->TXXXFrameList);
@@ -85,11 +87,13 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
   else if(strncasecmp(frameID,"T",1)==0){
     ListFramePtr_setFirstActive(&ID3Tag->TXTFrameList);
     ID3v2TXTFrameType * TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
+
     while (TXTFramePtr != NULL && strncasecmp(frameID,TXTFramePtr->header.frameId,4) != 0){
       ListFramePtr_setNextActive(&ID3Tag->TXTFrameList);
       TXTFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->TXTFrameList);
     }
     if(TXTFramePtr != NULL) PrintFrame_TXTF(*TXTFramePtr,version);
+    else printf("Not frame in tag\n");
   }
   else if(strncasecmp(frameID,"APIC",4)==0){ PRINT_LIST_FRAME(ID3Tag->APICFrameList,APICFrame,ID3v2APICFrameType,PrintFrame_APIC);}
   else if(strncasecmp(frameID,"W",1)==0){
@@ -100,10 +104,12 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
       WWWFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WWWFrameList);
     }
     if(WWWFramePtr != NULL) PrintFrame_WWWF(*WWWFramePtr,version);
+    else printf("Not frame in tag\n");
   }
   else if(strncasecmp(frameID,"WXXX",4)==0){
     ListFramePtr_setFirstActive(&ID3Tag->WXXXFrameList);
     ID3v2WXXXFrameType * WXXXFramePtr = ListFramePtr_getActiveFramePtr(ID3Tag->WXXXFrameList);
+    if (WXXXFramePtr != NULL) printf("Not frame in tag\n");
     while (WXXXFramePtr != NULL){
       PrintFrame_WXXX(*WXXXFramePtr,version);
       ListFramePtr_setNextActive(&ID3Tag->WXXXFrameList);
@@ -130,11 +136,7 @@ void PrintFrame_printFrame(ID3TagType *ID3Tag, char *frameID){
   else if(strncasecmp(frameID,"SYTC",4)==0){ if(ID3Tag->SYTC != NULL) PrintFrame_DefaultFrame(*ID3Tag->SYTC,version);}
   else if(strncasecmp(frameID,"USER",4)==0){ if(ID3Tag->USER != NULL) PrintFrame_USER(*ID3Tag->USER,version);}
   else if(strncasecmp(frameID,"OWNE",4)==0){ if(ID3Tag->OWNE != NULL) PrintFrame_DefaultFrame(*ID3Tag->OWNE,version);}
-  // else if(strncasecmp(frameID,"IPLS",4)==0){ if(ID3Tag->IPLS != NULL) PrintFrame_IPLS(*ID3Tag->IPLS);}
-  // else if(strncasecmp(frameID,"SYTC",4)==0){ if(ID3Tag->SYTC != NULL) PrintFrame_SYTC(*ID3Tag->SYTC);}
-  // else if(strncasecmp(frameID,"USER",4)==0){ if(ID3Tag->USER != NULL) PrintFrame_USER(*ID3Tag->USER);}
-  // else if(strncasecmp(frameID,"OWNE",4)==0){ if(ID3Tag->OWNE != NULL) PrintFrame_OWNE(*ID3Tag->OWNE);}
-  
+
   else if(strncasecmp(frameID,"COMR",4)==0){ if(ID3Tag->COMR != NULL) PrintFrame_DefaultFrame(*ID3Tag->COMR,version);}
   else if(strncasecmp(frameID,"POSS",4)==0){ if(ID3Tag->POSS != NULL) PrintFrame_DefaultFrame(*ID3Tag->POSS,version);}
   else if(strncasecmp(frameID,"RVRB",4)==0){ if(ID3Tag->RVRB != NULL) PrintFrame_RVRB(*ID3Tag->RVRB,version);}
